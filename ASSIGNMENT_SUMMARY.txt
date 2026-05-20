@@ -1,0 +1,170 @@
+HPC Exam Project - Part 1: OpenMP
+=================================
+
+Goal
+----
+Implement an OpenMP simulator for the two-dimensional damped wave equation:
+
+    d2u/dt2 + gamma * du/dt = c^2 * Laplacian(u)
+
+The simulator computes the wave height u(x, y, t) on an M x M grid over N
+time steps, then saves each time step as a grayscale PGM image. The generated
+PGM frames can later be combined into an MP4 video with FFmpeg.
+
+Main Assignment Requirements
+----------------------------
+1. Discretize space and time:
+   - Space grid: M x M points.
+   - Spatial step: dx, and usually dy = dx.
+   - Time step: dt.
+   - Time index: n.
+
+2. Use the input parameters:
+   - gamma: wave damping coefficient.
+   - c: wave propagation speed.
+   - dt: time integration step.
+   - dx: spatial integration step.
+   - M: square matrix size.
+   - N: number of simulation steps.
+   - Initial impulse: position (i0, j0) and amplitude at time zero.
+
+3. Compute N matrices representing the evolution of the wave.
+
+4. Parallelize the simulation with OpenMP.
+
+5. Save each completed matrix in folder sim/ as a binary PGM file named:
+
+       frame_<xxxxx>.pgm
+
+   where <xxxxx> is the 5-digit frame number, for example:
+
+       frame_00001.pgm
+
+6. PGM output format:
+   - First line: P5
+   - Second line: M M
+   - Third line: 255
+   - Then M x M bytes, each between 0 and 255.
+
+7. Convert PGM frames to MP4 with FFmpeg:
+
+       ffmpeg -framerate <FPS> -i ./sim/frame_%05d.pgm -c:v libx264 -pix_fmt yuv420p nome_video.mp4
+
+   FPS should be chosen from dt. A simple starting point is FPS = round(1 / dt),
+   but the final choice should match the intended simulation playback speed.
+
+Current Project Preparation
+---------------------------
+Created project structure:
+
+    src/main.c              OpenMP damped wave simulator
+    Makefile                Build rules for gcc + OpenMP
+    Makefile.linux          Linux build/run/video rules
+    scripts/install_ffmpeg.ps1  PowerShell helper for FFmpeg installation
+    scripts/make_video.ps1  PowerShell helper for FFmpeg video generation
+    .gitignore              Ignores build output, frames, videos, and local tools
+
+Assigned Parameters
+-------------------
+The assignment PDF says each student has their own simulation parameters in:
+
+    Parameters_part_1.pdf
+
+The file is now available as parameters_part_1.pdf. For student ID 352165:
+
+    gamma = 0.067
+    c = 0.59
+    i0 = M/2
+    j0 = M/2
+    u(i0,j0) = 56
+
+The simulator defaults the impulse position to the grid center when
+--impulse-i and --impulse-j are omitted.
+
+Build
+-----
+On this machine, use:
+
+    mingw32-make
+
+Run Assigned Parameters
+-----------------------
+Run with your assigned gamma, c, and impulse amplitude:
+
+    mingw32-make run-student
+
+The Makefile currently uses these general simulation constants:
+
+    M = 512
+    N = 300
+    dt = 0.1
+    dx = 1.0
+
+These can be overridden at the command line, for example:
+
+    mingw32-make run-student SIZE=1024 STEPS=500 THREADS=8
+
+Run Small Test
+--------------
+Small run, only for testing the setup:
+
+    .\build\wave_sim.exe --gamma 0.05 --c 1.0 --dt 0.1 --dx 1.0 --size 128 --steps 120 --impulse-i 64 --impulse-j 64 --amplitude 1.0 --threads 4
+
+The optional --scale value controls how floating-point wave heights are mapped
+to PGM bytes. If omitted, the simulator uses abs(amplitude), which keeps damping
+visible over time instead of independently normalizing every frame.
+
+FFmpeg On Windows
+-----------------
+The Linux command from the assignment downloads a Linux tar.xz build. On this
+Windows machine, use the helper script instead:
+
+    .\scripts\install_ffmpeg.ps1
+
+This downloads the Windows ZIP build from BtbN and places ffmpeg.exe under
+ffmpeg_tool/.
+
+After running, the frames should appear in:
+
+    sim/
+
+Video Example
+-------------
+If FFmpeg is installed and available in PATH:
+
+    .\scripts\make_video.ps1 -Framerate 10 -InputDir sim -Output wave.mp4
+
+Or with the Makefile helper:
+
+    mingw32-make video
+
+Linux Commands
+--------------
+On Linux, use the Linux makefile:
+
+    make -f Makefile.linux
+    make -f Makefile.linux run-student
+
+If FFmpeg is not installed system-wide, download the assignment's Linux build:
+
+    make -f Makefile.linux install-ffmpeg
+    make -f Makefile.linux video
+
+If FFmpeg is already installed system-wide:
+
+    make -f Makefile.linux video-system
+
+FFmpeg Install Note
+-------------------
+The failed command used:
+
+    ffmpegmaster-latest-linux64-gpl.tar.xz
+
+There are two issues:
+
+    1. The asset name is missing the hyphen after ffmpeg.
+    2. That is a Linux build, but this project is being run on Windows.
+
+Use the Windows helper instead:
+
+    mingw32-make install-ffmpeg

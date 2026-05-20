@@ -1,0 +1,56 @@
+CC := gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -fopenmp
+LDFLAGS ?= -lm -fopenmp
+
+BUILD_DIR := build
+SRC_DIR := src
+TARGET := $(BUILD_DIR)/wave_sim
+SOURCES := $(SRC_DIR)/main.c
+
+GAMMA ?= 0.067
+C ?= 0.59
+DT ?= 0.1
+DX ?= 1.0
+SIZE ?= 512
+STEPS ?= 300
+AMPLITUDE ?= 56
+THREADS ?= 4
+OUTPUT ?= sim
+FPS ?= 10
+VIDEO ?= wave_352165.mp4
+
+FFMPEG_ARCHIVE ?= ffmpeg.tar.xz
+FFMPEG_DIR ?= ffmpeg_tool
+FFMPEG_URL ?= https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz
+FFMPEG ?= $(FFMPEG_DIR)/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg
+
+.PHONY: all clean clean-generated run-smoke run-student install-ffmpeg video video-system
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCES)
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+run-smoke: $(TARGET)
+	$(TARGET) --gamma 0.05 --c 1.0 --dt 0.1 --dx 1.0 --size 64 --steps 10 --impulse-i 32 --impulse-j 32 --amplitude 1.0 --threads 2 --output sim
+
+run-student: $(TARGET)
+	$(TARGET) --gamma $(GAMMA) --c $(C) --dt $(DT) --dx $(DX) --size $(SIZE) --steps $(STEPS) --amplitude $(AMPLITUDE) --threads $(THREADS) --output $(OUTPUT)
+
+install-ffmpeg:
+	mkdir -p $(FFMPEG_DIR)
+	wget -O $(FFMPEG_ARCHIVE) $(FFMPEG_URL)
+	tar -xf $(FFMPEG_ARCHIVE) -C $(FFMPEG_DIR)
+
+video:
+	$(FFMPEG) -y -framerate $(FPS) -i $(OUTPUT)/frame_%05d.pgm -frames:v $(STEPS) -c:v libx264 -pix_fmt yuv420p $(VIDEO)
+
+video-system:
+	ffmpeg -y -framerate $(FPS) -i $(OUTPUT)/frame_%05d.pgm -frames:v $(STEPS) -c:v libx264 -pix_fmt yuv420p $(VIDEO)
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+clean-generated:
+	rm -rf $(OUTPUT) $(VIDEO)

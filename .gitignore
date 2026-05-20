@@ -1,0 +1,8 @@
+build/
+sim/
+ffmpeg_tool/
+ffmpeg.zip
+*.mp4
+*.exe
+*.o
+*.obj
