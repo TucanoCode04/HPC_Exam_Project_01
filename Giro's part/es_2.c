@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <mpi.h>
 
+// Funzione per il salvataggio dell'immagine PGM in scala di grigi
 void save_pgm(const char *filename, float *u, int M) {
     FILE *f = fopen(filename, "wb");
     if (!f) return;
@@ -12,23 +13,37 @@ void save_pgm(const char *filename, float *u, int M) {
 
     unsigned char *pixels = (unsigned char *)malloc(M * M * sizeof(unsigned char));
 
-    // Soglia ottimizzata per far risaltare l'impatto delle due onde smorzate
-    float u_min = -0.5f;
-    float u_max = +0.5f;
+    double max_val = 0.8;
+    double factor = 127.0 / max_val;
 
     for (int i = 0; i < M * M; i++) {
-        float val = u[i];
-        float norm = (val - u_min) / (u_max - u_min);
+        int value = (int)(127 + factor * u[i]);
 
-        if (norm < 0.0f) norm = 0.0f;
-        if (norm > 1.0f) norm = 1.0f;
+        if (value > 255) value = 255;
+        if (value < 0)   value = 0;
 
-        pixels[i] = (unsigned char)(norm * 255.0f);
+        pixels[i] = (unsigned char)value;
     }
 
     fwrite(pixels, sizeof(unsigned char), M * M, f);
     fclose(f);
     free(pixels);
+}
+
+// Funzione ausiliaria per distribuire l'impulso in modo sferico ed evitare l'anisotropia a quadrato
+void apply_impulse(float *u_curr, float *u_prev, int M, int i0, int j0, float amp) {
+    for (int r = -2; r <= 2; r++) {
+        for (int c = -2; c <= 2; c++) {
+            int pi = i0 + r;
+            int pj = j0 + c;
+            if (pi >= 0 && pi < M && pj >= 0 && pj < M) {
+                float dist_sq = (float)(r * r + c * c);
+                float weight = expf(-dist_sq / 2.0f);
+                u_curr[pi * M + pj] += amp * weight;
+                u_prev[pi * M + pj] += amp * weight;
+            }
+        }
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -40,7 +55,7 @@ int main(int argc, char *argv[]) {
 
     if (num_procs < 3) {
         if (rank == 0) {
-            printf("Errore: Occorrono 3 processi MPI! Esegui con: mpirun -np 3 ...\n");
+            printf("Errore: Occorrono 3 processi MPI!\n");
         }
         MPI_Finalize();
         return 1;
@@ -98,14 +113,12 @@ int main(int argc, char *argv[]) {
         u_next[i] = 0.0f;
     }
 
-    // Impulso iniziale Onda 1
-    u_curr[i1 * M + j1] = impulso1;
-    u_prev[i1 * M + j1] = impulso1;
+    // Applicazione impulso sferico pulito Onda 1
+    apply_impulse(u_curr, u_prev, M, i1, j1, impulso1);
 
-    // Impulso iniziale Onda 2 (solo sim2)
+    // Applicazione impulso sferico pulito Onda 2 (solo sim2 a t = 0)
     if (rank == 1) {
-        u_curr[i2 * M + j2] += impulso2;
-        u_prev[i2 * M + j2] += impulso2;
+        apply_impulse(u_curr, u_prev, M, i2, j2, impulso2);
     }
 
     float alpha = (c * dt / dx) * (c * dt / dx);
@@ -123,10 +136,9 @@ int main(int argc, char *argv[]) {
 
             #pragma omp single
             {
-                // Impulso ritardato Onda 2 (solo sim3 a t = tstart)
+                // Inserimento pulito dell'impulso ritardato per sim3
                 if (rank == 2 && n == n_start) {
-                    u_curr[i2 * M + j2] += impulso2;
-                    u_prev[i2 * M + j2] += impulso2;
+                    apply_impulse(u_curr, u_prev, M, i2, j2, impulso2);
                 }
 
                 snprintf(filename, sizeof(filename), "%s/frame_%05d.pgm", sim_dir, n);
