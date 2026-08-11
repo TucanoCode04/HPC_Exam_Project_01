@@ -1,0 +1,10 @@
+\section{Introduction}
+Following the initial wave simulator developed with OpenMP, this second assignment extends the application to execute multiple concurrent simulations on an HPC system using a hybrid MPI and OpenMP programming model. The goal is to study multi-wave interaction and interference dynamics under different physical conditions. While OpenMP continues to handle data parallelism by accelerating the 2D stencil computations across local CPU cores, MPI is introduced to manage task parallelism. Specifically, the system executes three distinct simulation scenarios simultaneously within a single execution run: 
+\begin{itemize}
+    \item Simulation 1: Reproduces the baseline single-wave scenario initiated by a single central impulse at $t = 0$.
+    \item Simulation 2: Models wave superposition and interference phenomena by initiating two simultaneous impulses at different spatial locations at $t = 0$.
+    \item Simulation 3: Introduces time-delayed interference dynamics by generating a second impulse at a spatial location after a predetermined time-shift ($t = t_{start}$).By decoupling these independent workloads across separate MPI processes, the hybrid architecture maximizes computational throughput without requiring inter-process communication during the time-stepping loop.
+\end{itemize}
+By decoupling these independent workloads across separate MPI processes, the hybrid architecture maximizes computational throughput without requiring inter-process communication during the time-stepping loop.
+
+\section{}
