@@ -6,6 +6,33 @@
 \maketitle
 \section{Introduction (??)}
 \section{Assignment 1}
+\subsection{Introduction and objectives}
+The objective of this project is to implement a simulator that models the propagation of a damped wave. The general partial differential equation describing the phenomenon in space as time varies is the following:
+\begin{equation}
+    \frac{\partial^{2}u}{\partial t^{2}}+\gamma\frac{\partial u}{\partial t}=c^{2}\nabla^{2}u
+\end{equation}
+Where $u(x,y,t)$ represents the height of the wave on a two-dimensional plane over time, $\gamma$ is the wave damping coefficient, and $c$ is the wave propagation speed. The simulator calculates the wave height for each point in the coordinate space $(x, y)$ as time $t$ changes, with the ultimate goal of generating an MP4 video of the simulation.
+
+
+\subsection{Implementation}
+To perform the simulation, it is necessary to convert the continuous model into a discrete model suitable for implementation on a computer. For this purpose, a grid is introduced: space is divided into equally spaced points along the x and y directions with steps $\Delta x$ and $\Delta y$, and time is discretised into instants separated by a time step $\Delta t$.
+Consequently, each point in space is identified by integer indices $(i,j)$, and time by an index $n$. The continuous function $u(x,y,t)$ is replaced by a matrix of values $u_{i,j}^{n}$, representing the value of the function at the grid point $(i,j)$ at time step $n$. The derivatives appearing in the differential equation are approximated using finite differences. In particular, both central and forward difference methods are implemented in the code and can be tested separately.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Assignment 2}
 \section{Assignment 3}
 \end{document}
