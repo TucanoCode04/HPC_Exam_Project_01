@@ -1,0 +1,132 @@
+VERSION 1 -> VERSION 2
+Buffering the I/O and parallelizing the pixel-writing stage
+------------------------------------------------------------------------------
+ 
+WHAT CHANGED:
+In v1, writing a frame meant calling fwrite() once per pixel (1,000,000
+library calls per frame), executed entirely by a single thread inside a
+"#pragma omp single" block. In v2 this is replaced by two steps: (1) a
+write_buffer() function fills an in-memory array with the 0-255 scaled
+values, executed in parallel by all threads via its own "#pragma omp for";
+(2) the whole buffer is then written to disk with a SINGLE fwrite() call.
+ 
+WHY:
+Thousands of fwrite() calls carry a non-negligible fixed cost (library/OS
+overhead) that adds up linearly with the number of calls. On top of that,
+in v1 this work was fully serial (single thread, no parallelism at all),
+while scaling the values (an independent arithmetic operation per cell) is
+perfectly parallelizable.
+ 
+WHAT IT OPTIMIZES:
+- Drastically reduces I/O overhead: from 1,000,000 fwrite() calls per frame
+  down to just 1.
+- Spreads the CPU-bound value-scaling work across all threads (previously
+  carried entirely by a single thread in v1).
+ 
+SIDE EFFECT (later fixed in v3):
+The "#pragma omp for" inside write_buffer() is a separate worksharing
+construct from the one used for the physics stencil: it therefore
+introduces an ADDITIONAL implicit barrier on every timestep where a frame
+is saved. Added to the barrier from the "single" that writes the file and
+the one from the "single" that swaps the pointers, this results in up to 4
+synchronization points per timestep in the worst case (versus 2 in v1).
+ 
+ 
+------------------------------------------------------------------------------
+VERSION 2 -> VERSION 3
+Loop fusion, fewer synchronization points, NUMA-aware parallel
+initialization
+------------------------------------------------------------------------------
+ 
+1) FUSING THE PHYSICS COMPUTATION AND THE BUFFER FILL
+ 
+WHAT CHANGED:
+Filling the buffer is no longer done in a separate function/loop; it is
+folded directly into the "#pragma omp for" that already computes the
+stencil (same i,j index range). As soon as each thread computes
+u_fut[i][j], it also immediately writes the corresponding pixel into the
+buffer (if that frame is due to be saved).
+ 
+WHY:
+Both operations iterate over exactly the same indices. Keeping them in two
+separate "#pragma omp for" constructs forces the threads to synchronize
+twice for work that could be done in a single pass. The VTune analysis had
+shown that the cost of these synchronizations clearly dominated over the
+actual useful work.
+ 
+WHAT IT OPTIMIZES:
+Removes one full barrier per timestep whenever a frame is saved, without
+losing any parallelism: the work is identical, it is just grouped into a
+single worksharing phase.
+ 
+------------------------------------------------------------------------------
+ 
+2) PRECOMPUTING THE BUFFER BORDER (outside the time loop)
+ 
+WHAT CHANGED:
+The border pixel value (127, corresponding to a physical value that is
+always 0, since the stencil never touches the domain's edge) is now
+written ONCE before the simulation starts, instead of being recomputed
+every frame.
+ 
+WHY:
+The domain boundary is fixed for the entire simulation (a Dirichlet-type
+boundary condition, never updated by the stencil): recomputing a value
+that never changes, over and over, is pure wasted CPU work.
+ 
+WHAT IT OPTIMIZES:
+Removes redundant, fully predictable computation from the hot loop of the
+simulation (roughly 4*M cells per frame that no longer need recomputing).
+ 
+------------------------------------------------------------------------------
+ 
+3) MERGING THE TWO "#pragma omp single" BLOCKS
+ 
+WHAT CHANGED:
+The block that writes the file to disk and the block that swaps the
+pointers (u, u_past, u_fut) are merged into a single "#pragma omp single",
+always executed (with the file write conditioned internally), instead of
+two separate, consecutive single blocks.
+ 
+WHY:
+Every "single" construct carries its own implicit barrier at the end:
+having two consecutive single blocks means paying the synchronization cost
+twice for what is really a single piece of "housekeeping" work that only
+needs to be done by one thread.
+ 
+WHAT IT OPTIMIZES:
+Halves the number of single-related synchronization points per timestep
+(from 2 down to 1), further reducing the time threads spend idle waiting
+for one another.
+ 
+------------------------------------------------------------------------------
+ 
+4) PARALLEL INITIALIZATION OF THE MATRICES (u, u_past, u_fut) IN MAIN
+ 
+WHAT CHANGED:
+The loop that zeroes the three matrices, previously serial, is now
+parallelized with "#pragma omp parallel for schedule(static)
+collapse(2)", using the same schedule as the main stencil loop. At the
+same time, u_fut is now zeroed too (it was previously forgotten), which
+matters because, as the three arrays periodically rotate roles
+(u -> u_past -> u_fut), a non-zeroed u_fut would otherwise expose
+uninitialized memory to the stencil.
+ 
+WHY (NUMA first-touch):
+On a multi-socket compute node, a memory page is physically assigned to
+the NUMA node of whichever thread writes to it first (first touch), not
+of the thread that allocated it with malloc(). If initialization is done
+serially, all the matrix memory ends up close to a single core; later,
+when the main loop distributes work across dozens of threads (possibly
+spread across different sockets), the "distant" threads pay for a remote
+memory access on EVERY timestep, for the whole duration of the
+simulation. By initializing in parallel with the same partitioning scheme
+later used in the computation, each thread "physically owns" (in the NUMA
+sense) roughly the same rows it will later work on.
+ 
+WHAT IT OPTIMIZES:
+Not so much the runtime of the initialization loop itself (a negligible
+one-shot cost), but the memory-access latency for the ENTIRE subsequent
+simulation (700-1000 timesteps) on multi-socket hardware. As a side
+effect, it also fixes the read of uninitialized memory during the stencil
+computation.
