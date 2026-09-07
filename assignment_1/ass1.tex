@@ -33,7 +33,7 @@ Finally, the simulation must advance to the next time step. To maximize efficien
 
  
 \subsubsection{Identified inefficiencies and corrective transformations}
-All profiling and testing in this section was performed with a workload
+All profiling and testing in this section was performed using 32 threads with a workload
 size of $M = 1000$.
 
 The initial implementation, although parallelized with OpenMP, was
@@ -79,6 +79,12 @@ accesses afterwards. This requires a \textit{static} schedule specifically:
 a dynamic schedule would not guarantee that the
 same thread is assigned the same iterations across the two loops, making
 the first-touch alignment ineffective.
+
+After these improvements, from the VTune Hotspot analysis, the CPU time spent in \texttt{gomp\_team\_barrier\_wait\_end} dropped to 57.5\%,
+while the time spent in matrix computation rose to 15.7\%. The I/O (\texttt{fwrite} CPU time) time instead dropped significantly to less than 0.3\%.
+However, inspecting the Threading analysis, it was found that the program still used only 23\% of the available CPUs, resulting in an average effective
+CPU utilization of only 7.362 out of 32. This was due to the too low workload size compared to the number of threads. The next steps
+inspected and tested the program changing the workload size and other parameters to see how the program utilizes the resources differently.
 
 \subsection{Test}
 \subsubsection{Scalability test}
