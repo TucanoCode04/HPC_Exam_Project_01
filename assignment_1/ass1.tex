@@ -94,7 +94,7 @@ inspected and tested the program changing the workload size and other parameters
     \caption{Execution time and True CPU Efficiency scaling with varying grid sizes ($M$) using 32 threads.}
     \label{fig:performance_scaling}
 \end{figure}
-\subsubsection{I/O test}
-run the program with and without the write amtrix function to see the difference.
-\subsubsection{Sweep of number of threads per matrix dimension}
-in order to see how scale up the efficiency of parallelization (also commenting the I/O part to see only the computation time)
+add also the same analysis with 96 threads.
+\subsubsection{Sweep of number of threads on sweet point M=10000}
+in order to see how scale up the efficiency of parallelization, use the parameter S = tserial / tparallel and parallel efficienty E = S / number of threads
+
