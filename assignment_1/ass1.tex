@@ -90,11 +90,20 @@ inspected and tested the program changing the workload size and other parameters
 \subsubsection{Sweep of workload size}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/timeandCPUU.png}
+    \includegraphics[width=0.75\textwidth]{../assignment_1/plots/timeandCPUU.png}
     \caption{Execution time and True CPU Efficiency scaling with varying grid sizes ($M$) using 32 threads.}
     \label{fig:performance_scaling}
 \end{figure}
+As shown in figure \ref{fig:performance_scaling}, the effective CPU utilization experiences a steep increase when the workload size increasesfrom M=1000 to M=5000, going from 23.0\% to 46.0\%. After this point, the CPU utilization continues to rise at a slower pace, reaching its peak at 47.4\% with M=10000. This trend
+indicates that the program itself is not able to effectively utilize the available resources due to mainly the serialization of the I/O operations. This effect is partially mitigated when the computation workload is increased and thus overcoming the I/O wait time, but eventually still represents an unavoidable bottleneck in the performance of the program.
+The execution time of the spatial computation scales quadratically ($O(M^2)$) with respect to the grid dimension $M$. In our case, scaling the domain from $M=5000$ to $M=15000$ (a 3x increase in 1D size) results in an 8.25x increase in execution time, which closely approximates the ideal 9x quadratic growth factor. The minor deviations from the exact quadratic curve are attributed to the constant overhead of thread management.
 add also the same analysis with 96 threads.
-\subsubsection{Sweep of number of threads on sweet point M=10000}
+\subsubsection{Sweep of number of threads on sweet point M=15000}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling.png}
+    \caption{Speedup and parallel efficiency with varying number of threads}
+    \label{fig:speedup}
+\end{figure}
 in order to see how scale up the efficiency of parallelization, use the parameter S = tserial / tparallel and parallel efficienty E = S / number of threads
 
