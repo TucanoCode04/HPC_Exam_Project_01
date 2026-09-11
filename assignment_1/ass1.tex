@@ -1,18 +1,31 @@
 \section{Assignment 1}
 \subsection{Introduction and objectives}
-The objective of this assignment is to implement a simulator that models the propagation of a damped wave. The general partial differential equation describing the phenomenon in space as time varies is the following:
+The goal of this assignment is to implement a simulator for the
+propagation of a damped wave, governed by the following partial
+differential equation:
 \begin{equation}
     \frac{\partial^{2}u}{\partial t^{2}}+\gamma\frac{\partial u}{\partial t}=c^{2}\nabla^{2}u
 \end{equation}
-Where $u(x,y,t)$ represents the height of the wave on a two-dimensional plane over time, $\gamma$ is the wave damping coefficient, and $c$ is the wave propagation speed. The simulator calculates the wave height for each point in the coordinate space $(x, y)$ as time $t$ changes, with the ultimate goal of generating an MP4 video of the simulation.
-
+where $u(x,y,t)$ is the wave height on a two-dimensional plane over
+time, $\gamma$ is the damping coefficient, and $c$ is the propagation
+speed. The simulator computes $u$ at every point $(x,y)$ as $t$
+advances, with the final goal of producing an MP4 video of the
+simulation.
 
 \subsection{Implementation}
-To perform the simulation, it is necessary to convert the continuous model into a discrete model suitable for implementation on a computer. For this purpose, a grid is introduced: space is divided into equally spaced points along the x and y directions with steps $\Delta x$ and $\Delta y$, and time is discretised into instants separated by a time step $\Delta t$.
-Consequently, each point in space is identified by integer indices $(i,j)$, and time by an index $t$. The continuous function $u(x,y,t)$ is replaced by a matrix of values $u_{i,j}^{t}$, representing the value of the function at the grid point $(i,j)$ at time step $t$. The derivatives appearing in the differential equation are approximated using finite differences. In particular, both \textbf{central and forward difference} methods are implemented in the code and can be tested separately.
+The continuous model is discretised on a regular grid: space is divided
+into points spaced by $\Delta x$ and $\Delta y$, and time into steps of
+$\Delta t$. Each grid point is identified by indices $(i,j)$ and each
+instant by an index $t$, so that $u(x,y,t)$ becomes a matrix of values
+$u_{i,j}^{t}$. The derivatives in the equation are approximated with \textbf{central differences method}.
 
-
-To handle the temporal evolution of the wave, three distinct $M \times M$ matrices are dynamically allocated in memory using the \texttt{malloc} function in C. These matrices, defined as \texttt{u\_past}, \texttt{u}, and \texttt{u\_fut}, represent the wave state at the previous time step ($t-1$), the current time step ($t$), and the future time step ($t+1$), respectively. Initially, all matrix elements are set to zero but an initial impulse in a specific locationis assigned to start the perturbation. In the analyzed case, the initial impulse, which is set at the center of the grid (M/2, M/2), the propagation speed $c$ and the damping coefficient $\gamma$ are set to the following values:
+The temporal evolution is handled with three $M \times M$ matrices,
+\texttt{u\_past}, \texttt{u} and \texttt{u\_fut}, dynamically allocated
+with \texttt{malloc} and representing the wave state at times $t-1$, $t$
+and $t+1$ respectively. All elements are initialised to zero except for a
+single impulse at the centre of the grid $(M/2, M/2)$, used to start the
+perturbation. The impulse amplitude, propagation speed and damping
+coefficient used throughout this work are:
 \begin{center}
     \begin{tabular}{|c|c|c|}
     \hline
@@ -23,87 +36,163 @@ To handle the temporal evolution of the wave, three distinct $M \times M$ matric
     \end{tabular}
 \end{center}
 
+The core of this assignment is the parallelization of the update loop
+with \textbf{OpenMP}. A \texttt{\#pragma omp parallel} region is opened
+once before the time loop, and the two nested spatial loops are
+distributed across threads with \texttt{\#pragma omp for
+schedule(static) collapse(2)}: \texttt{schedule(static)} splits the
+iterations into equal-sized chunks assigned before execution, while
+\texttt{collapse(2)} fuses the $i$ and $j$ loops into a single
+$M\times M$ iteration space, giving the scheduler far more, finer-grained
+work units to balance across cores. Each thread thus computes
+$u_{i,j}^{t+1}$ for a disjoint set of coordinates, independently and
+concurrently with the others.
 
-To accelerate the computation, the program utilizes the \textbf{OpenMP} library as parallelization framework to generate the matrices representing the evolution of the wave, which is also the core of this assignment. Instead of calculating the new state of the grid sequentially, the workload is distributed across multiple active threads: this is performed using the \texttt{\#pragma omp parallel} directive within the code just before the loop for the temporal advancement. Then, by parallelizing the nested spatial loops using the \texttt{\#pragma omp for schedule(static) collapse(2)} directive, the computation of individual matrix elements is executed concurrently. The \texttt{schedule(static)} clause dictates that the loop iterations are divided into chunks of equal size and assigned to the threads before execution begins. The \texttt{collapse(2)} clause is utilized to fuse the two nested spatial loops (iterating over rows $i$ and columns $j$) into a single iteration space of size $M \times M$. This significantly increases the total number of independent iterations available for distribution, ensuring a finer and more balanced division of the workload among the active cores.
-By doing so, while one thread computes a future value $u_{i,j}^{t+1}$ for a specific coordinate utilizing the current and past values ($u_{i,j}^{t}$ and $u_{i,j}^{t-1}$), all the other threads are simultaneously computing the future values for different coordinates.
+Once \texttt{u\_fut} has been fully computed for the current timestep, it
+must be written to a PGM file; this is done inside a \texttt{\#pragma omp
+single} block, so that only one thread performs the write while the rest
+wait at the implicit barrier. To avoid the cost of deep-copying entire
+matrices between timesteps, the temporal advance is implemented as a
+three-way pointer rotation (\texttt{u\_past} takes the address of
+\texttt{u}, \texttt{u} takes that of \texttt{u\_fut}, and \texttt{u\_fut}
+is recycled for the next iteration), performed by the same thread that
+just wrote the file. This keeps the pointer swap race-free and avoids any
+extra synchronization beyond the barrier already required for the write.
 
-Once the entire \texttt{u\_fut} matrix has been fully calculated for the current temporal iteration, the program must write the costructed matrix to a Portable Graymap (PGM) file format. To do so, the program uses a \texttt{\#pragma omp single} directive to ensure that only one thread performs the writing operation, while the other threads will wait at an implicit synchronization barrier.
-Finally, the simulation must advance to the next time step. To maximize efficiency and eliminate the computational overhead of deep-copying large memory blocks, time progression is achieved through a cyclic pointer swap (\texttt{u\_past} takes the address of \texttt{u}, \texttt{u} points to \texttt{u\_fut}, and \texttt{u\_fut} is recycled to store the next iteration). This operation is executed by the same thread which performed the writing to the PGM file, guaranteeing that only one designated thread performs the pointer exchange, preventing race conditions and strictly preserves memory efficiency before the threads begin computing the next time step.
-
-
- 
 \subsubsection{Identified inefficiencies and corrective transformations}
-All profiling and testing in this section was performed using 32 threads with a workload
-size of $M = 1000$.
+All profiling and testing in this section was performed using 32 threads
+with a workload size of $M = 1000$.
 
-The initial implementation, although parallelized with OpenMP, was
-profiled using \textbf{Intel VTune Profiler}, combining \textit{Hotspots}
-analysis (which functions consume CPU time) and \textit{Threading}
-analysis (how much of that time is effective computation versus idle
-spinning at synchronization points).
+We profiled the initial implementation with \textbf{Intel VTune
+Profiler}, combining \textit{Hotspots} analysis (which functions consume
+CPU time) and \textit{Threading} analysis (how much of that time is
+effective computation versus idle spinning at synchronization points).
 
 Hotspot analysis showed that \texttt{gomp\_team\_barrier\_wait\_end} and
 \texttt{fwrite} accounted for 79.4\% and 9.7\% of total CPU time
-respectively, against only 2.2\% for the matrix computation itself. The
+respectively, against only 2.2\% for the matrix computation itself: the
 bottleneck was therefore not the stencil, but excessive synchronization
 and I/O overhead. Three successive transformations addressed this, each
-verified via VTune or direct code inspection.
+verified either via VTune or direct code inspection.
 
 \paragraph{Improvement 1: buffered frame output.}
-Frames were originally written pixel-by-pixel with \texttt{fwrite()}
-inside a single-threaded \texttt{\#pragma omp single} block. This was
-replaced with an in-memory buffer, filled in parallel via a dedicated
+Frames were originally written pixel by pixel with \texttt{fwrite()}
+inside a single-threaded \texttt{\#pragma omp single} block. We replaced
+this with an in-memory buffer, filled in parallel via a dedicated
 \texttt{\#pragma omp for} and flushed to disk with one \texttt{fwrite()}
-call, cutting I/O calls from one per pixel to one per frame. This
-introduced a new barrier, since the buffer-fill loop is a separate
-worksharing construct from the stencil loop.
+call, cutting I/O calls from one per pixel to one per frame. This did
+introduce a new barrier, however, since the buffer-fill loop is a
+separate worksharing construct from the stencil loop.
 
 \paragraph{Improvement 2: loop fusion.}
-As the stencil and buffer-fill share the same $(i,j)$ range, they were
-merged into a single \texttt{\#pragma omp for}, writing each scaled pixel
-immediately after computing \texttt{u\_fut[i][j]}. This removes the extra
-barrier from Improvement 1 with no loss of parallel work.
+Since the stencil and the buffer-fill iterate over the exact same
+$(i,j)$ range, we merged them into a single \texttt{\#pragma omp for},
+writing each scaled pixel immediately after computing
+\texttt{u\_fut[i][j]}. This removes the extra barrier introduced above,
+with no loss of parallel work.
 
-\paragraph{Improvement 3: NUMA-aware initialization.}
-On a multi-socket machine, each CPU socket has its own memory: cores access memory local to their own socket faster than memory
-attached to another socket (NUMA).
-Physical pages are assigned to a NUMA domain on \textit{first touch}
-(the first thread to write to a page). A serial initialization therefore places all matrix
-memory on a single NUMA domain; once the parallel calculation spreads work
-across all cores, threads mapped to a different socket pay a
-remote-access penalty on every timestep. To prevent this, the
-initialization loop was parallelized with the same
-\texttt{schedule(static) collapse(2)} clause used in the calculation loop, so
-that each thread's first-touch region matches the region it repeatedly
-accesses afterwards. This requires a \textit{static} schedule specifically:
-a dynamic schedule would not guarantee that the
-same thread is assigned the same iterations across the two loops, making
-the first-touch alignment ineffective.
+\paragraph{Improvement 3: parallel initialization and scheduling policy.}
+The matrix initialization, originally performed sequentially by a single
+thread, was parallelized with \texttt{\#pragma omp parallel for}. By
+Amdahl's law, this serial fraction would otherwise cap the achievable
+speedup regardless of how well the main loop scales. We also gave the
+initialization loop the same schedule as the stencil loop. Profiling the complete pipeline
+(including I/O) showed, however, that \texttt{schedule(guided)}
+outperforms \texttt{schedule(static)} in practice: dynamic work
+redistribution better compensates for the load imbalance introduced by
+the single-threaded frame-writing step, so \texttt{guided} was retained
+for the final implementation. As shown later in that same section,
+isolating the computation from I/O reverses this result, confirming that
+NUMA locality does matter once the synchronization overhead of I/O is
+removed.
 
-After these improvements, from the VTune Hotspot analysis, the CPU time spent in \\\texttt{gomp\_team\_barrier\_wait\_end} dropped to 57.5\%,
-while the time spent in matrix computation rose to 15.7\%. The I/O (\texttt{fwrite} CPU time) time instead dropped significantly to less than 0.3\%.
-However, inspecting the Threading analysis, it was found that the program still used only 23\% of the available CPUs, resulting in an average effective
-CPU utilization of only 7.362 out of 32. This was due to the too low workload size compared to the number of threads. The next steps
-inspected and tested the program changing the workload size and other parameters to see how the program utilizes the resources differently.
+After these three improvements, VTune Hotspot analysis showed the CPU
+time spent in \\\texttt{gomp\_team\_barrier\_wait\_end} dropping to 57.5\%,
+while time spent in the matrix computation itself rose to 15.7\%; I/O
+(\texttt{fwrite}) time fell below 0.3\%. The Threading analysis, however,
+revealed that the program was still using only 23\% of the available
+CPUs, for an average effective utilization of 7.362 out of 32 threads --
+a clear sign that, at $M=1000$, the workload was simply too small for the
+number of threads requested. This motivated the next round of tests,
+which vary the workload size and other parameters to see how resource
+utilization changes.
 
-\subsection{Test}
+\subsection{Testing and Results}
+\label{sec:testing}
 \subsubsection{Sweep of workload size}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{../assignment_1/plots/timeandCPUU.png}
-    \caption{Execution time and True CPU Efficiency scaling with varying grid sizes ($M$) using 32 threads.}
+    \includegraphics[width=0.7\textwidth]{../assignment_1/plots/timeandCPUU.png}
+    \caption{Execution time and true CPU efficiency scaling with varying grid sizes ($M$), using 32 threads.}
     \label{fig:performance_scaling}
 \end{figure}
-As shown in figure \ref{fig:performance_scaling}, the effective CPU utilization experiences a steep increase when the workload size increasesfrom M=1000 to M=5000, going from 23.0\% to 46.0\%. After this point, the CPU utilization continues to rise at a slower pace, reaching its peak at 47.4\% with M=10000. This trend
-indicates that the program itself is not able to effectively utilize the available resources due to mainly the serialization of the I/O operations. This effect is partially mitigated when the computation workload is increased and thus overcoming the I/O wait time, but eventually still represents an unavoidable bottleneck in the performance of the program.
-The execution time of the spatial computation scales quadratically ($O(M^2)$) with respect to the grid dimension $M$. In our case, scaling the domain from $M=5000$ to $M=15000$ (a 3x increase in 1D size) results in an 8.25x increase in execution time, which closely approximates the ideal 9x quadratic growth factor. The minor deviations from the exact quadratic curve are attributed to the constant overhead of thread management.
-add also the same analysis with 96 threads.
-\subsubsection{Sweep of number of threads on sweet point M=15000}
+As shown in Figure~\ref{fig:performance_scaling}, effective CPU
+utilization rises steeply as the workload grows from $M=1000$ to
+$M=5000$, from 23.0\% to 46.0\%, then continues to increase more slowly,
+peaking at 47.4\% for $M=10000$. This indicates that the program alone
+cannot make full use of the available resources, mainly because of the
+serialized I/O; a larger computational workload partially hides this
+cost, but it remains an unavoidable bottleneck.
+
+Execution time scales quadratically ($O(M^2)$) with the grid size, as
+expected for the spatial computation: going from $M=5000$ to $M=15000$
+(a 3x increase in linear size) increases execution time by $8.25\times$,
+close to the ideal $9\times$ predicted by quadratic growth -- the small
+deviation is attributable to constant thread-management overhead.
+
+\subsubsection{Sweep of number of threads at $M=15000$}
+The remaining tests were run on the \texttt{Edu\_sapphire} partition
+(2 nodes, 48 physical / 96 logical cores each); each node is dual-socket,
+with 24 physical cores per socket.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling.png}
-    \caption{Speedup and parallel efficiency with varying number of threads}
+    \caption{Speedup and parallel efficiency with varying number of threads.}
     \label{fig:speedup}
 \end{figure}
-in order to see how scale up the efficiency of parallelization, use the parameter S = tserial / tparallel and parallel efficienty E = S / number of threads
+Figure~\ref{fig:speedup} shows two distinct regimes. For $P \leq 32$, all
+threads run on independent physical cores; the residual efficiency loss
+is explained by the OpenMP barrier cost identified with VTune, which
+grows with team size. For $P=64$ and $P=96$, thread count exceeds the
+number of physical cores (48), so multiple logical threads begin sharing
+the execution units, caches and memory bandwidth of the same physical
+core through Hyper-Threading.
 
+We repeated the same test with the I/O operations disabled, so that the
+program only computes the matrix updates.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling_noio.png}
+    \caption{Speedup and parallel efficiency with varying number of threads, I/O disabled.}
+    \label{fig:speedup_noio}
+\end{figure}
+As Figure~\ref{fig:speedup_noio} shows, both metrics improve
+significantly: at $P=96$ speedup more than doubles, from $11.1\times$ to
+$25.1\times$, and parallel efficiency grows from 11.6\% to 26.1\%. This
+confirms that a substantial share of the overhead seen in the full
+version came from the I/O operations and their associated
+synchronization barriers, rather than from the stencil computation
+itself.
+
+Finally, we replaced \texttt{schedule(guided)} with
+\texttt{schedule(static)} in both the initialization and the stencil
+loop, to restore the NUMA alignment mentioned earlier. Once thread count
+exceeds 24, work is necessarily split across both sockets, and accesses
+to memory owned by the other socket incur the added latency of the
+inter-socket interconnect.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling_noio_static.png}
+    \caption{Speedup and parallel efficiency with varying number of threads, I/O disabled, \texttt{schedule(static)}.}
+    \label{fig:speedup_noio_static}
+\end{figure}
+As shown in Figure~\ref{fig:speedup_noio_static}, the static schedule
+substantially mitigates this effect: the efficiency drop between $P=16$
+and $P=32$ is roughly halved (from $-19.3$ to $-10.0$ percentage points
+relative to \texttt{guided}), and efficiency remains markedly higher at
+$P=32$ (43.7\% vs. 29.9\%), $P=64$ (45.4\% vs. 27.0\%, a 68\% relative
+gain) and $P=96$ (38.3\% vs. 26.1\%), with speedup at $P=96$ rising from
+$25.1\times$ to $36.8\times$. This is consistent with the static schedule
+preserving the same thread-to-row mapping established during
+initialization, which keeps most memory accesses local to each thread's
+own socket even as the workload spans both NUMA domains.

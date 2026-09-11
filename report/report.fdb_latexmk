@@ -1,8 +1,10 @@
 # Fdb version 4
-["pdflatex"] 1788941428.87755 "/home/klakson/Desktop/uni_master/first_year/second_semester/HPC/assignments/repo/HPC_Exam_Project_01/report/report.tex" "report.pdf" "report" 1788941430.84606 0
+["pdflatex"] 1789118341.56959 "/home/klakson/Desktop/uni_master/first_year/second_semester/HPC/assignments/repo/HPC_Exam_Project_01/report/report.tex" "report.pdf" "report" 1789118345.37811 0
   "../Giro_part/Esercizio_2/sezione_giro_2.tex" 1787041124.23702 4605 0c5005847e7152fe8d5fca5ab4fe22d0 ""
-  "../assignment_1/ass1.tex" 1788941428.54749 10481 edbe911498e6920f2d79ef6929816ddc ""
+  "../assignment_1/ass1.tex" 1789118341.23421 10701 2419b675670fb6d62861d9d8afb046e8 ""
   "../assignment_1/plots/scaling.png" 1788941323.95511 302778 b60fdada9611b36c84408bf6bd8c4761 ""
+  "../assignment_1/plots/scaling_noio.png" 1788984823.76899 296117 56eb1e992473cccc974be0754b1f7921 ""
+  "../assignment_1/plots/scaling_noio_static.png" 1789029109.70496 296440 b55f48981e1ad4b89609e077368e9e8c ""
   "../assignment_1/plots/timeandCPUU.png" 1788786308.06146 210459 cc945d84d11743081762ed0ae7f89fbc ""
   "/etc/texmf/web2c/texmf.cnf" 1774005325.26675 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/klakson/Desktop/uni_master/first_year/second_semester/HPC/assignments/repo/HPC_Exam_Project_01/report/report.tex" 1788787001.67387 478 b65f9547c844a38f29288556a6a4381c ""
@@ -33,7 +35,6 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1248133631 32362 179c33bbf43f19adbb3825bb4e36e57a ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1248133631 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
-  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1248133631 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1248133631 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb" 1248133631 31099 c85edf1dd5b9e826d67c9c7293b6786c ""
   "/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1461363279 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -58,7 +59,7 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1774005348.12989 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1774005484 8214427 0cb22ae05101bc55f778cf89f77045eb ""
-  "report.aux" 1788941430.7543 2180 3bd522fa6514b02677e8a179d9ee54fe "pdflatex"
+  "report.aux" 1789118345.29319 2726 68b99c0c6ecf54b208d9a9dd653fc328 "pdflatex"
   "report.tex" 1788787001.67387 478 b65f9547c844a38f29288556a6a4381c ""
   (generated)
   "report.aux"
