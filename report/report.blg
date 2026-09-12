@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: report.aux
+The style file: plain.bst
+Database file #1: b.bib
+Warning--I didn't find a database entry for "guidedandstatic"
+You've used 3 entries,
+            2118 wiz_defined-function locations,
+            511 strings with 4759 characters,
+and the built_in function-call counts, 823 in all, are:
+= -- 71
+> -- 52
+< -- 0
++ -- 21
+- -- 18
+* -- 45
+:= -- 152
+add.period$ -- 9
+call.type$ -- 3
+change.case$ -- 18
+chr.to.int$ -- 0
+cite$ -- 3
+duplicate$ -- 24
+empty$ -- 62
+format.name$ -- 18
+if$ -- 164
+int.to.chr$ -- 0
+int.to.str$ -- 3
+missing$ -- 1
+newline$ -- 18
+num.names$ -- 6
+pop$ -- 26
+preamble$ -- 1
+purify$ -- 15
+quote$ -- 0
+skip$ -- 23
+stack$ -- 0
+substring$ -- 15
+swap$ -- 3
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 12
+warning$ -- 0
+while$ -- 6
+width$ -- 4
+write$ -- 30
+(There was 1 warning)

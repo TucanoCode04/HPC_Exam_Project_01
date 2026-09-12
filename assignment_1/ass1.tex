@@ -60,17 +60,25 @@ just wrote the file. This keeps the pointer swap race-free and avoids any
 extra synchronization beyond the barrier already required for the write.
 
 \subsubsection{Identified inefficiencies and corrective transformations}
-All profiling and testing in this section was performed using 32 threads
-with a workload size of $M = 1000$.
+All profiling and testing in this section was performed using the \textit{Edu\_skylake} partition, 32 threads
+and a workload size of $M = 1000$. The aim was to identify the main bottlenecks and improve the source code.
 
 We profiled the initial implementation with \textbf{Intel VTune
-Profiler}, combining \textit{Hotspots} analysis (which functions consume
-CPU time) and \textit{Threading} analysis (how much of that time is
-effective computation versus idle spinning at synchronization points).
+Profiler}. \textit{Hotspots} analysis identifies which functions in an
+application consume the largest share of execution time, using
+low-overhead sampling to build a ranked list of hotspot functions as a
+starting point for optimization \cite{vtune-hotspots}. \textit{Threading}
+analysis instead evaluates how efficiently the application uses the
+available processor cores, exposing inefficiencies in threading-runtime
+usage and contention at synchronization points that leave threads idle
+and prevent full processor utilization, summarized through its
+\textit{Effective CPU Utilization} metric \cite{vtune-threading}.
+Combining the two analyses lets us separate genuine computation time from
+time lost to idle spinning at synchronization points.
 
 Hotspot analysis showed that \texttt{gomp\_team\_barrier\_wait\_end} and
 \texttt{fwrite} accounted for 79.4\% and 9.7\% of total CPU time
-respectively, against only 2.2\% for the matrix computation itself: the
+respectively, against only 2.2\% for the matrix computation itself \footnote{gjgjgj}: the
 bottleneck was therefore not the stencil, but excessive synchronization
 and I/O overhead. Three successive transformations addressed this, each
 verified either via VTune or direct code inspection.
@@ -95,13 +103,20 @@ with no loss of parallel work.
 The matrix initialization, originally performed sequentially by a single
 thread, was parallelized with \texttt{\#pragma omp parallel for}. By
 Amdahl's law, this serial fraction would otherwise cap the achievable
-speedup regardless of how well the main loop scales. We also gave the
-initialization loop the same schedule as the stencil loop. Profiling the complete pipeline
+speedup regardless of how well the main loop scales. On a multi-socket
+compute node, each CPU socket has its own directly-attached memory
+bank: cores access memory local to their own socket faster than memory
+attached to another socket, a design known as NUMA (Non-Uniform Memory
+Access). Under the default \textit{first-touch} policy, a physical page
+is assigned to the socket of whichever thread writes to it first, we therefore gave
+the initialization loop the same schedule as the stencil loop, so that
+each thread's first-touch region matches the region it repeatedly
+accesses afterwards. Profiling the complete pipeline
 (including I/O) showed, however, that \texttt{schedule(guided)}
-outperforms \texttt{schedule(static)} in practice: dynamic work
+outperforms \texttt{schedule(static)} in practice \cite{guidedandstatic}: dynamic work
 redistribution better compensates for the load imbalance introduced by
 the single-threaded frame-writing step, so \texttt{guided} was retained
-for the final implementation. As shown later in that same section,
+for the final implementation. As shown later in the testing section,
 isolating the computation from I/O reverses this result, confirming that
 NUMA locality does matter once the synchronization overhead of I/O is
 removed.
@@ -109,9 +124,9 @@ removed.
 After these three improvements, VTune Hotspot analysis showed the CPU
 time spent in \\\texttt{gomp\_team\_barrier\_wait\_end} dropping to 57.5\%,
 while time spent in the matrix computation itself rose to 15.7\%; I/O
-(\texttt{fwrite}) time fell below 0.3\%. The Threading analysis, however,
+(\texttt{fwrite}) time fell below 0.3\% \footnote{ See "output\_1920920.txt"}. The Threading analysis, however,
 revealed that the program was still using only 23\% of the available
-CPUs, for an average effective utilization of 7.362 out of 32 threads --
+CPUs, for an average effective utilization of 7.362 out of 32 threads:
 a clear sign that, at $M=1000$, the workload was simply too small for the
 number of threads requested. This motivated the next round of tests,
 which vary the workload size and other parameters to see how resource
@@ -129,7 +144,7 @@ utilization changes.
 As shown in Figure~\ref{fig:performance_scaling}, effective CPU
 utilization rises steeply as the workload grows from $M=1000$ to
 $M=5000$, from 23.0\% to 46.0\%, then continues to increase more slowly,
-peaking at 47.4\% for $M=10000$. This indicates that the program alone
+peaking at 47.4\% for $M=10000$ \footnote{ See output\_1920920.txt, output\_1920886.txt, output\_1920889.txt, output\_1920892.txt, output\_1920894.txt, output\_1920842.txt, output\_1920899.txt}. This indicates that the program alone
 cannot make full use of the available resources, mainly because of the
 serialized I/O; a larger computational workload partially hides this
 cost, but it remains an unavoidable bottleneck.
@@ -142,7 +157,7 @@ deviation is attributable to constant thread-management overhead.
 
 \subsubsection{Sweep of number of threads at $M=15000$}
 The remaining tests were run on the \texttt{Edu\_sapphire} partition
-(2 nodes, 48 physical / 96 logical cores each); each node is dual-socket,
+(2 nodes, 48 physical and 96 logical cores each); each node is dual-socket,
 with 24 physical cores per socket.
 \begin{figure}[H]
     \centering
@@ -156,10 +171,12 @@ is explained by the OpenMP barrier cost identified with VTune, which
 grows with team size. For $P=64$ and $P=96$, thread count exceeds the
 number of physical cores (48), so multiple logical threads begin sharing
 the execution units, caches and memory bandwidth of the same physical
-core through Hyper-Threading.
+core through Hyper-Threading: each core
+exposes two logical processors to the OS, which share the same
+execution units, caches and memory bandwidth \cite{marr2002hyperthreading}.
 
 We repeated the same test with the I/O operations disabled, so that the
-program only computes the matrix updates.
+program only computes the matrix updates. \footnote{See output\_1925400.txt, output\_1925398.txt, output\_1925396.txt, output\_1925394.txt, output\_1925399.txt, output\_1925397.txt, output\_1925395.txt, output\_1925393.txt in folder "results\_noio"}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling_noio.png}
@@ -176,7 +193,7 @@ itself.
 
 Finally, we replaced \texttt{schedule(guided)} with
 \texttt{schedule(static)} in both the initialization and the stencil
-loop, to restore the NUMA alignment mentioned earlier. Once thread count
+loop, to restore the NUMA alignment mentioned earlier. \footnote{See output\_1928239.txt, output\_1928222.txt, output\_1928220.txt, output\_1927019.txt, output\_1927027.txt, output\_1927036.txt in folder "results\_noio\_static"} Once thread count
 exceeds 24, work is necessarily split across both sockets, and accesses
 to memory owned by the other socket incur the added latency of the
 inter-socket interconnect.
