@@ -39,4 +39,29 @@ ffmpeg -y -framerate 30 -i sim1/frame_%05d.pgm -c:v libx264 -pix_fmt yuv420p vid
 ffmpeg -y -framerate 30 -i sim2/frame_%05d.pgm -c:v libx264 -pix_fmt yuv420p video_sim2.mp4
 ffmpeg -y -framerate 30 -i sim3/frame_%05d.pgm -c:v libx264 -pix_fmt yuv420p video_sim3.mp4
 
+# --- profile ---
+echo "Profiling..."
+WORKDIR="$PWD"
+RESULTS="$PWD/vtune_results"
+
+# Se esiste una versione precedente dei risultati, la elimina.
+[ -d "$RESULTS" ] && rm -rf "$RESULTS"
+mkdir -p "$RESULTS"
+
+# VTune Path
+VTUNE="/share/apps/intel/oneapi/vtune/2025.0/bin64/vtune"
+
+# --- Profiling execution ---
+# "--" separa le opzioni di vtune dall'eseguibile target: buona pratica,
+# evita ambiguità se in futuro assign_1 dovesse ricevere argomenti.
+"$VTUNE" -collect hotspots  -result-dir "$RESULTS/hotspots"  -- ./es02_exe
+"$VTUNE" -collect threading -result-dir "$RESULTS/threading" -- ./es02_exe
+
+# Compress all the results into a zip file (path relativi, non assoluti).
+cd "$WORKDIR"
+zip -r results.zip vtune_results
+
+echo "Profile results saved in: $WORKDIR/results.zip"
+
+
 echo "Job MPI + OpenMP completato con successo!"
