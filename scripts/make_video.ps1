@@ -3,16 +3,19 @@ param(
     [string]$InputDir = "sim",
     [string]$Output = "wave.mp4",
     [int]$Frames = 0,
-    [string]$Ffmpeg = ""
+    [string]$Ffmpeg = "",
+    [string]$Extension = "pgm"
 )
 
 $ErrorActionPreference = "Stop"
+
+$Extension = $Extension.TrimStart(".")
 
 if (-not (Test-Path -Path $InputDir -PathType Container)) {
     throw "Input directory '$InputDir' does not exist."
 }
 
-$firstFrame = Join-Path $InputDir "frame_00000.pgm"
+$firstFrame = Join-Path $InputDir ("frame_00000.{0}" -f $Extension)
 if (-not (Test-Path -Path $firstFrame -PathType Leaf)) {
     throw "Expected first frame '$firstFrame' was not found."
 }
@@ -29,7 +32,7 @@ if ($Ffmpeg -eq "") {
 $ffmpegArgs = @(
     "-y",
     "-framerate", $Framerate,
-    "-i", (Join-Path $InputDir "frame_%05d.pgm")
+    "-i", (Join-Path $InputDir ("frame_%05d.{0}" -f $Extension))
 )
 
 if ($Frames -gt 0) {

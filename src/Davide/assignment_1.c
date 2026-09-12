@@ -4,14 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef _WIN32
-#include <direct.h>
-#define MKDIR(path) _mkdir(path)
-#else
 #include <sys/stat.h>
-#define MKDIR(path) mkdir(path, 0755)
-#endif
 
 typedef struct {
     double gamma;
@@ -140,7 +133,7 @@ static int parse_args(int argc, char **argv, Config *cfg) {
 }
 
 static int ensure_output_dir(const char *path) {
-    if (MKDIR(path) == 0) {
+    if (mkdir(path, 0755) == 0) {
         return 1;
     }
     return errno == EEXIST;

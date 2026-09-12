@@ -1,8 +1,15 @@
 build/
 sim/
+sim1/
+sim2/
+sim3/
+sim1_ppm/
+sim2_ppm/
+sim3_ppm/
 ffmpeg_tool/
 ffmpeg.zip
 *.mp4
 *.exe
 *.o
 *.obj
+local_notes/
