@@ -15,4 +15,19 @@ Deborah~T. Marr, Frank Binns, David~L. Hill, Glenn Hinton, David~A. Koufaty, J.~
 \newblock Hyper-threading technology architecture and microarchitecture.
 \newblock {\em Intel Technology Journal}, 2002.
 
+\bibitem{openmpcollapse}
+{OpenMP Architecture Review Board}.
+\newblock {OpenMP} application programming interface, version 5.0.
+\newblock Technical report, OpenMP Architecture Review Board, November 2018.
+
+\bibitem{numaslides}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 10\_parallel\_architectures.pdf course slides.
+\newblock 2026.
+
+\bibitem{slidestatic}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 14\_openmp.pdf course slides.
+\newblock 2026.
+
 \end{thebibliography}

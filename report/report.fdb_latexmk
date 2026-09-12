@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex report"] 1789227192.66018 "report.aux" "report.bbl" "report" 1789227754.01575 0
-  "./b.bib" 1789227188.27009 1049 fc85a1cc95c42660d6d6e3fe027f228e ""
+["bibtex report"] 1789229507.60454 "report.aux" "report.bbl" "report" 1789229512.26571 0
+  "./b.bib" 1789229503.58278 1655 03d253f69fc53b30ab362cf36d893c9c ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "report.aux" 1789227753.47621 3723 16cdb3f50b7eaf5188e7995e8a28e523 "pdflatex"
+  "report.aux" 1789229511.6058 3897 90bfb7dc66938ce13fc8ead9aa182763 "pdflatex"
   (generated)
   "report.bbl"
   "report.blg"
   (rewritten before read)
-["pdflatex"] 1789227750.33187 "/home/klakson/Desktop/uni_master/first_year/second_semester/HPC/assignments/repo/HPC_Exam_Project_01/report/report.tex" "report.pdf" "report" 1789227754.01605 0
+["pdflatex"] 1789229507.77906 "/home/klakson/Desktop/uni_master/first_year/second_semester/HPC/assignments/repo/HPC_Exam_Project_01/report/report.tex" "report.pdf" "report" 1789229512.2661 0
   "../Giro_part/Esercizio_2/sezione_giro_2.tex" 1787041124.23702 4605 0c5005847e7152fe8d5fca5ab4fe22d0 ""
-  "../assignment_1/ass1.tex" 1789227750.00422 12585 e3c495b1e9e63643ed7eb3d979495161 ""
+  "../assignment_1/ass1.tex" 1789229487.4588 12930 95aa03f8ba98d2f4b4be24c192254998 ""
   "../assignment_1/plots/scaling.png" 1788941323.95511 302778 b60fdada9611b36c84408bf6bd8c4761 ""
   "../assignment_1/plots/scaling_noio.png" 1788984823.76899 296117 56eb1e992473cccc974be0754b1f7921 ""
   "../assignment_1/plots/scaling_noio_static.png" 1789029109.70496 296440 b55f48981e1ad4b89609e077368e9e8c ""
@@ -99,9 +99,9 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1774005348.12989 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1774005484 8214427 0cb22ae05101bc55f778cf89f77045eb ""
-  "report.aux" 1789227753.47621 3723 16cdb3f50b7eaf5188e7995e8a28e523 "pdflatex"
-  "report.bbl" 1789227192.82807 807 1f969b1481ba1dd7f4a4456f7cb5f4c3 "bibtex report"
-  "report.out" 1789227753.47721 2026 ab9854c6ba3e4398810d5be5c9ae79d5 "pdflatex"
+  "report.aux" 1789229511.6058 3897 90bfb7dc66938ce13fc8ead9aa182763 "pdflatex"
+  "report.bbl" 1789229507.77379 1249 d0db78804758855af17174cd3fa2ddb0 "bibtex report"
+  "report.out" 1789229511.6068 2026 ab9854c6ba3e4398810d5be5c9ae79d5 "pdflatex"
   "report.tex" 1789225626.1952 553 50d5466bc1e9bd662f06cc8320ddf673 ""
   (generated)
   "report.aux"

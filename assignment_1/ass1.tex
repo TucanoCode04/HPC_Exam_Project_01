@@ -41,9 +41,9 @@ with \textbf{OpenMP}. A \texttt{\#pragma omp parallel} region is opened
 once before the time loop, and the two nested spatial loops are
 distributed across threads with \texttt{\#pragma omp for
 schedule(static) collapse(2)}: \texttt{schedule(static)} splits the
-iterations into equal-sized chunks assigned before execution, while
+iterations into equal-sized chunks assigned before execution \cite{slidestatic}, while
 \texttt{collapse(2)} fuses the $i$ and $j$ loops into a single
-$M\times M$ iteration space, giving the scheduler far more, finer-grained
+$M\times M$ iteration space \cite{openmpcollapse}, giving the scheduler far more, finer-grained
 work units to balance across cores. Each thread thus computes
 $u_{i,j}^{t+1}$ for a disjoint set of coordinates, independently and
 concurrently with the others.
@@ -107,16 +107,21 @@ speedup regardless of how well the main loop scales. On a multi-socket
 compute node, each CPU socket has its own directly-attached memory
 bank: cores access memory local to their own socket faster than memory
 attached to another socket, a design known as NUMA (Non-Uniform Memory
-Access). Under the default \textit{first-touch} policy, a physical page
+Access) \cite{numaslides}. Under the default \textit{first-touch} policy, a physical page
 is assigned to the socket of whichever thread writes to it first, we therefore gave
 the initialization loop the same schedule as the stencil loop, so that
 each thread's first-touch region matches the region it repeatedly
 accesses afterwards. Profiling the complete pipeline
 (including I/O) showed, however, that \texttt{schedule(guided)}
-outperforms \texttt{schedule(static)} in practice \cite{guidedandstatic}: dynamic work
-redistribution better compensates for the load imbalance introduced by
-the single-threaded frame-writing step, so \texttt{guided} was retained
-for the final implementation. As shown later in the testing section,
+outperforms \texttt{schedule(static)} in practice \cite{guidedandstatic}: 
+under \texttt{guided} scheduling,
+chunks are handed out to threads on request rather than fixed in advance,
+with each chunk's size proportional to the number of remaining
+iterations and shrinking toward the specified minimum (1 as default) as the loop
+progresses \cite{openmpcollapse}.This dynamic redistribution better
+compensates for the load imbalance introduced by the single-threaded
+frame-writing step, so \texttt{guided} was retained for the final
+implementation. As shown later in the testing section,
 isolating the computation from I/O reverses this result, confirming that
 NUMA locality does matter once the synchronization overhead of I/O is
 removed.
