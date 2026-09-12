@@ -172,6 +172,8 @@ static int run_scenario(const Config *cfg, const Scenario *scenario) {
         }
     }
 
+    double color_time = 0.0;
+    double compute_time = 0.0;
     double start_time = omp_get_wtime();
     int ok = 1;
     for (int frame = 0; frame < cfg->steps; ++frame) {
@@ -181,14 +183,19 @@ static int run_scenario(const Config *cfg, const Scenario *scenario) {
             }
         }
 
-        if (!write_ppm_frame(scenario->output_dir, frame, current, cfg->size,
-                             colorizer)) {
+        double t0 = omp_get_wtime();
+        int wrote = write_ppm_frame(scenario->output_dir, frame, current,
+                                    cfg->size, colorizer);
+        color_time += omp_get_wtime() - t0;
+        if (!wrote) {
             ok = 0;
             break;
         }
 
         if (frame + 1 < cfg->steps) {
+            double t1 = omp_get_wtime();
             compute_next(cfg->size, previous, current, next);
+            compute_time += omp_get_wtime() - t1;
             double *tmp = previous;
             previous = current;
             current = next;
@@ -198,8 +205,10 @@ static int run_scenario(const Config *cfg, const Scenario *scenario) {
 
     double elapsed = omp_get_wtime() - start_time;
     if (ok) {
-        printf("Rank %d: simulation '%s' finished in %.3f s (%d OpenMP threads).\n",
-               scenario->rank, scenario->output_dir, elapsed, omp_get_max_threads());
+        printf("Rank %d: simulation '%s' finished in %.3f s "
+               "(colorize+write %.3f s, compute %.3f s, %d OpenMP threads).\n",
+               scenario->rank, scenario->output_dir, elapsed, color_time,
+               compute_time, omp_get_max_threads());
     }
 
     cuda_colorizer_destroy(colorizer);

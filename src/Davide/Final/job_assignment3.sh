@@ -36,16 +36,16 @@ echo "OpenMP threads per rank: $OMP_NUM_THREADS"
 echo "MPI ranks: $SLURM_NTASKS"
 
 # --- Code compilation ---
-# No Makefile: nvcc drives the whole build. It compiles assignment_3.c
-# through its host compiler (gcc), compiles wave_color_cuda.cu itself,
-# and links both against the CUDA runtime and MPI in one pass.
+# No Makefile: two compilers, three steps. mpicc already knows its own
+# MPI include/lib paths and understands its own -Wl,-rpath linker flags,
+# so it compiles and links everything except the CUDA source. nvcc only
+# ever sees wave_color_cuda.cu; the two .o files are linked together by
+# mpicc, which just needs to be told where libcudart lives.
 echo "Compiling..."
-MPI_CFLAGS=$(mpicc --showme:compile)
-MPI_LDFLAGS=$(mpicc --showme:link)
-
-nvcc -O3 -Xcompiler -fopenmp $MPI_CFLAGS -c assignment_3.c -o assignment_3.o
+mpicc -O3 -fopenmp -c assignment_3.c -o assignment_3.o
 nvcc -O3 -c wave_color_cuda.cu -o wave_color_cuda.o
-nvcc -O3 -Xcompiler -fopenmp assignment_3.o wave_color_cuda.o -o assignment_3 $MPI_LDFLAGS
+mpicc -O3 -fopenmp assignment_3.o wave_color_cuda.o -o assignment_3 \
+    -L$CUDA_HOME/lib64 -lcudart -lstdc++
 
 ## --- Program run ---
 echo "Running the program"
@@ -69,11 +69,13 @@ mpirun -np $SLURM_NTASKS "$NSYS" profile \
     -- ./assignment_3
 
 # --- Nsight Compute: detailed metrics for the colorize_kernel itself
-#     (occupancy, memory throughput, ...). Only rank 0, and only the first
-#     few kernel launches, since full instrumentation per launch is costly.
-"$NCU" --set basic --launch-count 5 \
-    --export "$RESULTS/kernel_metrics" \
-    -- ./assignment_3 --steps 20
+#     (occupancy, memory throughput, ...). Only the first few kernel
+#     launches per rank, since full instrumentation per launch is costly.
+# Note: unlike nsys, ncu takes the target executable as the first
+# positional argument directly, with no "--" separator before it.
+mpirun -np $SLURM_NTASKS "$NCU" --set basic --launch-count 5 \
+    --export "$RESULTS/kernel_metrics_rank%q{OMPI_COMM_WORLD_RANK}" \
+    ./assignment_3 --steps 20
 
 cd "$WORKDIR"
 zip -r results.zip nsight_results
