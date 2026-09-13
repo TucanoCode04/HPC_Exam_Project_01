@@ -1,0 +1,4 @@
+mode,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads
+distributed,0,sim1_ppm,18.380,17.940,0.440,4
+distributed,1,sim2_ppm,18.470,18.031,0.439,4
+distributed,2,sim3_ppm,18.485,18.042,0.443,4

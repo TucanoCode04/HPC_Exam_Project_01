@@ -6,6 +6,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+static double now_seconds(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
+}
 
 struct CudaColorizer {
     int matrix_size;
@@ -203,7 +210,7 @@ static size_t format_ppm_ascii(CudaColorizer *colorizer) {
 
 int cuda_write_ppm(const char *path, const double *u, int matrix_size,
                    double color_scale, double zero_band,
-                   CudaColorizer *colorizer) {
+                   CudaColorizer *colorizer, CudaFrameTiming *timing) {
     if (path == NULL || u == NULL || colorizer == NULL ||
         matrix_size != colorizer->matrix_size || color_scale <= 0.0 ||
         zero_band < 0.0 || zero_band >= 1.0) {
@@ -213,14 +220,24 @@ int cuda_write_ppm(const char *path, const double *u, int matrix_size,
 
     size_t scalar_bytes = colorizer->total_pixels * sizeof(double);
     size_t rgb_bytes = colorizer->total_pixels * 3u * sizeof(unsigned char);
+    double t0, t1;
 
+    t0 = now_seconds();
     cudaError_t error = cudaMemcpy(colorizer->device_u, u, scalar_bytes,
                                    cudaMemcpyHostToDevice);
+    t1 = now_seconds();
+    if (timing) timing->h2d_s = t1 - t0;
     if (error != cudaSuccess) {
         set_cuda_error("cudaMemcpy host to device", error);
         return 0;
     }
 
+    /* An explicit sync here (rather than letting the D2H memcpy below
+     * implicitly wait for the kernel) exists purely so kernel_s and d2h_s
+     * measure two separate things instead of one blurred together -- a
+     * small stall reintroduced specifically for this measurement, not
+     * needed for correctness. */
+    t0 = now_seconds();
     int blocks = (int)((colorizer->total_pixels + (size_t)colorizer->block_size - 1u) /
                        (size_t)colorizer->block_size);
     colorize_kernel<<<blocks, colorizer->block_size>>>(colorizer->device_u,
@@ -228,20 +245,32 @@ int cuda_write_ppm(const char *path, const double *u, int matrix_size,
                                                         (int)colorizer->total_pixels,
                                                         color_scale, zero_band);
     error = cudaGetLastError();
+    if (error == cudaSuccess) {
+        error = cudaDeviceSynchronize();
+    }
+    t1 = now_seconds();
+    if (timing) timing->kernel_s = t1 - t0;
     if (error != cudaSuccess) {
         set_cuda_error("colorize_kernel launch", error);
         return 0;
     }
 
+    t0 = now_seconds();
     error = cudaMemcpy(colorizer->host_rgb, colorizer->device_rgb, rgb_bytes,
                        cudaMemcpyDeviceToHost);
+    t1 = now_seconds();
+    if (timing) timing->d2h_s = t1 - t0;
     if (error != cudaSuccess) {
         set_cuda_error("cudaMemcpy device to host", error);
         return 0;
     }
 
+    t0 = now_seconds();
     size_t content_size = format_ppm_ascii(colorizer);
+    t1 = now_seconds();
+    if (timing) timing->format_s = t1 - t0;
 
+    t0 = now_seconds();
     FILE *file = fopen(path, "wb");
     if (file == NULL) {
         snprintf(last_error, sizeof(last_error), "could not open '%s' for writing", path);
@@ -250,6 +279,8 @@ int cuda_write_ppm(const char *path, const double *u, int matrix_size,
 
     size_t written = fwrite(colorizer->ascii_buffer, 1, content_size, file);
     int closed_ok = (fclose(file) == 0);
+    t1 = now_seconds();
+    if (timing) timing->write_s = t1 - t0;
 
     if (written != content_size || !closed_ok) {
         snprintf(last_error, sizeof(last_error), "incomplete write for '%s'", path);

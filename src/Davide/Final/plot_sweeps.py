@@ -142,16 +142,29 @@ def plot_blocksize_sweep(df, out_dir):
     plt.close(fig)
 
 
+CONTENTION_MODE_LABELS = {
+    "solo": "Solo\n(1 rank, exclusive GPU)",
+    "shared": "Shared\n(3 ranks, 1 GPU)",
+    "distributed": "Distributed\n(3 ranks, 3 GPUs, 1 node)",
+    "multinode": "Multi-node\n(3 ranks, 3 nodes,\n1 GPU each)",
+}
+CONTENTION_MODE_ORDER = ["solo", "shared", "distributed", "multinode"]
+
+
 def plot_contention_sweep(df, out_dir):
     # Only sim1 exists under "solo" (rank 0's scenario); compare against
-    # sim1's own row under "shared" for an apples-to-apples pair.
+    # sim1's own row under every other mode for an apples-to-apples set.
+    # Handles however many modes are actually present in the CSV -- not
+    # every experiment (solo/shared/distributed/multinode) has to have
+    # been run yet for this to produce a plot.
     sim1 = df[df["scenario"] == "sim1_ppm"].set_index("mode")
-    modes = ["solo", "shared"]
-    labels = ["Solo\n(1 rank, exclusive GPU)", "Shared\n(3 ranks, 1 GPU)"]
+    modes = [m for m in CONTENTION_MODE_ORDER if m in sim1.index]
+    modes += [m for m in sim1.index if m not in CONTENTION_MODE_ORDER]
+    labels = [CONTENTION_MODE_LABELS.get(m, m) for m in modes]
     compute_vals = [sim1.loc[m, "compute_time_s"] for m in modes]
     color_vals = [sim1.loc[m, "color_time_s"] for m in modes]
 
-    fig, ax = plt.subplots(figsize=(6, 4.5))
+    fig, ax = plt.subplots(figsize=(1.8 + 1.6 * len(modes), 4.5))
     fig.patch.set_facecolor(BG)
 
     x = range(len(modes))
@@ -165,7 +178,7 @@ def plot_contention_sweep(df, out_dir):
 
     ax.set_xticks(list(x))
     ax.set_xticklabels(labels)
-    style_axes(ax, "", "Time (s)", "sim1: GPU contention, solo vs. shared")
+    style_axes(ax, "", "Time (s)", "sim1: GPU contention across execution modes")
 
     fig.tight_layout()
     fig.savefig(out_dir / "contention_sweep_solo_vs_shared.png", dpi=200, facecolor=BG)

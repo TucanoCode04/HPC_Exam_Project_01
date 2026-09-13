@@ -121,11 +121,12 @@ static int ensure_output_dir(const char *path) {
 }
 
 static int write_ppm_frame(const char *dir, int frame, const double *u,
-                           int m, CudaColorizer *colorizer) {
+                           int m, CudaColorizer *colorizer,
+                           CudaFrameTiming *timing) {
     char path[64];
     snprintf(path, sizeof(path), "%s/frame_%05d.ppm", dir, frame);
 
-    if (!cuda_write_ppm(path, u, m, COLOR_SCALE, ZERO_BAND, colorizer)) {
+    if (!cuda_write_ppm(path, u, m, COLOR_SCALE, ZERO_BAND, colorizer, timing)) {
         fprintf(stderr, "Could not write '%s': %s.\n", path,
                 cuda_colorizer_last_error());
         return 0;
@@ -174,6 +175,7 @@ static int run_scenario(const Config *cfg, const Scenario *scenario) {
 
     double color_time = 0.0;
     double compute_time = 0.0;
+    CudaFrameTiming phase_totals = {0};
     double start_time = omp_get_wtime();
     int ok = 1;
     for (int frame = 0; frame < cfg->steps; ++frame) {
@@ -183,10 +185,16 @@ static int run_scenario(const Config *cfg, const Scenario *scenario) {
             }
         }
 
+        CudaFrameTiming frame_timing = {0};
         double t0 = omp_get_wtime();
         int wrote = write_ppm_frame(scenario->output_dir, frame, current,
-                                    cfg->size, colorizer);
+                                    cfg->size, colorizer, &frame_timing);
         color_time += omp_get_wtime() - t0;
+        phase_totals.h2d_s += frame_timing.h2d_s;
+        phase_totals.kernel_s += frame_timing.kernel_s;
+        phase_totals.d2h_s += frame_timing.d2h_s;
+        phase_totals.format_s += frame_timing.format_s;
+        phase_totals.write_s += frame_timing.write_s;
         if (!wrote) {
             ok = 0;
             break;
@@ -209,6 +217,15 @@ static int run_scenario(const Config *cfg, const Scenario *scenario) {
                "(colorize+write %.3f s, compute %.3f s, %d OpenMP threads).\n",
                scenario->rank, scenario->output_dir, elapsed, color_time,
                compute_time, omp_get_max_threads());
+        /* Deliberately not starting with "Rank " -- the sweep script's
+         * parser filters on that prefix, and this line doesn't match its
+         * expected fields, so keeping it distinct avoids corrupting CSV
+         * rows if this build is ever run under sweep_assignment3.sh. */
+        printf("  phase breakdown for rank %d: h2d %.3f s, kernel %.3f s, "
+               "d2h %.3f s, format %.3f s, write %.3f s (totals over %d frames).\n",
+               scenario->rank, phase_totals.h2d_s, phase_totals.kernel_s,
+               phase_totals.d2h_s, phase_totals.format_s, phase_totals.write_s,
+               cfg->steps);
     }
 
     cuda_colorizer_destroy(colorizer);
