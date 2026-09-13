@@ -1,0 +1,56 @@
+Compiling...
+=== Size sweep ===
+Rank 1: simulation 'sim2_ppm' finished in 0.257 s (colorize+write 0.254 s, compute 0.003 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 0.258 s (colorize+write 0.255 s, compute 0.003 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 0.354 s (colorize+write 0.350 s, compute 0.004 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 0.544 s (colorize+write 0.537 s, compute 0.008 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 0.552 s (colorize+write 0.544 s, compute 0.008 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 0.660 s (colorize+write 0.652 s, compute 0.007 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 1.921 s (colorize+write 1.895 s, compute 0.027 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 1.955 s (colorize+write 1.929 s, compute 0.027 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 2.022 s (colorize+write 1.995 s, compute 0.027 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 7.174 s (colorize+write 7.068 s, compute 0.106 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 7.206 s (colorize+write 7.099 s, compute 0.107 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 7.336 s (colorize+write 7.224 s, compute 0.112 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 19.684 s (colorize+write 19.240 s, compute 0.444 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 19.750 s (colorize+write 19.305 s, compute 0.445 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 19.907 s (colorize+write 19.462 s, compute 0.445 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 80.459 s (colorize+write 78.670 s, compute 1.789 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 81.053 s (colorize+write 79.266 s, compute 1.787 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 81.374 s (colorize+write 79.557 s, compute 1.817 s, 4 OpenMP threads).
+=== Thread sweep ===
+Rank 1: simulation 'sim2_ppm' finished in 77.860 s (colorize+write 75.834 s, compute 2.026 s, 1 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 78.132 s (colorize+write 76.141 s, compute 1.991 s, 1 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 79.528 s (colorize+write 77.353 s, compute 2.176 s, 1 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 81.803 s (colorize+write 80.061 s, compute 1.742 s, 2 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 81.806 s (colorize+write 80.050 s, compute 1.756 s, 2 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 81.807 s (colorize+write 80.049 s, compute 1.758 s, 2 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 77.160 s (colorize+write 75.360 s, compute 1.799 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 77.190 s (colorize+write 75.392 s, compute 1.798 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 77.882 s (colorize+write 76.050 s, compute 1.832 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 77.282 s (colorize+write 75.469 s, compute 1.813 s, 8 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 78.127 s (colorize+write 76.326 s, compute 1.801 s, 8 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 78.130 s (colorize+write 76.331 s, compute 1.800 s, 8 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 80.755 s (colorize+write 78.956 s, compute 1.799 s, 16 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 80.998 s (colorize+write 79.161 s, compute 1.837 s, 16 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 82.029 s (colorize+write 80.219 s, compute 1.810 s, 16 OpenMP threads).
+=== Block size sweep ===
+Rank 2: simulation 'sim3_ppm' finished in 87.386 s (colorize+write 85.580 s, compute 1.807 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 87.400 s (colorize+write 85.650 s, compute 1.750 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 88.862 s (colorize+write 87.100 s, compute 1.762 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 78.183 s (colorize+write 76.443 s, compute 1.739 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 79.153 s (colorize+write 77.389 s, compute 1.765 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 79.978 s (colorize+write 78.235 s, compute 1.743 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 77.119 s (colorize+write 75.353 s, compute 1.767 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 78.157 s (colorize+write 76.410 s, compute 1.748 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 78.694 s (colorize+write 76.888 s, compute 1.806 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 79.905 s (colorize+write 78.140 s, compute 1.765 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 81.964 s (colorize+write 80.212 s, compute 1.752 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 82.617 s (colorize+write 80.801 s, compute 1.817 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 78.940 s (colorize+write 77.173 s, compute 1.767 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 79.747 s (colorize+write 77.995 s, compute 1.752 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 79.747 s (colorize+write 77.977 s, compute 1.770 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 86.415 s (colorize+write 84.681 s, compute 1.735 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 88.216 s (colorize+write 86.492 s, compute 1.725 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 89.258 s (colorize+write 87.534 s, compute 1.724 s, 4 OpenMP threads).
+Sweep complete. CSVs: size_sweep.csv, thread_sweep.csv, blocksize_sweep.csv

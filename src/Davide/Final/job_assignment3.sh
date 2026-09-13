@@ -22,9 +22,11 @@ export CUDA_HOME=/share/apps/hpc_sdk/Linux_x86_64/25.1/cuda
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 
-## --- Nsight profilers (separate from the CUDA toolkit in the SDK layout) ---
+## --- Nsight Systems (separate from the CUDA toolkit in the SDK layout).
+## Nsight Compute is intentionally not used here: this cluster returns
+## ERR_NVGPUCTRPERM (GPU performance-counter access is admin-only), which
+## is a driver-level restriction no user-side flag can work around.
 NSYS=/share/apps/hpc_sdk/Linux_x86_64/25.1/profilers/Nsight_Systems/bin/nsys
-NCU=/share/apps/hpc_sdk/Linux_x86_64/25.1/profilers/Nsight_Compute/ncu
 
 ## --- OpenMP configuration ---
 # Use the CPUs actually allocated by the scheduler for this task,
@@ -64,18 +66,9 @@ mkdir -p "$RESULTS"
 # --- Nsight Systems: whole-application timeline (CPU/GPU overlap, memcpy,
 #     kernel launches, OpenMP/MPI activity). One report per rank.
 mpirun -np $SLURM_NTASKS "$NSYS" profile \
-    --trace=cuda,openmp,osrt \
+    --trace=cuda,openmp,osrt --backtrace=lbr \
     --output="$RESULTS/timeline_rank%q{OMPI_COMM_WORLD_RANK}" \
     -- ./assignment_3
-
-# --- Nsight Compute: detailed metrics for the colorize_kernel itself
-#     (occupancy, memory throughput, ...). Only the first few kernel
-#     launches per rank, since full instrumentation per launch is costly.
-# Note: unlike nsys, ncu takes the target executable as the first
-# positional argument directly, with no "--" separator before it.
-mpirun -np $SLURM_NTASKS "$NCU" --set basic --launch-count 5 \
-    --export "$RESULTS/kernel_metrics_rank%q{OMPI_COMM_WORLD_RANK}" \
-    ./assignment_3 --steps 20
 
 cd "$WORKDIR"
 zip -r results.zip nsight_results

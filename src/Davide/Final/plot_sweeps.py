@@ -78,7 +78,7 @@ def plot_size_sweep(df, out_dir):
                "Where the time goes vs. grid size")
 
     fig.tight_layout()
-    fig.savefig(out_dir / "size_sweep.png", dpi=200, facecolor=BG)
+    fig.savefig(out_dir / "size_sweep_execution_time.png", dpi=200, facecolor=BG)
     plt.close(fig)
 
 
@@ -119,7 +119,7 @@ def plot_thread_sweep(df, out_dir):
                "Parallel efficiency: full pipeline vs. compute-only")
 
     fig.tight_layout()
-    fig.savefig(out_dir / "thread_sweep.png", dpi=200, facecolor=BG)
+    fig.savefig(out_dir / "thread_sweep_speedup_efficiency.png", dpi=200, facecolor=BG)
     plt.close(fig)
 
 
@@ -138,7 +138,37 @@ def plot_blocksize_sweep(df, out_dir):
                "colorize_kernel time vs. block size")
 
     fig.tight_layout()
-    fig.savefig(out_dir / "blocksize_sweep.png", dpi=200, facecolor=BG)
+    fig.savefig(out_dir / "blocksize_sweep_kernel_time.png", dpi=200, facecolor=BG)
+    plt.close(fig)
+
+
+def plot_contention_sweep(df, out_dir):
+    # Only sim1 exists under "solo" (rank 0's scenario); compare against
+    # sim1's own row under "shared" for an apples-to-apples pair.
+    sim1 = df[df["scenario"] == "sim1_ppm"].set_index("mode")
+    modes = ["solo", "shared"]
+    labels = ["Solo\n(1 rank, exclusive GPU)", "Shared\n(3 ranks, 1 GPU)"]
+    compute_vals = [sim1.loc[m, "compute_time_s"] for m in modes]
+    color_vals = [sim1.loc[m, "color_time_s"] for m in modes]
+
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    fig.patch.set_facecolor(BG)
+
+    x = range(len(modes))
+    ax.bar(x, compute_vals, width=0.5, color=PHASE_COLORS["compute"],
+           label="OpenMP compute_next")
+    ax.bar(x, color_vals, width=0.5, bottom=compute_vals,
+           color=PHASE_COLORS["colorize+write"], label="GPU colorize + write")
+    for i, (c, g) in enumerate(zip(compute_vals, color_vals)):
+        ax.text(i, c + g + max(color_vals) * 0.02, f"{c + g:.2f}s", ha="center",
+                 color=INK, fontsize=10, fontweight="bold")
+
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(labels)
+    style_axes(ax, "", "Time (s)", "sim1: GPU contention, solo vs. shared")
+
+    fig.tight_layout()
+    fig.savefig(out_dir / "contention_sweep_solo_vs_shared.png", dpi=200, facecolor=BG)
     plt.close(fig)
 
 
@@ -151,7 +181,17 @@ def main():
     plot_thread_sweep(pd.read_csv(here / "thread_sweep.csv"), out_dir)
     plot_blocksize_sweep(pd.read_csv(here / "blocksize_sweep.csv"), out_dir)
 
-    print(f"Wrote size_sweep.png, thread_sweep.png, blocksize_sweep.png to {out_dir}")
+    written = ["size_sweep_execution_time.png", "thread_sweep_speedup_efficiency.png",
+               "blocksize_sweep_kernel_time.png"]
+
+    contention_csv = here / "contention_sweep.csv"
+    if contention_csv.exists():
+        plot_contention_sweep(pd.read_csv(contention_csv), out_dir)
+        written.append("contention_sweep_solo_vs_shared.png")
+    else:
+        print(f"Skipping contention plot: {contention_csv} not found yet.")
+
+    print(f"Wrote {', '.join(written)} to {out_dir}")
 
 
 if __name__ == "__main__":

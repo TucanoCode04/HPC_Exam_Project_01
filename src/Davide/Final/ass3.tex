@@ -1,0 +1,202 @@
+\section{Assignment 3}
+\subsection{Introduction and objectives}
+This assignment extends the damped wave simulator from parts 1 and 2 with
+color. The underlying physics, discretisation, and MPI/OpenMP structure are
+unchanged: three MPI ranks each run one independent scenario (a single
+impulse, two impulses starting together, two impulses with the second
+delayed to $N/7$), and each rank parallelises its own $M \times M$ stencil
+update with OpenMP, exactly as in parts 1 and 2. What changes is the output
+stage: instead of a grayscale PGM frame, each timestep's matrix is sent to
+the GPU, mapped to an RGB triplet per pixel by a CUDA kernel, and saved as a
+P3 (ASCII) PPM file. Bright, saturated colors mark the wave's extrema,
+colors fade gradually along the rising/falling fronts, and near-zero, calm
+regions are left white. The scalar matrix driving the simulation is never
+modified by this process -- only the saved frame is colored.
+
+Simulation parameters (student 352165), unchanged from parts 1--2:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{$\gamma$} & \textbf{$c$} & \textbf{$(i_0,j_0)$} & \textbf{$u(i_0,j_0)$} & \\
+    \hline
+    0.067 & 0.59 & $(M/2,M/2)$ & 56 & \\
+    \hline
+    \end{tabular}
+\end{center}
+sim2's second wave: $(2M/3,\,M/4)$, amplitude $-35$, $t_{\text{start}}=0$.
+sim3's second wave: $(M/3,\,M/3)$, amplitude $58$, $t_{\text{start}}=N/7$.
+
+\subsection{Implementation}
+The project was rewritten from an earlier draft to remove unused
+configurability (most physical parameters were assignment-mandated
+constants, not things ever actually varied at runtime) and to make the
+CUDA path measurably faster, not just correct.
+
+\paragraph{CUDA colorization.} \texttt{colorize\_kernel} runs one GPU thread
+per pixel. Each thread normalizes its value by a fixed scale (58, the
+largest of the three configured amplitudes), applies a $\sqrt{|\cdot|}$
+contrast boost so mid-amplitude fronts remain visually distinguishable
+rather than washed out, and fades from white toward red/orange (positive)
+or blue (negative) as magnitude grows past a small \texttt{zero\_band}
+threshold -- satisfying the assignment's requirement for bright extrema,
+graded fronts, and white calm regions.
+
+\paragraph{Performance choices.} Three changes distinguish this
+implementation from a direct "make it work" port: (1) the CUDA colorizer
+context (device buffers, host buffers) is allocated once per scenario and
+reused for all 300 frames, not re-allocated per frame; (2) the host-side RGB
+buffer uses pinned (\texttt{cudaHostAlloc}) memory rather than plain
+\texttt{malloc}, enabling faster DMA transfer; (3) the ASCII PPM writer
+builds the entire frame's text in one pre-allocated buffer and issues a
+single \texttt{fwrite}, instead of one \texttt{fprintf} call per pixel
+value -- the latter was identified as the likely dominant CPU-side cost in
+early testing, mirroring the \texttt{fwrite}-per-pixel bottleneck that part
+1's VTune analysis found in the grayscale writer.
+
+\paragraph{Build.} No Makefile is used. \texttt{assignment\_3.c} is
+compiled and linked by \texttt{mpicc} (which already knows its own MPI
+include/library paths); \texttt{wave\_color\_cuda.cu} is compiled separately
+by \texttt{nvcc}; the two object files are linked together by \texttt{mpicc},
+given only the CUDA runtime's library path.
+
+\subsubsection{Engineering journey: errors and fixes}
+Several real build- and tool-level errors were hit and resolved during
+development; they are recorded here since diagnosing them shaped some of
+the final design choices above.
+
+\begin{itemize}
+\item \textbf{\texttt{nvcc fatal: Unknown option '-Wl,-rpath'}.} Caused by
+  piping \texttt{mpicc --showme:link}'s output directly into \texttt{nvcc}:
+  that output includes \texttt{gcc}-style linker passthrough flags which
+  \texttt{nvcc}'s argument parser does not accept the same way. Fixed by
+  letting \texttt{mpicc} do all MPI-aware compiling and linking itself
+  (see Build, above), so \texttt{nvcc} never has to see an MPI flag at all.
+\item \textbf{Nsight Compute: ``option is ambiguous, matches
+  `app-replay-buffer', `cache-control', \ldots''.} Caused by copying
+  Nsight Systems' \texttt{-{}-} convention (``everything after this is the
+  target executable'') into the Nsight Compute invocation. Nsight Compute
+  does not use that separator; the stray \texttt{-{}-} was parsed as an
+  option name of zero length, which is a valid (ambiguous) prefix of every
+  long option Nsight Compute knows. Fixed by passing the target executable
+  directly, with no separator.
+\item \textbf{Nsight Compute: \texttt{ERR\_NVGPUCTRPERM}.} Once the above
+  was fixed, Nsight Compute connected to all three ranks but was refused
+  access to the GPU's performance counters -- a cluster-wide, admin-level
+  restriction, not something fixable from a student account. Nsight Compute
+  was dropped from the workflow; Nsight Systems (which does not need this
+  permission) and the program's own internal timers cover the same ground
+  for this report.
+\item \textbf{Silent CSV column misalignment.} The sweep script's CSV
+  headers for the thread- and block-size sweeps were written with one
+  column name fewer than the number of fields actually being written per
+  row. \texttt{pandas} does not error on this: it silently treats the first
+  field as an unlabeled row index and shifts every header name one column
+  over, so every plotted value was reading the wrong field. Caught by
+  cross-checking the parsed DataFrame against the raw CSV text rather than
+  trusting that ``the script ran without error'' meant the output was
+  correct; fixed by correcting the header line to match the true column
+  count.
+\end{itemize}
+
+\subsection{Testing and Results}
+\label{sec:testing3}
+Unless noted otherwise, all sweeps use \texttt{--steps 50} (fewer than the
+production run's 300, to keep the whole sweep inside one job) and were run
+on the \texttt{edu\_a40} partition (2 nodes, 48 listed cores, 4$\times$A40
+GPUs per node; whether ``48'' is physical or logical cores -- \texttt{edu\_sapphire}
+lists 48 but schedules 96 -- was still being confirmed as of this writing,
+see the open item below).
+
+\subsubsection{Sweep of grid size}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../src/Davide/Final/plots/size_sweep_execution_time.png}
+    \caption{Execution time and its GPU-colorize/OpenMP-compute split, varying grid size $M$, 4 OpenMP threads, 3 concurrent ranks sharing one GPU.}
+    \label{fig:size_sweep3}
+\end{figure}
+Execution time grows super-linearly with $M$ and approaches ideal
+$O(M^2)$ scaling as $M$ increases: the $128\to256$ doubling costs only
+$2.1\times$ (fixed per-run overhead still dominates at this scale), while
+the $2048\to4096$ doubling costs $4.1\times$, essentially the ideal
+quadratic ratio. The right panel makes the more important point plainly:
+GPU colorize-and-write time dominates total execution time throughout, and
+increasingly so as $M$ grows -- at $M=4096$ it is 79.3s of 81.1s total
+($\sim$98\%), against OpenMP's \texttt{compute\_next} at 1.8s
+($\sim$2\%). Both phases are $O(M^2)$, so this ratio is essentially
+constant across the whole sweep (also $\sim$98\%/2\% at $M=2048$) --
+coloring and writing an ASCII PPM frame is simply far more expensive per
+pixel than the finite-difference update itself.
+
+\subsubsection{Sweep of OpenMP thread count}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../src/Davide/Final/plots/thread_sweep_speedup_efficiency.png}
+    \caption{Speedup and parallel efficiency vs. OpenMP thread count at $M=4096$, both for the full pipeline and for \texttt{compute\_next} in isolation.}
+    \label{fig:thread_sweep3}
+\end{figure}
+Both curves are effectively flat, never exceeding roughly $1.2\times$
+speedup even at 16 threads. This is not simply because $M$ was too small
+(a first attempt at $M=1024$ showed the same flatness, motivating this
+larger $M=4096$ rerun) -- both timed phases are $O(M^2)$, so their ratio,
+and therefore how visible \texttt{compute\_next}'s own scaling is against
+the dominant GPU cost, does not change with $M$. Looking at
+\texttt{compute\_next}'s own time in isolation (the ``compute-only''
+series) shows real but small speedup, saturating at $\sim$1.15--1.2$\times$
+by 2 threads with no further gain through 16. This is consistent with the
+5-point stencil update being memory-bandwidth-bound rather than
+compute-bound: each output point costs 4 loads, 1 store, and a handful of
+FLOPs, so a small number of threads is enough to saturate available memory
+bandwidth, after which adding threads only adds contention for it. This
+differs from part 1's OpenMP scaling results (which showed real speedup at
+large thread counts) mainly because part 1's benchmark used $M$ up to
+15000, at a scale where the total work is large enough to be interesting on
+its own, independent of any GPU-bound stage.
+
+\subsubsection{Sweep of CUDA block size}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{../src/Davide/Final/plots/blocksize_sweep_kernel_time.png}
+    \caption{GPU colorize-and-write time vs. CUDA threads-per-block, $M=4096$.}
+    \label{fig:blocksize_sweep3}
+\end{figure}
+Both very small (32) and the maximum (1024) threads-per-block measurably
+underperform a mid-range choice: 32 costs $\sim$88s on average, 1024
+$\sim$88s, against a minimum of $\sim$78s around 128 threads/block --
+roughly a 12\% swing. The same qualitative shape (worse at the extremes,
+best in the low hundreds) appeared independently in an earlier sweep at
+$M=1024$, which strengthens confidence this is a genuine occupancy effect
+rather than run-to-run noise, though the curve itself is somewhat jagged
+(plausible given 3 ranks concurrently contending for one physical GPU) --
+averaging repeated runs per block size would sharpen it further if needed.
+
+\subsubsection{GPU contention: solo vs. shared \textit{(pending rerun)}}
+To separate genuine per-frame cost from contention for the one GPU all
+three ranks share, \texttt{assignment\_3.c} was extended to accept an
+explicit single-rank ``solo'' mode (previously rejected outright, since the
+program assumed exactly the 3-scenario production layout), and
+\texttt{sweep\_assignment3.sh} now runs sim1's workload both alone
+(1 rank, exclusive GPU) and as part of the normal 3-rank run, at identical
+parameters. \textit{Results pending a rerun of the sweep script; expected
+figure: \texttt{contention\_sweep\_solo\_vs\_shared.png}.}
+
+\subsubsection{Nsight Systems timeline \textit{(pending analysis)}}
+\texttt{job\_assignment3.sh} produces one \texttt{.nsys-rep} timeline per
+rank (\texttt{--trace=cuda,openmp,osrt}), viewed locally in the Nsight
+Systems GUI. \textit{Not yet analyzed in this report; Nsight Compute
+kernel-level metrics (occupancy, memory throughput) were attempted but are
+unavailable on this cluster --} \texttt{ERR\_NVGPUCTRPERM} \textit{--
+so the timeline view is the primary GPU-side profiling evidence for this
+assignment.}
+
+\subsubsection{Physical vs. logical core count on \texttt{edu\_a40}}
+The HPC@PoliTO guide lists 48 cores for both \texttt{edu\_sapphire} and
+\texttt{edu\_a40}, but \texttt{edu\_sapphire} was observed to actually
+schedule 96. \texttt{sinfo -p edu\_a40 -N -o "\%N \%c \%X \%Y \%Z"} confirms
+the same holds for \texttt{edu\_a40}: 2 sockets $\times$ 24 cores $\times$ 2
+threads/core = 96 logical cores per node (SMT), not 48 -- the guide's figure
+is physical cores only. The thread sweep in Figure~\ref{fig:thread_sweep3}
+was capped at 16 threads accordingly; \texttt{sweep\_assignment3.sh} now
+requests \texttt{--cpus-per-task=32} (the true per-rank ceiling, $96/3$
+ranks) and tests up to 32 threads. \textit{Rerun pending; expectation, per
+the memory-bandwidth-bound argument above, is that the plateau already
+visible by 2 threads continues unchanged through 32.}

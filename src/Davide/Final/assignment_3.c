@@ -296,9 +296,16 @@ int main(int argc, char **argv) {
         omp_set_num_threads(cfg.omp_threads);
     }
 
-    if (num_procs < 3) {
+    /* num_procs == 1 is an intentional exception: a solo run of sim1 alone,
+     * with the GPU to itself, used to measure how much of the 3-rank
+     * production numbers is genuine cost vs. contention for the one shared
+     * device. Anything else below 3 ranks doesn't map to a valid scenario
+     * set and is rejected. */
+    if (num_procs != 1 && num_procs < 3) {
         if (rank == 0) {
-            fprintf(stderr, "This program requires at least 3 MPI ranks (got %d).\n",
+            fprintf(stderr,
+                    "This program requires either exactly 1 rank (solo GPU "
+                    "benchmark) or at least 3 ranks (got %d).\n",
                     num_procs);
         }
         MPI_Finalize();
