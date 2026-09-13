@@ -37,7 +37,8 @@ mpicc -O3 -fopenmp assignment_3.o wave_color_cuda.o -o assignment_3 \
     -L$CUDA_HOME/lib64 -lcudart -lstdc++
 
 CSV="contention_sweep.csv"
-[ -f "$CSV" ] || echo "mode,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads" > "$CSV"
+PHASE_HEADER="h2d_s,kernel_s,d2h_s,format_s,write_s"
+[ -f "$CSV" ] || echo "mode,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads,$PHASE_HEADER" > "$CSV"
 
 parse_line() {
     local line="$1"
@@ -51,14 +52,34 @@ parse_line() {
     echo "$rank,$scenario,$elapsed,$color,$compute,$threads"
 }
 
+parse_phase_line() {
+    local line="$1"
+    local h2d kernel d2h format write
+    h2d=$(grep -oP '(?<=h2d )[0-9.]+' <<< "$line")
+    kernel=$(grep -oP '(?<=kernel )[0-9.]+' <<< "$line")
+    d2h=$(grep -oP '(?<=d2h )[0-9.]+' <<< "$line")
+    format=$(grep -oP '(?<=format )[0-9.]+' <<< "$line")
+    write=$(grep -oP '(?<=write )[0-9.]+' <<< "$line")
+    echo "$h2d,$kernel,$d2h,$format,$write"
+}
+
 echo "=== Multi-node (3 ranks, 3 nodes, 1 dedicated GPU each) ==="
 rm -rf ./sim1_ppm ./sim2_ppm ./sim3_ppm
 output=$(mpirun -np 3 ./assignment_3 --size 2048 --steps 50 --threads 4)
 echo "$output"
-while IFS= read -r line; do
+lines=()
+mapfile -t lines <<< "$output"
+n=${#lines[@]}
+for ((i = 0; i < n; i++)); do
+    line="${lines[$i]}"
     [[ "$line" == Rank\ * ]] || continue
-    echo "multinode,$(parse_line "$line")" >> "$CSV"
-done <<< "$output"
+    base=$(parse_line "$line")
+    phase="0,0,0,0,0"
+    if (( i + 1 < n )) && [[ "${lines[$((i + 1))]}" == *"phase breakdown"* ]]; then
+        phase=$(parse_phase_line "${lines[$((i + 1))]}")
+    fi
+    echo "multinode,$base,$phase" >> "$CSV"
+done
 rm -rf ./sim1_ppm ./sim2_ppm ./sim3_ppm
 
 echo "Appended 'multinode' rows to $CSV"

@@ -38,6 +38,14 @@ SCENARIO_LABELS = {
 
 PHASE_COLORS = {"colorize+write": "#2a78d6", "compute": "#eb6834"}
 
+# The 5 sub-phases inside colorize+write, in actual execution order
+# (h2d copy -> kernel -> d2h copy -> ASCII format -> disk write). Colors are
+# the palette's slots 1-5 in fixed order -- validated for adjacent-pair
+# colorblind-safety, the relevant check for a stacked bar.
+PHASE5_COLUMNS = ["h2d_s", "kernel_s", "d2h_s", "format_s", "write_s"]
+PHASE5_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]
+PHASE5_LABELS = ["H2D copy", "Kernel", "D2H copy", "ASCII format", "Disk write (fwrite)"]
+
 
 def style_axes(ax, xlabel, ylabel, title):
     ax.set_facecolor(BG)
@@ -79,6 +87,53 @@ def plot_size_sweep(df, out_dir):
 
     fig.tight_layout()
     fig.savefig(out_dir / "size_sweep_execution_time.png", dpi=200, facecolor=BG)
+    plt.close(fig)
+
+
+def plot_phase_breakdown(df, out_dir):
+    # Skip rows from before this instrumentation existed (all-zero phase
+    # columns) rather than plotting a misleading all-zero stack for them.
+    df = df[df[PHASE5_COLUMNS].sum(axis=1) > 0]
+    if df.empty:
+        print("Skipping phase breakdown plot: no rows with phase data yet.")
+        return
+
+    avg = df.groupby("matrix_size")[PHASE5_COLUMNS].mean().sort_index()
+
+    fig, (ax_full, ax_zoom) = plt.subplots(1, 2, figsize=(12, 5))
+    fig.patch.set_facecolor(BG)
+
+    x = range(len(avg))
+    x_labels = [str(m) for m in avg.index]
+
+    # Left: all 5 phases, absolute seconds -- write's dominance is the point,
+    # so this is deliberately NOT log-scaled or normalized to 100% (that
+    # would visually erase the exact effect being shown).
+    bottom = [0.0] * len(avg)
+    for column, color, label in zip(PHASE5_COLUMNS, PHASE5_COLORS, PHASE5_LABELS):
+        vals = avg[column].values
+        ax_full.bar(x, vals, bottom=bottom, width=0.6, color=color, label=label)
+        bottom = [b + v for b, v in zip(bottom, vals)]
+    ax_full.set_xticks(list(x))
+    ax_full.set_xticklabels(x_labels)
+    style_axes(ax_full, "Matrix size (M)", "Time (s, avg. across ranks)",
+               "colorize+write: full phase breakdown")
+
+    # Right: same data with "write" excluded, zoomed in so the shape of the
+    # other 4 phases (invisible slivers on the left) is actually readable.
+    bottom = [0.0] * len(avg)
+    for column, color, label in zip(PHASE5_COLUMNS[:-1], PHASE5_COLORS[:-1],
+                                     PHASE5_LABELS[:-1]):
+        vals = avg[column].values
+        ax_zoom.bar(x, vals, bottom=bottom, width=0.6, color=color, label=label)
+        bottom = [b + v for b, v in zip(bottom, vals)]
+    ax_zoom.set_xticks(list(x))
+    ax_zoom.set_xticklabels(x_labels)
+    style_axes(ax_zoom, "Matrix size (M)", "Time (s, avg. across ranks)",
+               "Same, with disk write excluded (zoomed in)")
+
+    fig.tight_layout()
+    fig.savefig(out_dir / "size_sweep_phase_breakdown.png", dpi=200, facecolor=BG)
     plt.close(fig)
 
 
@@ -190,12 +245,21 @@ def main():
     out_dir = here / "plots"
     out_dir.mkdir(exist_ok=True)
 
-    plot_size_sweep(pd.read_csv(here / "size_sweep.csv"), out_dir)
+    size_df = pd.read_csv(here / "size_sweep.csv")
+    plot_size_sweep(size_df, out_dir)
     plot_thread_sweep(pd.read_csv(here / "thread_sweep.csv"), out_dir)
     plot_blocksize_sweep(pd.read_csv(here / "blocksize_sweep.csv"), out_dir)
 
     written = ["size_sweep_execution_time.png", "thread_sweep_speedup_efficiency.png",
                "blocksize_sweep_kernel_time.png"]
+
+    if all(col in size_df.columns for col in PHASE5_COLUMNS):
+        plot_phase_breakdown(size_df, out_dir)
+        written.append("size_sweep_phase_breakdown.png")
+    else:
+        print("Skipping phase breakdown plot: size_sweep.csv predates the "
+              "h2d/kernel/d2h/format/write columns -- rerun the sweep with "
+              "the updated sweep_assignment3.sh to get them.")
 
     contention_csv = here / "contention_sweep.csv"
     if contention_csv.exists():

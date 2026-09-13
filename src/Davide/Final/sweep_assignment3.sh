@@ -47,10 +47,11 @@ THREADS_CSV="thread_sweep.csv"
 BLOCK_CSV="blocksize_sweep.csv"
 CONTENTION_CSV="contention_sweep.csv"
 
-echo "matrix_size,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads" > "$SIZE_CSV"
-echo "omp_threads,rank,scenario,elapsed_s,color_time_s,compute_time_s,reported_threads" > "$THREADS_CSV"
-echo "block_size,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads" > "$BLOCK_CSV"
-echo "mode,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads" > "$CONTENTION_CSV"
+PHASE_HEADER="h2d_s,kernel_s,d2h_s,format_s,write_s"
+echo "matrix_size,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads,$PHASE_HEADER" > "$SIZE_CSV"
+echo "omp_threads,rank,scenario,elapsed_s,color_time_s,compute_time_s,reported_threads,$PHASE_HEADER" > "$THREADS_CSV"
+echo "block_size,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads,$PHASE_HEADER" > "$BLOCK_CSV"
+echo "mode,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads,$PHASE_HEADER" > "$CONTENTION_CSV"
 
 # Pulls the numbers out of one "Rank N: simulation '...' finished in ..."
 # line and prints them comma-separated, matching write_ppm_frame's log
@@ -67,8 +68,26 @@ parse_line() {
     echo "$rank,$scenario,$elapsed,$color,$compute,$threads"
 }
 
+# Pulls h2d/kernel/d2h/format/write out of the "  phase breakdown for
+# rank N: ..." line that assignment_3.c prints immediately after each
+# "Rank N: ..." summary line.
+parse_phase_line() {
+    local line="$1"
+    local h2d kernel d2h format write
+    h2d=$(grep -oP '(?<=h2d )[0-9.]+' <<< "$line")
+    kernel=$(grep -oP '(?<=kernel )[0-9.]+' <<< "$line")
+    d2h=$(grep -oP '(?<=d2h )[0-9.]+' <<< "$line")
+    format=$(grep -oP '(?<=format )[0-9.]+' <<< "$line")
+    write=$(grep -oP '(?<=write )[0-9.]+' <<< "$line")
+    echo "$h2d,$kernel,$d2h,$format,$write"
+}
+
 # Runs one sweep point under a given MPI process count and appends one CSV
-# row per rank, prefixed with the value of the parameter being swept.
+# row per rank, prefixed with the value of the parameter being swept. Each
+# "Rank N: ..." line is immediately followed by its own phase-breakdown
+# line (same process, two consecutive printfs), so pairing line i with
+# line i+1 is reliable -- read into an array instead of a plain pipe loop
+# so both lines of a pair are available at once.
 run_point_np() {
     local csv="$1"
     local np="$2"
@@ -77,10 +96,21 @@ run_point_np() {
     local output
     output=$(mpirun -np "$np" ./assignment_3 "$@")
     echo "$output"
-    while IFS= read -r line; do
+    local lines=()
+    mapfile -t lines <<< "$output"
+    local n=${#lines[@]}
+    local i
+    for ((i = 0; i < n; i++)); do
+        local line="${lines[$i]}"
         [[ "$line" == Rank\ * ]] || continue
-        echo "$sweep_value,$(parse_line "$line")" >> "$csv"
-    done <<< "$output"
+        local base phase
+        base=$(parse_line "$line")
+        phase="0,0,0,0,0"
+        if (( i + 1 < n )) && [[ "${lines[$((i + 1))]}" == *"phase breakdown"* ]]; then
+            phase=$(parse_phase_line "${lines[$((i + 1))]}")
+        fi
+        echo "$sweep_value,$base,$phase" >> "$csv"
+    done
 }
 
 # Same as above, always at the job's full rank count ($SLURM_NTASKS = 3).

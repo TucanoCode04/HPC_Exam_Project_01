@@ -64,6 +64,13 @@
 
 \subsection{Results: phase breakdown (h2d / kernel / d2h / format / write)}
 First run with the \texttt{CudaFrameTiming} instrumentation actually active (job 1936206, full sweep incl.\ contention; job 1936207, distributed). Decisive result:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../src/Davide/Final/plots/Third Run 96/size_sweep_phase_breakdown.png}
+    \caption{colorize+write split into its 5 phases vs.\ grid size. Left: full stack, absolute time -- write's dominance is the point, deliberately not log-scaled. Right: same data with write excluded, zoomed in so the shape of the other 4 phases is actually visible.}
+    \label{fig:phase_breakdown}
+\end{figure}
+(Data note: \texttt{sweep\_assignment3.sh}/\texttt{contention\_multigpu.sh}/\texttt{contention\_multinode.sh} were updated to capture h2d/kernel/d2h/format/write into the CSVs going forward -- for this particular run, that CSV-side capture didn't exist yet at run time, so these numbers/plot were reconstructed directly from the already-completed jobs' raw text logs, which already contained every phase-breakdown line -- same real data, just re-parsed rather than requiring a cluster rerun. Script: local, one-off, not part of the checked-in pipeline.)
 \begin{itemize}
 \item At $M=4096$ (avg.\ over 3 ranks, totals over 50 frames): of \texttt{color\_time} $\approx$76.5s -- \texttt{write} (the \texttt{fwrite} call) $\approx$72.4s (\textbf{94.6\%}), \texttt{format} (ASCII conversion) $\approx$3.3s (\textbf{4.3\%}), \texttt{h2d}+\texttt{kernel}+\texttt{d2h} combined $\approx$0.8s ($\sim$1\%). Same lopsided pattern at every grid size swept, not just $M=4096$.
 \item \textbf{Decision: do not parallelize \texttt{format\_ppm\_ascii}.} Even a theoretically perfect, zero-overhead parallelization of the ASCII-formatting step (the fixed-width-padding or prefix-sum approaches discussed earlier) would save at most $\sim$4\% of \texttt{color\_time}. Not worth the added complexity. The real cost is the disk write itself, not the formatting before it.

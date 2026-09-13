@@ -50,9 +50,14 @@ mpicc -O3 -fopenmp assignment_3.o wave_color_cuda.o -o assignment_3 \
     -L$CUDA_HOME/lib64 -lcudart -lstdc++
 
 ## --- Program run ---
+# --size 1024, not the DEFAULT_SIZE=512 fallback: at 512 the wave is too
+# small to read clearly in the rendered video. 1024 stays comfortably
+# inside the job's time budget (~45s/rank for 300 steps, per the size
+# sweep) while giving 4x the pixel detail. Bump further to --size 2048
+# for even more detail if the time budget allows (~2min/rank instead).
 echo "Running the program"
 rm -rf ./sim1_ppm ./sim2_ppm ./sim3_ppm
-mpirun -np $SLURM_NTASKS ./assignment_3
+mpirun -np $SLURM_NTASKS ./assignment_3 --size 1024
 echo "Program finished. Frames saved in sim1_ppm, sim2_ppm, sim3_ppm"
 
 # --- profile ---
@@ -68,7 +73,7 @@ mkdir -p "$RESULTS"
 mpirun -np $SLURM_NTASKS "$NSYS" profile \
     --trace=cuda,openmp,osrt --backtrace=lbr \
     --output="$RESULTS/timeline_rank%q{OMPI_COMM_WORLD_RANK}" \
-    -- ./assignment_3
+    -- ./assignment_3 --size 1024
 
 cd "$WORKDIR"
 zip -r results.zip nsight_results
