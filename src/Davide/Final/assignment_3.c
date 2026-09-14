@@ -14,12 +14,26 @@
 #define GAMMA 0.067
 #define WAVE_C 0.59
 #define DT 0.1
-#define DX 1.0
+/* DX shrunk from 1.0: propagation distance is c*T/dx (T = total simulated
+ * time = steps*dt), while amplitude decay is ~exp(-gamma*T/2) -- decay
+ * depends only on T, not on dx, so shrinking dx buys more distance at
+ * a FIXED decay budget rather than trading one against the other. At
+ * dx=0.125, dt=0.1, 400 steps (T=40): Courant number 0.472 (still under
+ * the 0.707 CFL limit), wavefront reaches ~189 cells (~94% of the M=400
+ * grid's half-width), same ~26% amplitude remaining at the last frame as
+ * dx=0.25 would give -- more visible reach, not more fade. */
+#define DX 0.125
 
 #define IMPULSE_AMPLITUDE 56.0
 #define SIM2_SECOND_AMPLITUDE -35.0
 #define SIM3_SECOND_AMPLITUDE 58.0
-#define ZERO_BAND 0.03
+/* Lowered from 0.03: this is the |value|/COLOR_SCALE threshold below which
+ * a pixel renders white ("calm"). With gamma=0.067 damping, a several-
+ * hundred-step video's amplitude decays well below the old 3% threshold
+ * before the video ends, rendering the tail as solid white even though
+ * the wave hasn't physically vanished yet -- purely a visualization
+ * threshold, doesn't affect the physics or how far the wave travels. */
+#define ZERO_BAND 0.01
 
 #define DEFAULT_SIZE 512
 #define DEFAULT_STEPS 300

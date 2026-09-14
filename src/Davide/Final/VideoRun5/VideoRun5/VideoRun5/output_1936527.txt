@@ -1,0 +1,38 @@
+OpenMP threads per rank: 4
+MPI ranks: 3
+Compiling...
+Running the program
+Rank 1: simulation 'sim2_ppm' finished in 6.688 s (colorize+write 6.560 s, compute 0.128 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.027 s, kernel 0.161 s, d2h 0.011 s, format 0.248 s, write 6.113 s (totals over 400 frames).
+Rank 2: simulation 'sim3_ppm' finished in 6.707 s (colorize+write 6.577 s, compute 0.129 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.028 s, kernel 0.055 s, d2h 0.011 s, format 0.250 s, write 6.233 s (totals over 400 frames).
+Rank 0: simulation 'sim1_ppm' finished in 6.772 s (colorize+write 6.642 s, compute 0.130 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.030 s, kernel 0.160 s, d2h 0.011 s, format 0.249 s, write 6.191 s (totals over 400 frames).
+Program finished. Frames saved in sim1_ppm, sim2_ppm, sim3_ppm
+Profiling...
+Collecting data...
+Collecting data...
+Collecting data...
+Rank 2: simulation 'sim3_ppm' finished in 7.233 s (colorize+write 7.084 s, compute 0.149 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.033 s, kernel 0.056 s, d2h 0.012 s, format 0.254 s, write 6.728 s (totals over 400 frames).
+Rank 0: simulation 'sim1_ppm' finished in 7.409 s (colorize+write 7.255 s, compute 0.154 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.036 s, kernel 0.058 s, d2h 0.012 s, format 0.261 s, write 6.886 s (totals over 400 frames).
+Rank 1: simulation 'sim2_ppm' finished in 7.322 s (colorize+write 7.172 s, compute 0.150 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.031 s, kernel 0.057 s, d2h 0.012 s, format 0.257 s, write 6.814 s (totals over 400 frames).
+Generating '/tmp/nsys-report-96b7.qdstrm'
+Generating '/tmp/nsys-report-4ef8.qdstrm'
+Generating '/tmp/nsys-report-fc06.qdstrm'
+[1/1] [0%                          ] timeline_rank0.nsys-rep[1/1] [0%                          ] timeline_rank1.nsys-rep[1/1] [0%                          ] timeline_rank2.nsys-rep[1/1] [0%                          ] timeline_rank0.nsys-rep[1/1] [=====29%                    ] timeline_rank0.nsys-rep[1/1] [=15%                        ] timeline_rank0.nsys-rep[1/1] [=======39%                  ] timeline_rank0.nsys-rep[1/1] [========40%                 ] timeline_rank0.nsys-rep[1/1] [========42%                 ] timeline_rank0.nsys-rep[1/1] [0%                          ] timeline_rank1.nsys-rep[1/1] [========40%                 ] timeline_rank1.nsys-rep[1/1] [========41%                 ] timeline_rank1.nsys-rep[1/1] [=========43%                ] timeline_rank0.nsys-rep[1/1] [==========47%               ] timeline_rank0.nsys-rep[1/1] [==========48%               ] timeline_rank0.nsys-rep[1/1] [===========52%              ] timeline_rank0.nsys-rep[1/1] [============55%             ] timeline_rank0.nsys-rep[1/1] [=============59%            ] timeline_rank0.nsys-rep[1/1] [==============62%           ] timeline_rank0.nsys-rep[1/1] [===============66%          ] timeline_rank0.nsys-rep[1/1] [================69%         ] timeline_rank0.nsys-rep[1/1] [=================72%        ] timeline_rank0.nsys-rep[1/1] [==================76%       ] timeline_rank0.nsys-rep[1/1] [===================79%      ] timeline_rank0.nsys-rep[1/1] [===================82%      ] timeline_rank0.nsys-rep[1/1] [======================92%   ] timeline_rank0.nsys-rep[1/1] [========================100%] timeline_rank0.nsys-rep[1/1] [========================100%] timeline_rank0.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/nsight_results/timeline_rank0.nsys-rep
+[1/1] [=========43%                ] timeline_rank1.nsys-rep[1/1] [0%                          ] timeline_rank2.nsys-rep[1/1] [=====30%                    ] timeline_rank2.nsys-rep[1/1] [=======39%                  ] timeline_rank2.nsys-rep[1/1] [========41%                 ] timeline_rank2.nsys-rep[1/1] [=========44%                ] timeline_rank1.nsys-rep[1/1] [=========45%                ] timeline_rank1.nsys-rep[1/1] [=========46%                ] timeline_rank1.nsys-rep[1/1] [===========50%              ] timeline_rank1.nsys-rep[1/1] [============54%             ] timeline_rank1.nsys-rep[1/1] [=============58%            ] timeline_rank1.nsys-rep[1/1] [==============61%           ] timeline_rank1.nsys-rep[1/1] [===============65%          ] timeline_rank1.nsys-rep[1/1] [================69%         ] timeline_rank1.nsys-rep[1/1] [=================73%        ] timeline_rank1.nsys-rep[1/1] [==================77%       ] timeline_rank1.nsys-rep[1/1] [===================81%      ] timeline_rank1.nsys-rep[1/1] [====================85%     ] timeline_rank1.nsys-rep[1/1] [=====================88%    ] timeline_rank1.nsys-rep[1/1] [=======================93%  ] timeline_rank1.nsys-rep[1/1] [========================100%] timeline_rank1.nsys-rep[1/1] [=========43%                ] timeline_rank2.nsys-rep[1/1] [=========44%                ] timeline_rank2.nsys-rep[1/1] [=========46%                ] timeline_rank2.nsys-rep[1/1] [========================100%] timeline_rank1.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/nsight_results/timeline_rank1.nsys-rep
+[1/1] [==========47%               ] timeline_rank2.nsys-rep[1/1] [===========51%              ] timeline_rank2.nsys-rep[1/1] [============54%             ] timeline_rank2.nsys-rep[1/1] [=============58%            ] timeline_rank2.nsys-rep[1/1] [==============62%           ] timeline_rank2.nsys-rep[1/1] [===============65%          ] timeline_rank2.nsys-rep[1/1] [================69%         ] timeline_rank2.nsys-rep[1/1] [=================73%        ] timeline_rank2.nsys-rep[1/1] [==================76%       ] timeline_rank2.nsys-rep[1/1] [===================81%      ] timeline_rank2.nsys-rep[1/1] [====================85%     ] timeline_rank2.nsys-rep[1/1] [=====================88%    ] timeline_rank2.nsys-rep[1/1] [======================92%   ] timeline_rank2.nsys-rep[1/1] [========================100%] timeline_rank2.nsys-rep[1/1] [========================100%] timeline_rank2.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/nsight_results/timeline_rank2.nsys-rep
+  adding: nsight_results/ (stored 0%)
+  adding: nsight_results/timeline_rank0.nsys-rep (deflated 45%)
+  adding: nsight_results/timeline_rank1.nsys-rep (deflated 44%)
+  adding: nsight_results/timeline_rank2.nsys-rep (deflated 45%)
+Profile results saved in: /home/hpc26_352165/Test/src/results.zip

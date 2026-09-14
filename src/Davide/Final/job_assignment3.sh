@@ -50,14 +50,19 @@ mpicc -O3 -fopenmp assignment_3.o wave_color_cuda.o -o assignment_3 \
     -L$CUDA_HOME/lib64 -lcudart -lstdc++
 
 ## --- Program run ---
-# --size 1024, not the DEFAULT_SIZE=512 fallback: at 512 the wave is too
-# small to read clearly in the rendered video. 1024 stays comfortably
-# inside the job's time budget (~45s/rank for 300 steps, per the size
-# sweep) while giving 4x the pixel detail. Bump further to --size 2048
-# for even more detail if the time budget allows (~2min/rank instead).
+# --size 400: user-confirmed from testing before this rewrite -- at the
+# DEFAULT_SIZE=512 fallback the wave reads as too small relative to the
+# grid in the rendered video.
+# --steps 400 (up from DEFAULT_STEPS=300, matching a prior reference
+# video's frame count): reaching further with more steps alone (tried:
+# 1500) also meant more amplitude decay (depends on gamma*dt, unaffected
+# by grid size), so the tail of the video washed out to solid white well
+# before it ended. Fixed by shrinking DX instead (see assignment_3.c) --
+# that buys propagation distance without touching the decay rate, so 400
+# steps is now enough on its own. See DX's comment for the numbers.
 echo "Running the program"
 rm -rf ./sim1_ppm ./sim2_ppm ./sim3_ppm
-mpirun -np $SLURM_NTASKS ./assignment_3 --size 1024
+mpirun -np $SLURM_NTASKS ./assignment_3 --size 400 --steps 400
 echo "Program finished. Frames saved in sim1_ppm, sim2_ppm, sim3_ppm"
 
 # --- profile ---
@@ -73,7 +78,7 @@ mkdir -p "$RESULTS"
 mpirun -np $SLURM_NTASKS "$NSYS" profile \
     --trace=cuda,openmp,osrt --backtrace=lbr \
     --output="$RESULTS/timeline_rank%q{OMPI_COMM_WORLD_RANK}" \
-    -- ./assignment_3 --size 1024
+    -- ./assignment_3 --size 400 --steps 400
 
 cd "$WORKDIR"
 zip -r results.zip nsight_results
