@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.3.20)  14 SEP 2026 15:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.3.20)  14 SEP 2026 16:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -267,7 +267,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 6.
 
-Overfull \hbox (2.63167pt too wide) in paragraph at lines 39--50
+Overfull \hbox (2.63167pt too wide) in paragraph at lines 43--54
 \OT1/cmr/m/n/10.95 tributed across threads with \OT1/cmtt/m/n/10.95 #pragma omp for schedule(static) collapse(2)\OT1/cmr/m/n/10.95 : \OT1/cmtt/m/n/10.95 schedule(static)
  []
 
@@ -275,42 +275,42 @@ Overfull \hbox (2.63167pt too wide) in paragraph at lines 39--50
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 81.
+(Font)              <9> on input line 85.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 81.
+(Font)              <5> on input line 85.
  [2]
-<../assignment_1/plots/timeandCPUU96.png, id=95, 712.5822pt x 424.9476pt>
+<../assignment_1/plots/timeandCPUU96.png, id=100, 712.5822pt x 424.9476pt>
 File: ../assignment_1/plots/timeandCPUU96.png Graphic file (type png)
 <use ../assignment_1/plots/timeandCPUU96.png>
-Package pdftex.def Info: ../assignment_1/plots/timeandCPUU96.png  used on input line 148.
+Package pdftex.def Info: ../assignment_1/plots/timeandCPUU96.png  used on input line 152.
 (pdftex.def)             Requested size: 338.58632pt x 201.91704pt.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 160.
+(hyperref)                removing `math shift' on input line 164.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 160.
+(hyperref)                removing `math shift' on input line 164.
 
-<../assignment_1/plots/scaling.png, id=99, 1003.1076pt x 423.7431pt>
+<../assignment_1/plots/scaling.png, id=104, 1003.1076pt x 423.7431pt>
 File: ../assignment_1/plots/scaling.png Graphic file (type png)
 <use ../assignment_1/plots/scaling.png>
-Package pdftex.def Info: ../assignment_1/plots/scaling.png  used on input line 163.
+Package pdftex.def Info: ../assignment_1/plots/scaling.png  used on input line 167.
 (pdftex.def)             Requested size: 386.95897pt x 163.46164pt.
 [3 <../assignment_1/plots/timeandCPUU96.png>]
-<../assignment_1/plots/scaling_noio.png, id=109, 1003.1076pt x 423.7431pt>
+<../assignment_1/plots/scaling_noio.png, id=114, 1003.1076pt x 423.7431pt>
 File: ../assignment_1/plots/scaling_noio.png Graphic file (type png)
 <use ../assignment_1/plots/scaling_noio.png>
-Package pdftex.def Info: ../assignment_1/plots/scaling_noio.png  used on input line 177.
+Package pdftex.def Info: ../assignment_1/plots/scaling_noio.png  used on input line 181.
 (pdftex.def)             Requested size: 386.95897pt x 163.46164pt.
-<../assignment_1/plots/scaling_noio_static.png, id=112, 1003.1076pt x 423.7431pt>
+<../assignment_1/plots/scaling_noio_static.png, id=117, 1003.1076pt x 423.7431pt>
 File: ../assignment_1/plots/scaling_noio_static.png Graphic file (type png)
 <use ../assignment_1/plots/scaling_noio_static.png>
-Package pdftex.def Info: ../assignment_1/plots/scaling_noio_static.png  used on input line 197.
+Package pdftex.def Info: ../assignment_1/plots/scaling_noio_static.png  used on input line 201.
 (pdftex.def)             Requested size: 386.95897pt x 163.46164pt.
 
-Underfull \hbox (badness 1708) in paragraph at lines 198--198
+Underfull \hbox (badness 1708) in paragraph at lines 202--202
 []\OT1/cmr/m/n/10.95 Figure 4: []Speedup and par-al-lel ef-fi-ciency with vary-ing num-ber of threads, I/O dis-abled,
  []
 
@@ -328,18 +328,18 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: AB9854C6BA3E4398810D5BE5C9AE79D5;2026.
  ) 
 Here is how much of TeX's memory you used:
- 9008 strings out of 474222
- 140879 string characters out of 5748733
- 1941975 words of memory out of 5000000
+ 9009 strings out of 474222
+ 140891 string characters out of 5748733
+ 1943975 words of memory out of 5000000
  31126 multiletter control sequences out of 15000+600000
  565007 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,8n,79p,1070b,438s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on report.pdf (7 pages, 1113534 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb>
+Output written on report.pdf (7 pages, 1148075 bytes).
 PDF statistics:
- 218 PDF objects out of 1000 (max. 8388607)
- 171 compressed objects within 2 object streams
- 40 named destinations out of 1000 (max. 500000)
+ 239 PDF objects out of 1000 (max. 8388607)
+ 184 compressed objects within 2 object streams
+ 41 named destinations out of 1000 (max. 500000)
  117 words of extra memory for PDF output out of 10000 (max. 10000000)
 
