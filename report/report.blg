@@ -1,16 +1,13 @@
-This is BibTeX, Version 0.99d
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: report.aux
-Reallocating 'name_of_file' (item size: 1) to 6 items.
 The style file: plain.bst
-Reallocating 'name_of_file' (item size: 1) to 2 items.
 Database file #1: b.bib
-Warning--I didn't find a database entry for "guidedandstatic"
 Warning--empty journal in numaslides
 Warning--empty journal in slidestatic
 You've used 6 entries,
             2118 wiz_defined-function locations,
-            522 strings with 5025 characters,
+            521 strings with 5010 characters,
 and the built_in function-call counts, 1427 in all, are:
 = -- 130
 > -- 73
@@ -49,4 +46,4 @@ warning$ -- 2
 while$ -- 12
 width$ -- 7
 write$ -- 59
-(There were 3 warnings)
+(There were 2 warnings)
