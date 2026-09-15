@@ -64,7 +64,7 @@ just wrote the file. This keeps the pointer swap race-free and avoids any
 extra synchronization beyond the barrier already required for the write.
 
 \subsubsection{Identified inefficiencies and corrective transformations}
-All profiling and testing in this section was performed using the \textit{Edu\_skylake} partition, 32 threads
+All profiling and testing in this section was performed using the \texttt{Edu\_skylake} partition (2 nodes, 32 physical and logical cores) \cite{hpcguide} with 32 threads
 and a workload size of $M = 1000$. The aim was to identify the main bottlenecks and improve the source code.
 
 We profiled the initial implementation with \textbf{Intel VTune
@@ -145,7 +145,7 @@ utilization changes.
 \label{sec:testing}
 The remaining tests were run on the \texttt{Edu\_sapphire} partition
 (2 nodes, 48 physical and 96 logical cores each); each node is dual-socket,
-with 24 physical cores per socket.
+with 24 physical cores per socket \cite{hpcguide}.
 \subsubsection{Sweep of workload size}
 \begin{figure}[H]
     \centering
