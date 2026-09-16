@@ -29,4 +29,32 @@ Following these code optimizations, the execution times of the three ranks were 
 
 This massive slowdown is not caused by the computational complexity of the hybrid setup, but by an Input/Output (I/O) bottleneck. The simultaneous memory access and disk-writing operations to the shared file system by all three MPI processes, each attempting to format and save \textbf{.pgm} frames concurrently, create heavy hardware contention. This I/O saturation stalls the CPU threads, drastically inflating the overall execution time for all processes involved.
 
+To isolate and evaluate the purely computational performance of the hybrid architecture, the disk-writing operations (I/O) were temporarily disabled. The profiling tests were then re-executed, varying the matrix size ($M$) while maintaining the configuration of 8 OpenMP threads per MPI task. 
 
+In the first optimization phase, all three ranks (totaling 24 threads) were deliberately confined to a single CPU socket to evaluate shared memory contention. 
+
+\begin{figure}[htbp]
+    \centering
+    % Sostituisci il percorso qui sotto con il nome del PRIMO grafico combo
+    \includegraphics[width=0.9\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_1socket.png}
+    \caption{Execution Time and Effective CPU Utilization vs Matrix Size (3 Ranks confined to a single socket without strict pinning).}
+    \label{fig:graph_single_socket}
+\end{figure}
+
+As illustrated in Figure \ref{fig:graph_single_socket}, eliminating the I/O bottleneck yields a drastic reduction in execution times, dropping from over 700 seconds to approximately 136 seconds for $M=15000$. This result is closely aligned with the 123 seconds observed in the Assignment 1 baseline, which, notably, was executed using only a single process. However, the Intel VTune profiling reveals a significant hardware-level anomaly: the Effective CPU Utilization is highly asymmetric. Rank 1 exhibits a drastically lower efficiency percentage compared to Ranks 0 and 2. Since the three processes execute the exact same computational volume, this discrepancy is not due to algorithmic imbalance. 
+
+Instead, because the 24 threads were executed within a single socket without strict hardware pinning, the Linux operating system attempted to optimize execution management by occasionally migrating computations from heavily utilized cores to colder ones. When a thread wakes up on a newly assigned core and attempts to compute the 2D stencil, it experiences a "cache miss" \cite{sanchez_cache}. Since each physical core relies on its own local level of cache, the required grid data is no longer immediately available. The processor is therefore forced to fetch the data all the way from the main RAM. This memory access operation is extremely slow and causes a memory stall, effectively freezing the CPU while it waits for the data to arrive. This phenomenon predominantly affected the threads of Rank 1, and these continuous RAM access stalls are the exact reason why its Effective CPU Utilization is severely degraded compared to the other two processes.
+
+To validate this memory contention hypothesis, a second profiling test was conducted by physically distributing the ranks across the node's Non-Uniform Memory Access (NUMA) architecture. Rank 0 and Rank 2 were strictly pinned to Socket 0, while Rank 1 was granted exclusive access to Socket 1.
+
+\begin{figure}[htbp]
+    \centering
+    % Sostituisci il percorso qui sotto con il nome del SECONDO grafico combo (quello sfalsato)
+    \includegraphics[width=0.9\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2socket.png}
+    \caption{Execution Time and Effective CPU Utilization vs Matrix Size (Rank 1 isolated on a separate socket).}
+    \label{fig:graph_isolated_socket}
+\end{figure}
+
+The results in Figure \ref{fig:graph_isolated_socket} perfectly illustrate the critical impact of memory bandwidth. By isolating Rank 1 on a separate socket, it gained unhindered access to the memory controller, allowing it to finalize its local stencil computations significantly faster than the other two processes, which were still competing for cache and RAM bandwidth on Socket 0 (e.g., executing in roughly 88 seconds versus 150 seconds).
+
+However, this topology introduces a counter-intuitive phenomenon regarding the recorded CPU efficiency, caused by the global synchronization barrier. Because the overall application relies on \texttt{MPI\_Finalize} to terminate safely, Rank 1 completes its physical calculations early and subsequently enters a prolonged idle spin-wait state, waiting for Ranks 0 and 2 to finish. Since VTune averages the Effective CPU Utilization over the entire lifespan of the process, this extended idle period drastically dilutes Rank 1's final metric. This apparent efficiency degradation is, in reality, a direct proof of its superior execution speed: hardware isolation allowed the rank to severely outpace the others, trading measured CPU utilization for raw computational velocity.
