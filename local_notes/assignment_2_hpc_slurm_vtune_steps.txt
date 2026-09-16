@@ -1,0 +1,326 @@
+Assignment 2 on the HPC: Slurm + MPI/OpenMP + VTune steps
+==========================================================
+
+Goal
+----
+Run assignment 2 on the school HPC with Slurm, generate the three PGM frame
+folders / MP4 videos, and collect VTune analysis for the MPI + OpenMP version.
+
+This assumes you are already connected to the HPC with ssh and you are creating
+an sbatch .sh file.
+
+
+Step 1: Go to the project folder
+--------------------------------
+On the HPC:
+
+    cd ~/HPC_Exam_Project_01
+
+If your project folder has a different name, use that path instead.
+
+
+Step 2: Check the modules
+-------------------------
+Assignment 2 needs:
+
+    gcc or another OpenMP-capable C compiler
+    mpicc / MPI runtime
+    ffmpeg for videos
+    vtune or Intel oneAPI for VTune analysis
+
+Check available modules:
+
+    module avail gcc
+    module avail openmpi
+    module avail mpi
+    module avail ffmpeg
+    module avail vtune
+    module avail oneapi
+
+Load the exact modules available on the cluster. Example:
+
+    module load gcc
+    module load openmpi
+    module load ffmpeg
+    module load vtune
+
+If VTune is provided through oneAPI instead:
+
+    module load intel-oneapi
+
+Then verify:
+
+    which mpicc
+    which srun
+    which ffmpeg
+    which vtune
+    vtune --version
+
+
+Step 3: Build assignment 2
+--------------------------
+From the project root:
+
+    make clean
+    make part2
+
+Expected executable:
+
+    build/wave_part2_mpi
+
+Do not use local/non-MPI test targets for the final HPC run. Assignment 2 must
+run with MPI.
+
+
+Step 4: Preferred sbatch script for assignment 2 + VTune
+-------------------------------------------------------
+Create this file on the HPC:
+
+    job_assignment2_vtune.sh
+
+Content:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p2_vtune
+    #SBATCH --ntasks=3
+    #SBATCH --cpus-per-task=4
+    #SBATCH --time=00:45:00
+    #SBATCH --output=wave_p2_vtune_%j.out
+    #SBATCH --error=wave_p2_vtune_%j.err
+
+    module load gcc
+    module load openmpi
+    module load ffmpeg
+    module load vtune
+
+    cd ~/HPC_Exam_Project_01
+
+    make clean
+    make part2
+
+    make run-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n $SLURM_NTASKS" THREADS=$SLURM_CPUS_PER_TASK
+    make video-part2
+
+    make vtune-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n $SLURM_NTASKS" THREADS=$SLURM_CPUS_PER_TASK
+
+Submit it:
+
+    sbatch job_assignment2_vtune.sh
+
+Check queue status:
+
+    squeue -u $USER
+
+Check job accounting after it finishes:
+
+    sacct -j <jobid>
+
+
+Step 5: What assignment 2 does
+------------------------------
+The program starts three MPI ranks:
+
+    rank 0 -> sim1/
+    rank 1 -> sim2/
+    rank 2 -> sim3/
+
+For student ID 352165:
+
+    sim1: original wave at (M/2, M/2), amplitude 56
+    sim2: original wave + second wave at (2M/3, M/4), amplitude -35, t = 0
+    sim3: original wave + second wave at (M/3, M/3), amplitude 58, t = N/7
+
+Each rank also uses OpenMP threads inside its matrix loop.
+
+With the sbatch script above:
+
+    MPI ranks = 3
+    OpenMP threads per rank = 4
+    total CPU cores requested = 3 * 4 = 12
+
+
+Step 6: Check normal simulation output
+--------------------------------------
+After the job finishes:
+
+    ls -lh
+    ls -lh sim1 | head
+    ls -lh sim2 | head
+    ls -lh sim3 | head
+
+Expected frame folders:
+
+    sim1/frame_00000.pgm
+    sim2/frame_00000.pgm
+    sim3/frame_00000.pgm
+
+Expected videos:
+
+    wave_352165_part2_sim1.mp4
+    wave_352165_part2_sim2.mp4
+    wave_352165_part2_sim3.mp4
+
+
+Step 7: Read Slurm output/error files
+-------------------------------------
+Slurm writes:
+
+    wave_p2_vtune_<jobid>.out
+    wave_p2_vtune_<jobid>.err
+
+Open them:
+
+    less wave_p2_vtune_<jobid>.out
+    less wave_p2_vtune_<jobid>.err
+
+The .out file should show three rank messages, one for each simulation.
+
+
+Step 8: Check VTune output
+--------------------------
+VTune results are created under:
+
+    vtune_results/
+
+List result directories:
+
+    find vtune_results -maxdepth 2 -type d
+
+For MPI profiling, VTune can create a result directory with hostname suffixes,
+for example:
+
+    vtune_results/part2_hpc-performance_<timestamp>.<node_name>
+
+or a single result directory if all ranks are collected together on one node.
+
+To generate a text report, use the actual result directory name:
+
+    make vtune-report RESULT=vtune_results/<actual_result_directory>
+
+Example:
+
+    make vtune-report RESULT=vtune_results/part2_hpc-performance_20260825_153000
+
+If VTune created a node-suffixed directory:
+
+    make vtune-report RESULT=vtune_results/part2_hpc-performance_20260825_153000.node001
+
+
+Step 9: If you want separate run and VTune jobs
+----------------------------------------------
+Sometimes VTune runs are slower and produce a lot of data. If you prefer, use
+two scripts.
+
+Normal simulation only:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p2_run
+    #SBATCH --ntasks=3
+    #SBATCH --cpus-per-task=4
+    #SBATCH --time=00:30:00
+    #SBATCH --output=wave_p2_run_%j.out
+    #SBATCH --error=wave_p2_run_%j.err
+
+    module load gcc
+    module load openmpi
+    module load ffmpeg
+
+    cd ~/HPC_Exam_Project_01
+
+    make part2
+    make run-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n $SLURM_NTASKS" THREADS=$SLURM_CPUS_PER_TASK
+    make video-part2
+
+VTune only:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p2_vtune
+    #SBATCH --ntasks=3
+    #SBATCH --cpus-per-task=4
+    #SBATCH --time=00:45:00
+    #SBATCH --output=wave_p2_vtune_%j.out
+    #SBATCH --error=wave_p2_vtune_%j.err
+
+    module load gcc
+    module load openmpi
+    module load vtune
+
+    cd ~/HPC_Exam_Project_01
+
+    make part2
+    make vtune-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n $SLURM_NTASKS" THREADS=$SLURM_CPUS_PER_TASK
+
+
+Step 10: Files to keep for assignment 2
+--------------------------------------
+Keep:
+
+    build/wave_part2_mpi
+    sim1/
+    sim2/
+    sim3/
+    wave_352165_part2_sim1.mp4
+    wave_352165_part2_sim2.mp4
+    wave_352165_part2_sim3.mp4
+    vtune_results/
+    job_assignment2_vtune.sh
+    wave_p2_vtune_<jobid>.out
+    wave_p2_vtune_<jobid>.err
+
+For the final homework upload, include the code, Makefile, submit scripts,
+simulation outputs, VTune analysis, report, and presentation.
+
+
+Common problems
+---------------
+If mpicc is not found:
+
+    module avail mpi
+    module avail openmpi
+    module load <available MPI module>
+
+If srun cannot launch MPI ranks:
+
+    Check the cluster documentation. Some clusters require a specific MPI
+    module that matches Slurm.
+
+If srun fails but mpirun works on the cluster:
+
+    make run-part2 THREADS=4
+    make vtune-part2 THREADS=4
+
+If -trace-mpi causes VTune problems:
+
+    make vtune-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n 3" VTUNE_MPI_OPTIONS= THREADS=4
+
+If the job times out:
+
+    Increase:
+
+        #SBATCH --time=01:00:00
+
+If videos are missing:
+
+    Check frames:
+
+        ls sim1/frame_00000.pgm
+        ls sim2/frame_00000.pgm
+        ls sim3/frame_00000.pgm
+
+    Check FFmpeg:
+
+        which ffmpeg
+
+    Then rerun:
+
+        make video-part2
+
+
+References
+----------
+Intel VTune's MPI command-line pattern is:
+
+    <mpi launcher> [options] vtune [options] -r <result_dir> -- <application> [arguments]
+
+For non-Intel MPI, Intel documents the -trace-mpi option so VTune can identify
+MPI ranks in the result.

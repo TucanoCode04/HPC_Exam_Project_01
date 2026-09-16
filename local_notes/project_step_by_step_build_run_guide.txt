@@ -1,0 +1,376 @@
+Linux/HPC build, run, and VTune guide
+=====================================
+
+This note is local-only. The folder local_notes/ is ignored by git.
+
+Course submission reminder
+--------------------------
+PDFs/assignments_how_to_2026 (1).pdf says the homework upload must include:
+
+    1. Full project, including code, compilation scripts, and submit scripts.
+    2. Simulation results, including output files and VTune analysis.
+    3. Project report.
+    4. Project presentation.
+
+The material must be uploaded at least one week before the presentation day.
+
+Current source layout
+---------------------
+Davide's assignment code is here:
+
+    src/Davide/assignment_1.c
+    src/Davide/assignment_2.c
+    src/Davide/assignment_3.c
+    src/Davide/wave_color_cuda.h
+    src/Davide/wave_color_cuda.cu
+
+The root Makefile is now Linux/HPC-oriented. Makefile.linux is only a wrapper:
+
+    make ...
+    make -f Makefile.linux ...
+
+These are equivalent.
+
+What to upload to the HPC
+-------------------------
+Yes, the code must be on the HPC filesystem before compiling/running.
+
+Upload at least:
+
+    Makefile
+    Makefile.linux
+    src/Davide/
+
+Useful extras:
+
+    PDFs/
+    local_notes/
+    report/
+
+Do not upload generated/local output unless you specifically need it:
+
+    build/
+    sim/
+    sim1/
+    sim2/
+    sim3/
+    sim1_ppm/
+    sim2_ppm/
+    sim3_ppm/
+    vtune_results/
+    ffmpeg_tool/
+    ffmpeg.zip
+    *.mp4
+
+HPC modules
+-----------
+Do not install GCC, MPI, CUDA, FFmpeg, or VTune on your PC. On the HPC, load
+the modules provided by the school. Module names are cluster-specific:
+
+    module avail
+    module avail vtune
+    module avail oneapi
+    module avail intel
+
+Typical shapes:
+
+    module load gcc
+    module load openmpi
+    module load cuda
+    module load ffmpeg
+    module load vtune
+
+or:
+
+    module load intel-oneapi
+
+If there is no vtune module but oneAPI is installed, the cluster docs may ask
+you to source Intel's environment script, for example:
+
+    source /opt/intel/oneapi/setvars.sh
+
+Then check:
+
+    which vtune
+    vtune --version
+
+Build
+-----
+Build all assignments:
+
+    make
+
+Build individually:
+
+    make part1
+    make part2
+    make part3
+
+If the CUDA runtime is not found while linking part 3:
+
+    make part3 CUDA_LDFLAGS="-L$CUDA_HOME/lib64 -lcudart -lstdc++"
+
+Run
+---
+Assignment 1:
+
+    make run-student THREADS=4
+
+Assignment 2:
+
+    make run-part2 THREADS=4
+
+Assignment 3:
+
+    make run-part3 THREADS=4
+
+The Makefile defaults to mpirun:
+
+    MPIEXEC = mpirun
+    MPIEXEC_FLAGS = -np 3
+
+If the cluster wants Slurm srun:
+
+    make run-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n 3" THREADS=4
+    make run-part3 MPIEXEC=srun MPIEXEC_FLAGS="-n 3" THREADS=4
+
+Create videos
+-------------
+After frames exist:
+
+    make video
+    make video-part2
+    make video-part3
+
+The Makefile uses system ffmpeg. Load the ffmpeg module first if needed.
+
+Student defaults
+----------------
+Student ID 352165:
+
+    gamma = 0.067
+    c = 0.59
+    first impulse = 56 at (M/2, M/2)
+
+Part 2/3 additional waves:
+
+    sim2 second wave = -35 at (2M/3, M/4), t = 0
+    sim3 second wave = 58 at (M/3, M/3), t = N/7
+
+Default runtime parameters:
+
+    DT = 0.1
+    DX = 1.0
+    SIZE = 512
+    STEPS = 300
+    THREADS = 4
+    FPS = 10
+
+Override example:
+
+    make run-part2 SIZE=1024 STEPS=600 THREADS=8
+
+Using VTune on the HPC
+----------------------
+Use VTune on a compute node, not on the login node. The normal pattern is:
+
+    1. Load compiler/MPI/CUDA/VTune modules.
+    2. Build with debug symbols.
+    3. Run VTune through a batch job or an interactive allocation.
+    4. Keep the vtune_results/ folders for submission.
+
+The Makefile already builds with -g and has these VTune targets:
+
+    make vtune-part1
+    make vtune-part1-hotspots
+    make vtune-part1-threading
+    make vtune-part2
+    make vtune-part3
+
+Default analyses:
+
+    part 1 = hotspots + threading
+    VTUNE_ANALYSIS = hotspots for make vtune-part1-analysis
+    VTUNE_MPI_ANALYSIS = hpc-performance
+
+Part 1 OpenMP profiling:
+
+    make part1
+    make vtune-part1 THREADS=4
+
+This runs both Part 1 analyses. If you only need one:
+
+    make vtune-part1-hotspots THREADS=4
+    make vtune-part1-threading THREADS=4
+
+For a custom single analysis:
+
+    make vtune-part1-analysis VTUNE_ANALYSIS=<analysis_name> THREADS=4
+
+The default part 1 target creates result folders under:
+
+    vtune_results/
+
+and writes text summaries next to them:
+
+    vtune_results/part1_hotspots_<timestamp>_summary.txt
+    vtune_results/part1_threading_<timestamp>_summary.txt
+
+Part 2 MPI + OpenMP profiling:
+
+    make part2
+    make vtune-part2 THREADS=4
+
+If the cluster requires srun:
+
+    make vtune-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n 3" THREADS=4
+
+Part 3 MPI + OpenMP + CUDA-host profiling:
+
+    make part3
+    make vtune-part3 THREADS=4
+
+If the cluster requires srun:
+
+    make vtune-part3 MPIEXEC=srun MPIEXEC_FLAGS="-n 3" THREADS=4
+
+Important: VTune is mainly for CPU, threading, memory, and MPI behavior. It can
+profile the host-side part of assignment 3, but it is not the right tool for
+detailed NVIDIA CUDA kernel profiling. If the professor specifically wants only
+"VTune analysis", keep the VTune result for assignment 3 host/MPI behavior.
+
+Manual VTune commands
+---------------------
+These are equivalent to the Makefile targets and useful if you want full
+control.
+
+Part 1:
+
+    vtune -collect hotspots -result-dir vtune_results/part1_hotspots -- \
+      build/wave_part1 --threads 4 --output sim
+
+    vtune -collect threading -result-dir vtune_results/part1_threading -- \
+      build/wave_part1 --threads 4 --output sim
+
+Part 2 with mpirun:
+
+    OMP_NUM_THREADS=4 mpirun -np 3 vtune -collect hpc-performance -trace-mpi \
+      -result-dir vtune_results/part2_hpc -- \
+      build/wave_part2_mpi --threads 4 --output-prefix sim
+
+Part 2 with srun:
+
+    OMP_NUM_THREADS=4 srun -n 3 vtune -collect hpc-performance -trace-mpi \
+      -result-dir vtune_results/part2_hpc -- \
+      build/wave_part2_mpi --threads 4 --output-prefix sim
+
+Part 3 with srun:
+
+    OMP_NUM_THREADS=4 srun -n 3 vtune -collect hpc-performance -trace-mpi \
+      -result-dir vtune_results/part3_hpc -- \
+      build/wave_part3_cuda_mpi --threads 4 --output-prefix sim
+
+Create a text report from a VTune result:
+
+    make vtune-report RESULT=vtune_results/<result_directory>
+
+or directly:
+
+    vtune -report summary -r vtune_results/<result_directory>
+
+For MPI runs, VTune may create per-node/per-rank result directories depending
+on the cluster and MPI runtime. Use the actual directory created under
+vtune_results/ as RESULT.
+
+Slurm examples
+--------------
+Use the exact partition/account/module/GPU options required by the school HPC.
+
+Assignment 1 + VTune:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p1_vtune
+    #SBATCH --ntasks=1
+    #SBATCH --cpus-per-task=4
+    #SBATCH --time=00:30:00
+
+    module load gcc
+    module load vtune
+
+    make part1
+    # Runs both Hotspots and Threading analyses for part 1.
+    make vtune-part1 THREADS=$SLURM_CPUS_PER_TASK
+
+Assignment 2 + VTune:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p2_vtune
+    #SBATCH --ntasks=3
+    #SBATCH --cpus-per-task=4
+    #SBATCH --time=00:45:00
+
+    module load gcc
+    module load openmpi
+    module load vtune
+
+    make part2
+    make vtune-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n $SLURM_NTASKS" THREADS=$SLURM_CPUS_PER_TASK
+
+Assignment 3 + VTune:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p3_vtune
+    #SBATCH --ntasks=3
+    #SBATCH --cpus-per-task=4
+    #SBATCH --gres=gpu:1
+    #SBATCH --time=01:00:00
+
+    module load gcc
+    module load openmpi
+    module load cuda
+    module load vtune
+
+    make part3
+    make vtune-part3 MPIEXEC=srun MPIEXEC_FLAGS="-n $SLURM_NTASKS" THREADS=$SLURM_CPUS_PER_TASK
+
+Output folders/files to keep
+----------------------------
+For submission, keep at least:
+
+    sim/
+    sim1/
+    sim2/
+    sim3/
+    sim1_ppm/
+    sim2_ppm/
+    sim3_ppm/
+    vtune_results/
+    *.mp4
+    report/report.pdf
+    presentation file
+
+If storage is limited, keep representative frames/videos and the VTune result
+folders required by the professor.
+
+Common fixes
+------------
+If vtune is not found:
+
+    module avail vtune
+    module avail oneapi
+    module load <the VTune/oneAPI module used by the course>
+
+If VTune says hardware event collection is not allowed, use a software-level
+analysis:
+
+    make vtune-part1-hotspots THREADS=4
+
+or ask the HPC docs which VTune analyses are permitted for normal users.
+
+If -trace-mpi causes problems with Intel MPI, run:
+
+    make vtune-part2 VTUNE_MPI_OPTIONS=
+
+If mpirun is blocked in Slurm jobs, use:
+
+    make vtune-part2 MPIEXEC=srun MPIEXEC_FLAGS="-n 3"

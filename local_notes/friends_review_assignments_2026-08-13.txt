@@ -1,0 +1,129 @@
+Review date: 2026-08-13
+
+Scope
+-----
+This note reviews the friend-provided code as reference material only:
+
+    src/assign_1.c
+    Giro_part/Esercizio_1/es1.c
+    Giro_part/Esercizio_2/es_2.c
+
+Davide's codebase layout
+------------------------
+Davide's implementation is now grouped under:
+
+    src/Davide/assignment_1.c
+    src/Davide/assignment_2.c
+    src/Davide/assignment_3.c
+    src/Davide/wave_color_cuda.h
+    src/Davide/wave_color_cuda.cu
+
+The friend files were intentionally left where they were.
+
+Review: src/assign_1.c
+----------------------
+This is a part 1-style OpenMP implementation.
+
+Main issues:
+- Lines 66-68 allocate u_fut, but lines 71-77 initialize only u and u_past.
+  u_fut can contain uninitialized values, especially on boundaries.
+- Line 36 opens a binary PGM file with "w" instead of "wb". Binary P5 PGM
+  output should be opened with "wb" so pixel bytes are written exactly.
+- The program assumes sim/ already exists. If the directory is missing, frame
+  writing fails.
+- It has no command-line configuration, so changing M, N, dx, dt, threads, scale,
+  or output directory requires editing and recompiling the source.
+- matrix_alloc does not check whether malloc failed for the row pointer array or
+  for individual rows.
+- write_matrix does not report fwrite failures.
+
+Design differences compared with Davide's assignment_1.c:
+- It uses double** row allocations instead of one contiguous array. That is
+  easier to read at first, but worse for cache locality and awkward for CUDA
+  transfer later.
+- It hard-codes a PGM scale of 5 at lines 31-32. A configurable or
+  amplitude-based scale is more reusable.
+- It uses a forward-damping update formula at line 119. That may be acceptable
+  if explained, but it differs from Davide's centered-damping formula.
+- It uses one outer OpenMP parallel region. That is a reasonable optimization,
+  but the boundary initialization issue still needs fixing.
+
+What would be needed before reusing ideas from it:
+- Fully initialize u_fut and explicitly keep boundaries fixed.
+- Use "wb" for binary PGM output.
+- Create the output directory from the program or document that the run script
+  must create it.
+- Add allocation and write checks.
+- Add arguments or compile-time configuration through the Makefile.
+
+Review: Giro_part/Esercizio_1/es1.c
+-----------------------------------
+This is also a part 1-style OpenMP implementation, and it has a cleaner memory
+layout than src/assign_1.c.
+
+What is good:
+- It uses contiguous 1D arrays, which is good for cache locality and for later
+  CUDA work.
+- It writes frame_00000 before advancing the simulation, so the initial
+  condition is visible.
+- The OpenMP parallel region is outside the time loop, reducing repeated thread
+  creation overhead.
+
+Main issues:
+- The fixed PGM normalization range at lines 15-16 can easily saturate images
+  when wave amplitudes are much larger than that interval.
+- It assumes sim/ already exists and silently returns from save_pgm if fopen
+  fails.
+- save_pgm does not check whether the pixel allocation succeeds.
+- save_pgm does not verify that fwrite wrote all pixels.
+- There is no command-line configuration.
+
+What would be needed before reusing ideas from it:
+- Replace the fixed visualization range with a configurable scale.
+- Create or validate the output directory.
+- Add allocation and write-error checks.
+- Expose the main numerical constants through arguments or Makefile variables.
+
+Review: Giro_part/Esercizio_2/es_2.c
+------------------------------------
+This is a useful reference for the part 2 MPI/OpenMP structure.
+
+What is good:
+- The rank-to-simulation idea is correct: each MPI process owns one independent
+  simulation.
+- No MPI communication is needed inside the time loop, because the assignment is
+  task parallelism across simulations, not domain decomposition of one matrix.
+- The OpenMP collapse(2) stencil loop is appropriate.
+- The delayed impulse for sim3 is applied at n_start before saving that time
+  step, which is a reasonable interpretation.
+
+Main issues:
+- Lines 56-62 require at least 3 MPI ranks, but ranks greater than 2 continue
+  without a valid scenario. It should either require exactly 3 ranks or make
+  rank >= 3 exit cleanly.
+- The program does not create sim1, sim2, and sim3 itself. The job script creates
+  them, but direct program execution can fail silently.
+- Lines 16-17 use a fixed grayscale scale of 0.8. That is fragile and can
+  saturate output depending on amplitudes and propagation.
+- apply_impulse uses a 5x5 Gaussian-like impulse. That can look nicer, but it
+  changes the assignment's point-impulse condition unless explained in the
+  report.
+- Giro_part/Esercizio_2/job_mpi_omp.sh line 30 compiles main.c, while the file
+  in that folder is named es_2.c. The script needs a filename fix to build the
+  intended code.
+- save_pgm does not check pixel allocation or fwrite result.
+
+What would be needed before reusing ideas from it:
+- Handle extra MPI ranks safely.
+- Make output-directory creation robust.
+- Make visualization scaling configurable.
+- Decide whether the Gaussian impulse is intentional and document it if kept.
+- Fix the job script compile command.
+
+Conclusion
+----------
+The friend code is useful as reference material, especially for seeing another
+MPI rank mapping in Giro_part/Esercizio_2/es_2.c. For Davide's final codebase,
+the cleaner path is to keep the implementations in src/Davide/ and use the
+Makefile targets there. That keeps the friend files untouched and avoids mixing
+different coding styles in one source tree.

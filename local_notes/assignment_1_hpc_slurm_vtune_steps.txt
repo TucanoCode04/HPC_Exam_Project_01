@@ -1,0 +1,232 @@
+Assignment 1 on the HPC: Slurm + VTune steps
+============================================
+
+Goal
+----
+Run assignment 1 on the school HPC, generate the PGM frames / MP4 video, and
+collect VTune Hotspots and Threading analyses for the OpenMP version.
+
+This assumes you are already connected to the HPC with ssh.
+
+
+Step 1: Put the project on the HPC
+----------------------------------
+If the project is already uploaded, go to its folder:
+
+    cd ~/HPC_Exam_Project_01
+
+If it is not uploaded yet, upload at least these from your PC:
+
+    Makefile
+    Makefile.linux
+    src/Davide/
+
+Optional but useful:
+
+    PDFs/
+    local_notes/
+    report/
+
+Do not upload old generated folders such as build/, sim/, vtune_results/, or
+old MP4 files unless you specifically need them.
+
+
+Step 2: Check the modules
+-------------------------
+On the HPC, run:
+
+    module avail gcc
+    module avail openmpi
+    module avail ffmpeg
+    module avail vtune
+    module avail oneapi
+
+Load the modules using the exact names available on the cluster. Example:
+
+    module load gcc
+    module load ffmpeg
+    module load vtune
+
+If VTune is inside oneAPI instead of a separate vtune module, use the module the
+HPC provides, for example:
+
+    module load intel-oneapi
+
+Then check:
+
+    which gcc
+    which make
+    which ffmpeg
+    which vtune
+    vtune --version
+
+
+Step 3: Build assignment 1
+--------------------------
+From the project root:
+
+    make clean
+    make part1
+
+Expected executable:
+
+    build/wave_part1
+
+
+Step 6: Preferred Slurm script for assignment 1 + VTune
+------------------------------------------------------
+Create a file on the HPC named:
+
+    job_assignment1_vtune.sh
+
+with this content:
+
+    #!/bin/bash
+    #SBATCH --job-name=wave_p1_vtune
+    #SBATCH --ntasks=1
+    #SBATCH --cpus-per-task=4
+    #SBATCH --time=00:30:00
+    #SBATCH --output=wave_p1_vtune_%j.out
+    #SBATCH --error=wave_p1_vtune_%j.err
+
+    module load gcc
+    module load ffmpeg
+    module load vtune
+
+    cd ~/HPC_Exam_Project_01
+
+    make clean
+    make part1
+
+    make run-student THREADS=$SLURM_CPUS_PER_TASK
+    make video
+
+    # Runs both Hotspots and Threading analyses for part 1.
+    make vtune-part1 THREADS=$SLURM_CPUS_PER_TASK
+
+Submit it:
+
+    sbatch job_assignment1_vtune.sh
+
+Check the queue:
+
+    squeue -u $USER
+
+After it finishes, check:
+
+    ls -lh
+    ls -lh sim | head
+    ls -lh vtune_results
+
+
+Step 7: Read the Slurm output
+-----------------------------
+After the job finishes, Slurm writes files like:
+
+    wave_p1_vtune_<jobid>.out
+    wave_p1_vtune_<jobid>.err
+
+Open them:
+
+    less wave_p1_vtune_<jobid>.out
+    less wave_p1_vtune_<jobid>.err
+
+The .err file should be empty or contain only harmless module/runtime messages.
+
+
+Step 8: Check the VTune result
+------------------------------
+The Makefile creates VTune folders under:
+
+    vtune_results/
+
+For assignment 1, the expected result directories are:
+
+    vtune_results/part1_hotspots_<timestamp>
+    vtune_results/part1_threading_<timestamp>
+
+List it:
+
+    find vtune_results -maxdepth 2 -type d
+
+The Makefile also writes text summaries for both assignment 1 analyses:
+
+    ls vtune_results/part1_*_summary.txt
+
+Read them:
+
+    less vtune_results/part1_*_summary.txt
+
+If you need to generate the report manually:
+
+    make vtune-report RESULT=vtune_results/<actual_result_directory>
+
+Examples:
+
+    make vtune-report RESULT=vtune_results/part1_hotspots_20260824_193000
+    make vtune-report RESULT=vtune_results/part1_threading_20260824_193000
+
+
+Step 9: What files matter for assignment 1
+-----------------------------------------
+Keep these:
+
+    build/wave_part1
+    sim/
+    wave_352165_part1.mp4
+    vtune_results/
+    wave_p1_vtune_<jobid>.out
+    wave_p1_vtune_<jobid>.err
+
+For the final homework upload, the course PDF asks for code, compilation
+scripts, submit scripts, simulation output, VTune analysis, report, and
+presentation.
+
+
+Common problems
+---------------
+If make is not found:
+
+    module avail make
+
+or ask whether make is loaded by the compiler module.
+
+If gcc is not found:
+
+    module avail gcc
+    module load <available gcc module>
+
+If ffmpeg is not found:
+
+    module avail ffmpeg
+    module load <available ffmpeg module>
+
+If vtune is not found:
+
+    module avail vtune
+    module avail oneapi
+    module load <available vtune or oneapi module>
+
+If VTune says hardware collection is not allowed:
+
+    make vtune-part1-hotspots THREADS=4
+
+If you want only the threading analysis:
+
+    make vtune-part1-threading THREADS=4
+
+If the job times out:
+
+    Increase the Slurm time line, for example:
+
+        #SBATCH --time=01:00:00
+
+If the output video is not created:
+
+    First check that frames exist:
+
+        ls sim/frame_00000.pgm
+
+    Then check that ffmpeg is available:
+
+        which ffmpeg
