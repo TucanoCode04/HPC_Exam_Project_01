@@ -1,0 +1,4 @@
+mode,rank,scenario,elapsed_s,color_time_s,compute_time_s,omp_threads
+multinode,0,sim1_ppm,18.758,18.346,0.412,4
+multinode,1,sim2_ppm,18.783,18.378,0.405,4
+multinode,2,sim3_ppm,18.878,18.475,0.403,4

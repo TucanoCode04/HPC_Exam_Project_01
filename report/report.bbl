@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{vtune-hotspots}
 {Intel Corporation}.
@@ -32,6 +32,26 @@ Edgar Ernesto~Sanchez Sanchez.
 \bibitem{slidestatic}
 Edgar Ernesto~Sanchez Sanchez.
 \newblock 14\_openmp.pdf course slides.
+\newblock 2026.
+
+\bibitem{sanchezmpiintro}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 16\_mpi\_intro.pdf course slides.
+\newblock 2026.
+
+\bibitem{sanchezmpitopo}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 17\_mpi\_virtual\_topologies.pdf course slides.
+\newblock 2026.
+
+\bibitem{sanchezcuda}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 18\_cuda.pdf course slides.
+\newblock 2026.
+
+\bibitem{sanchezgpuintro}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 19\_gpu\_programming\_intro.pdf course slides.
 \newblock 2026.
 
 \end{thebibliography}

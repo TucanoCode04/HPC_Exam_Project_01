@@ -32,8 +32,40 @@
 \@writefile{toc}{\contentsline {section}{\numberline {2}Assignment 2}{5}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Introduction}{5}{subsection.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Implementation}{5}{subsection.2.2}\protected@file@percent }
+\citation{sanchezmpiintro}
+\citation{slidestatic}
+\citation{sanchezcuda}
+\citation{sanchezgpuintro}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Test and optimizaion}{6}{subsection.2.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Assignment 3}{6}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Introduction}{6}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Architecture}{6}{subsection.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces A rendered frame (sim1, late in the simulation): bright extrema, fading fronts, white calm regions.}}{7}{figure.5}\protected@file@percent }
+\newlabel{fig:frame}{{5}{7}{A rendered frame (sim1, late in the simulation): bright extrema, fading fronts, white calm regions}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Cluster hardware}{7}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Metrics and the grid-size sweep}{7}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:metrics}{{3.4}{7}{Metrics and the grid-size sweep}{subsection.3.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Execution time and its GPU/OpenMP split, varying grid size $M$ (4 threads, 3 ranks sharing 1 GPU).}}{8}{figure.6}\protected@file@percent }
+\newlabel{fig:size}{{6}{8}{Execution time and its GPU/OpenMP split, varying grid size $M$ (4 threads, 3 ranks sharing 1 GPU)}{figure.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Phase breakdown: is the ASCII formatting worth parallelizing?}{8}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:phase}{{3.5}{8}{Phase breakdown: is the ASCII formatting worth parallelizing?}{subsection.3.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces colorize+write split into its 5 phases vs.\ grid size. Left: full stack (write's dominance is the point, not log-scaled). Right: same data with write excluded, zoomed in.}}{8}{figure.7}\protected@file@percent }
+\newlabel{fig:phase}{{7}{8}{colorize+write split into its 5 phases vs.\ grid size. Left: full stack (write's dominance is the point, not log-scaled). Right: same data with write excluded, zoomed in}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Where does the write time actually go? Nsight Systems, cross-checked on two GPUs}{9}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:nsys}{{3.6}{9}{Where does the write time actually go? Nsight Systems, cross-checked on two GPUs}{subsection.3.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces OS Runtime Summary breakdown (rank 0), \texttt  {edu\_a40} vs.\ \texttt  {edu\_v100} -- nearly identical despite very different GPU hardware.}}{9}{figure.8}\protected@file@percent }
+\newlabel{fig:nsys}{{8}{9}{OS Runtime Summary breakdown (rank 0), \texttt {edu\_a40} vs.\ \texttt {edu\_v100} -- nearly identical despite very different GPU hardware}{figure.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}OpenMP thread scaling and CUDA block size}{9}{subsection.3.7}\protected@file@percent }
+\citation{sanchezmpitopo}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Speedup and efficiency vs.\ OpenMP thread count at $M=4096$, full pipeline vs.\ compute-only.}}{10}{figure.9}\protected@file@percent }
+\newlabel{fig:thread}{{9}{10}{Speedup and efficiency vs.\ OpenMP thread count at $M=4096$, full pipeline vs.\ compute-only}{figure.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces GPU colorize+write time vs.\ CUDA threads-per-block, $M=4096$.}}{10}{figure.10}\protected@file@percent }
+\newlabel{fig:block}{{10}{10}{GPU colorize+write time vs.\ CUDA threads-per-block, $M=4096$}{figure.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}GPU contention across execution modes}{10}{subsection.3.8}\protected@file@percent }
+\newlabel{sec:contention}{{3.8}{10}{GPU contention across execution modes}{subsection.3.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces sim1's execution time across four GPU/node sharing configurations, identical workload.}}{11}{figure.11}\protected@file@percent }
+\newlabel{fig:contention}{{11}{11}{sim1's execution time across four GPU/node sharing configurations, identical workload}{figure.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}Conclusions}{11}{subsection.3.9}\protected@file@percent }
 \bibstyle{plain}
 \bibdata{b}
 \bibcite{vtune-hotspots}{1}
@@ -42,4 +74,8 @@
 \bibcite{openmpcollapse}{4}
 \bibcite{numaslides}{5}
 \bibcite{slidestatic}{6}
-\gdef \@abspage@last{7}
+\bibcite{sanchezmpiintro}{7}
+\bibcite{sanchezmpitopo}{8}
+\bibcite{sanchezcuda}{9}
+\bibcite{sanchezgpuintro}{10}
+\gdef \@abspage@last{12}

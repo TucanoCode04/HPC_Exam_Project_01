@@ -27,12 +27,13 @@
 #define IMPULSE_AMPLITUDE 56.0
 #define SIM2_SECOND_AMPLITUDE -35.0
 #define SIM3_SECOND_AMPLITUDE 58.0
-/* Lowered from 0.03: this is the |value|/COLOR_SCALE threshold below which
- * a pixel renders white ("calm"). With gamma=0.067 damping, a several-
- * hundred-step video's amplitude decays well below the old 3% threshold
- * before the video ends, rendering the tail as solid white even though
- * the wave hasn't physically vanished yet -- purely a visualization
- * threshold, doesn't affect the physics or how far the wave travels. */
+/* Fraction of a FRAME'S OWN PEAK |u| (not a fixed amplitude -- see
+ * COLOR_SCALE_FLOOR below) below which a pixel renders white ("calm").
+ * Since color scaling is now adaptive per frame, this controls the
+ * within-frame calm/active boundary (how far from the wavefront counts
+ * as calm), not how long the whole video stays visible -- purely a
+ * visualization threshold, doesn't affect the physics or how far the
+ * wave travels. */
 #define ZERO_BAND 0.01
 
 #define DEFAULT_SIZE 512
@@ -102,7 +103,17 @@ static void compute_next(int m, const double *previous, const double *current,
     }
 }
 
-#define COLOR_SCALE 58.0
+/* No longer the fixed color scale -- cuda_write_ppm now normalizes each
+ * frame against its OWN peak |u| (found via a GPU reduction), since a
+ * fixed scale calibrated to the impulse amplitude (56-58) reads as pale
+ * almost immediately: a 2D wave's peak falls off with distance from the
+ * source (geometric spreading) on top of gamma damping, so by ~frame 50
+ * of 400 the true peak is already ~5% of the impulse amplitude. This is
+ * now just a FLOOR -- small enough to stay out of the way through all the
+ * visually meaningful part of the simulation, big enough that once the
+ * wave has truly decayed near zero, the video settles to white instead of
+ * renormalizing leftover numerical noise to full brightness forever. */
+#define COLOR_SCALE_FLOOR (IMPULSE_AMPLITUDE * 0.01)
 
 static void build_scenario(const Config *cfg, int rank, Scenario *scenario) {
     scenario->rank = rank;
@@ -140,7 +151,7 @@ static int write_ppm_frame(const char *dir, int frame, const double *u,
     char path[64];
     snprintf(path, sizeof(path), "%s/frame_%05d.ppm", dir, frame);
 
-    if (!cuda_write_ppm(path, u, m, COLOR_SCALE, ZERO_BAND, colorizer, timing)) {
+    if (!cuda_write_ppm(path, u, m, COLOR_SCALE_FLOOR, ZERO_BAND, colorizer, timing)) {
         fprintf(stderr, "Could not write '%s': %s.\n", path,
                 cuda_colorizer_last_error());
         return 0;

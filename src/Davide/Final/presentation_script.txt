@@ -1,0 +1,156 @@
+Part 3 presentation -- 6 slides, ~6-8 minutes
+==============================================
+Practice script (read out loud once or twice -- each block is timed for
+roughly 15-22 seconds at normal speaking pace) + ready-to-use prompts for
+the Claude PowerPoint add-in, one per slide.
+
+Figures referenced below all live in:
+src/Davide/Final/Latex/figures/
+Video referenced below lives in:
+src/Davide/Final/Successful Runs/VideoRunA40/sim1.mp4
+
+
+SLIDE 1 -- Live demo
+--------------------
+On screen: sim1.mp4 playing, no text.
+
+Say:
+"This is our part three simulation -- the same damped wave from parts
+one and two, but now colored on the GPU, frame by frame. Bright red and
+blue mark the peaks, fading to white as the wave calms. Let's look at
+how we built this and what we found."
+
+PowerPoint add-in prompt:
+"Create a title-free slide. Embed the attached video file (sim1.mp4) as
+a large, centered, autoplaying video with no other text or decoration
+on the slide. Add this as speaker notes: 'This is our part three
+simulation -- the same damped wave from parts one and two, but now
+colored on the GPU, frame by frame. Bright red and blue mark the peaks,
+fading to white as the wave calms. Let's look at how we built this and
+what we found.'"
+
+
+SLIDE 2 -- What's new + how it works
+-------------------------------------
+On screen: architecture.png, headline "3 MPI ranks, OpenMP inside each,
+1 shared GPU".
+
+Say:
+"Part three keeps the same physics and the same three-rank, OpenMP
+setup as parts one and two -- one rank per scenario. What's new is the
+output: after every timestep, each rank sends its grid to the GPU,
+which colors it and saves it as a frame. All three ranks share one
+GPU."
+
+PowerPoint add-in prompt:
+"Create a slide titled '3 MPI ranks, OpenMP inside each, 1 shared GPU'.
+Include the attached image (architecture.png) large and centered below
+the title, no bullet points or extra text. Add this as speaker notes:
+'Part three keeps the same physics and the same three-rank, OpenMP
+setup as parts one and two -- one rank per scenario. What's new is the
+output: after every timestep, each rank sends its grid to the GPU,
+which colors it and saves it as a frame. All three ranks share one
+GPU.'"
+
+
+SLIDE 3 -- Phase breakdown
+---------------------------
+On screen: size_sweep_phase_breakdown.png, headline "write dominates
+(~95%) -> not worth parallelizing the formatting".
+
+Say:
+"We timed every step of that GPU path -- transfer, kernel, disk write --
+and one thing dominates: writing the frame to disk is about ninety-five
+percent of the time; the actual coloring is under one percent. That
+answered a question we had: is it worth parallelizing the
+file-formatting step? No -- it's only four percent of the cost."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'write dominates (~95%) -> not worth
+parallelizing the formatting'. Include the attached image
+(size_sweep_phase_breakdown.png) large and centered below the title, no
+bullet points. Add this as speaker notes: 'We timed every step of that
+GPU path -- transfer, kernel, disk write -- and one thing dominates:
+writing the frame to disk is about ninety-five percent of the time; the
+actual coloring is under one percent. That answered a question we had:
+is it worth parallelizing the file-formatting step? No -- it's only
+four percent of the cost.'"
+
+
+SLIDE 4 -- Nsight Systems cross-check
+----------------------------------------
+On screen: nsys_os_runtime_breakdown.png, headline "fclose >> fwrite --
+same on A40 and V100".
+
+Say:
+"We dug deeper with Nsight Systems and found it's not even the write
+call that's expensive -- it's closing the file. And we checked this on
+a second, older GPU, a V100, not just our A40 -- nearly the same
+pattern. So the bottleneck is I/O behavior, not something specific to
+our GPU code."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'fclose >> fwrite -- same on A40 and V100'.
+Include the attached image (nsys_os_runtime_breakdown.png) large and
+centered below the title, no bullet points. Add this as speaker notes:
+'We dug deeper with Nsight Systems and found it's not even the write
+call that's expensive -- it's closing the file. And we checked this on
+a second, older GPU, a V100, not just our A40 -- nearly the same
+pattern. So the bottleneck is I/O behavior, not something specific to
+our GPU code.'"
+
+
+SLIDE 5 -- GPU contention
+---------------------------
+On screen: contention_sweep_solo_vs_shared.png, headline "Solo << every
+multi-rank mode -> it's disk I/O, not GPU sharing".
+
+Say:
+"That led to a direct test: give each rank its own GPU, or even its own
+node, instead of sharing one. Dedicating a GPU per rank barely changed
+anything. What mattered was running completely alone, with no other
+rank writing at the same time. So the real cost is concurrent disk
+access, not GPU sharing."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'Solo << every multi-rank mode -> it's disk I/O,
+not GPU sharing'. Include the attached image
+(contention_sweep_solo_vs_shared.png) large and centered below the
+title, no bullet points. Add this as speaker notes: 'That led to a
+direct test: give each rank its own GPU, or even its own node, instead
+of sharing one. Dedicating a GPU per rank barely changed anything. What
+mattered was running completely alone, with no other rank writing at
+the same time. So the real cost is concurrent disk access, not GPU
+sharing.'"
+
+
+SLIDE 6 -- Conclusion
+-----------------------
+On screen: text only, 3 bullets max:
+  - GPU compute + CPU compute: both <2% of frame time
+  - Real cost: per-frame file I/O (specifically fclose, not fwrite)
+  - Every decision here came from measuring first, not assuming
+
+Say:
+"The headline for part three: GPU and CPU compute are both basically
+free here, under two percent each. The real cost is per-frame file
+I/O. And every decision we made -- what to parallelize, how to scale
+colors, how ranks share the GPU -- came from measuring first, not
+assuming."
+
+PowerPoint add-in prompt:
+"Create a closing slide titled 'Conclusions' with exactly these three
+bullet points, no image: 'GPU compute + CPU compute: both under 2% of
+frame time', 'Real cost: per-frame file I/O (fclose, not fwrite)',
+'Every decision here came from measuring first, not assuming'. Add this
+as speaker notes: 'The headline for part three: GPU and CPU compute are
+both basically free here, under two percent each. The real cost is
+per-frame file I/O. And every decision we made -- what to parallelize,
+how to scale colors, how ranks share the GPU -- came from measuring
+first, not assuming.'"
+
+
+Before generating with the two colleagues' slides already in the deck,
+worth adding once to your first prompt: "Match the existing deck's
+fonts, colors, and layout style" -- so slide 1 doesn't visually clash
+with whatever assignment 1 / assignment 2 already built.

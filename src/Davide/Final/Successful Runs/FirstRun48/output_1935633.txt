@@ -1,0 +1,46 @@
+OpenMP threads per rank: 4
+MPI ranks: 3
+Compiling...
+Running the program
+Rank 0: simulation 'sim1_ppm' finished in 9.248 s (colorize+write 8.931 s, compute 0.317 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 9.271 s (colorize+write 9.052 s, compute 0.219 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 9.311 s (colorize+write 9.098 s, compute 0.213 s, 4 OpenMP threads).
+Program finished. Frames saved in sim1_ppm, sim2_ppm, sim3_ppm
+Profiling...
+Collecting data...
+Collecting data...
+Collecting data...
+Rank 2: simulation 'sim3_ppm' finished in 11.097 s (colorize+write 10.862 s, compute 0.235 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 11.284 s (colorize+write 11.047 s, compute 0.237 s, 4 OpenMP threads).
+Rank 0: simulation 'sim1_ppm' finished in 11.434 s (colorize+write 11.203 s, compute 0.231 s, 4 OpenMP threads).
+Generating '/tmp/nsys-report-11d1.qdstrm'
+Generating '/tmp/nsys-report-e81b.qdstrm'
+Generating '/tmp/nsys-report-fca0.qdstrm'
+[1/1] [0%                          ] timeline_rank1.nsys-rep[1/1] [0%                          ] timeline_rank2.nsys-rep[1/1] [0%                          ] timeline_rank0.nsys-rep[1/1] [0%                          ] timeline_rank1.nsys-rep[1/1] [======34%                   ] timeline_rank1.nsys-rep[1/1] [========40%                 ] timeline_rank1.nsys-rep[1/1] [========42%                 ] timeline_rank1.nsys-rep[1/1] [=========44%                ] timeline_rank1.nsys-rep[1/1] [0%                          ] timeline_rank2.nsys-rep[1/1] [====28%                     ] timeline_rank2.nsys-rep[1/1] [========41%                 ] timeline_rank2.nsys-rep[1/1] [========42%                 ] timeline_rank2.nsys-rep[1/1] [=========44%                ] timeline_rank2.nsys-rep[1/1] [=========45%                ] timeline_rank2.nsys-rep[1/1] [==========48%               ] timeline_rank2.nsys-rep[1/1] [0%                          ] timeline_rank0.nsys-rep[1/1] [==========49%               ] timeline_rank2.nsys-rep[1/1] [===========53%              ] timeline_rank2.nsys-rep[1/1] [========41%                 ] timeline_rank0.nsys-rep[1/1] [=========43%                ] timeline_rank0.nsys-rep[1/1] [=========44%                ] timeline_rank0.nsys-rep[1/1] [============56%             ] timeline_rank2.nsys-rep[1/1] [=============59%            ] timeline_rank2.nsys-rep[1/1] [==============63%           ] timeline_rank2.nsys-rep[1/1] [===============66%          ] timeline_rank2.nsys-rep[1/1] [================69%         ] timeline_rank2.nsys-rep[1/1] [=================72%        ] timeline_rank2.nsys-rep[1/1] [==================76%       ] timeline_rank2.nsys-rep[1/1] [===================79%      ] timeline_rank2.nsys-rep[1/1] [===================82%      ] timeline_rank2.nsys-rep[1/1] [=====================86%    ] timeline_rank2.nsys-rep[1/1] [=======================93%  ] timeline_rank2.nsys-rep[1/1] [========================100%] timeline_rank2.nsys-rep[1/1] [========================100%] timeline_rank2.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/nsight_results/timeline_rank2.nsys-rep
+[1/1] [=========45%                ] timeline_rank0.nsys-rep[1/1] [=========46%                ] timeline_rank0.nsys-rep[1/1] [==========47%               ] timeline_rank0.nsys-rep[1/1] [==========48%               ] timeline_rank0.nsys-rep[1/1] [===========52%              ] timeline_rank0.nsys-rep[1/1] [============55%             ] timeline_rank0.nsys-rep[1/1] [=============59%            ] timeline_rank0.nsys-rep[1/1] [==============63%           ] timeline_rank0.nsys-rep[1/1] [===============66%          ] timeline_rank0.nsys-rep[1/1] [================70%         ] timeline_rank0.nsys-rep[1/1] [=================74%        ] timeline_rank0.nsys-rep[1/1] [==================78%       ] timeline_rank0.nsys-rep[1/1] [===================82%      ] timeline_rank0.nsys-rep[1/1] [====================85%     ] timeline_rank0.nsys-rep[1/1] [=====================89%    ] timeline_rank0.nsys-rep[1/1] [======================90%   ] timeline_rank0.nsys-rep[1/1] [=======================94%  ] timeline_rank0.nsys-rep[1/1] [========================100%] timeline_rank0.nsys-rep[1/1] [========================100%] timeline_rank0.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/nsight_results/timeline_rank0.nsys-rep
+[1/1] [=========45%                ] timeline_rank1.nsys-rep[1/1] [==========48%               ] timeline_rank1.nsys-rep[1/1] [==========49%               ] timeline_rank1.nsys-rep[1/1] [===========53%              ] timeline_rank1.nsys-rep[1/1] [============56%             ] timeline_rank1.nsys-rep[1/1] [=============59%            ] timeline_rank1.nsys-rep[1/1] [==============63%           ] timeline_rank1.nsys-rep[1/1] [===============66%          ] timeline_rank1.nsys-rep[1/1] [================70%         ] timeline_rank1.nsys-rep[1/1] [=================73%        ] timeline_rank1.nsys-rep[1/1] [==================77%       ] timeline_rank1.nsys-rep[1/1] [===================81%      ] timeline_rank1.nsys-rep[1/1] [====================85%     ] timeline_rank1.nsys-rep[1/1] [=====================88%    ] timeline_rank1.nsys-rep[1/1] [======================90%   ] timeline_rank1.nsys-rep[1/1] [=======================93%  ] timeline_rank1.nsys-rep[1/1] [========================100%] timeline_rank1.nsys-rep[1/1] [========================100%] timeline_rank1.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/nsight_results/timeline_rank1.nsys-rep
+==PROF== Connected to process 1635449 (/home/hpc26_352165/Test/src/assignment_3)
+==PROF== Connected to process 1635450 (/home/hpc26_352165/Test/src/assignment_3)
+==PROF== Connected to process 1635455 (/home/hpc26_352165/Test/src/assignment_3)
+==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
+==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
+==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
+Rank 0: simulation 'sim1_ppm' finished in 0.839 s (colorize+write 0.828 s, compute 0.011 s, 4 OpenMP threads).
+Rank 1: simulation 'sim2_ppm' finished in 0.846 s (colorize+write 0.835 s, compute 0.011 s, 4 OpenMP threads).
+Rank 2: simulation 'sim3_ppm' finished in 0.866 s (colorize+write 0.855 s, compute 0.012 s, 4 OpenMP threads).
+==PROF== Disconnected from process 1635455
+==PROF== Disconnected from process 1635449
+==PROF== Disconnected from process 1635450
+--------------------------------------------------------------------------
+prterun detected that one or more processes exited with non-zero status,
+thus causing the job to be terminated. The first process to do so was:
+
+   Process name: [prterun-compute-7-10-1635412@1,1]
+   Exit code:    1
+--------------------------------------------------------------------------

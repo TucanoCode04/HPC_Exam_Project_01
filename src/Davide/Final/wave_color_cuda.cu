@@ -2,11 +2,21 @@
 
 #include <cuda_runtime.h>
 
+#include <thrust/device_ptr.h>
+#include <thrust/execution_policy.h>
+#include <thrust/functional.h>
+#include <thrust/transform_reduce.h>
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+/* Used by cuda_write_ppm's per-frame peak-finding reduction, below. */
+struct AbsValue {
+    __host__ __device__ double operator()(double x) const { return fabs(x); }
+};
 
 static double now_seconds(void) {
     struct timespec ts;
@@ -236,14 +246,35 @@ int cuda_write_ppm(const char *path, const double *u, int matrix_size,
      * implicitly wait for the kernel) exists purely so kernel_s and d2h_s
      * measure two separate things instead of one blurred together -- a
      * small stall reintroduced specifically for this measurement, not
-     * needed for correctness. */
+     * needed for correctness. kernel_s now covers both the peak-finding
+     * reduction below and the colorize kernel itself -- both are GPU
+     * compute work back-to-back, not worth separate timing buckets. */
     t0 = now_seconds();
+
+    /* Adaptive per-frame color scale: a fixed color_scale (calibrated to
+     * the original impulse amplitude) reads as pale almost immediately,
+     * because a 2D wave's peak amplitude falls off with distance from the
+     * source (geometric spreading) on top of gamma damping -- by frame 50
+     * of 400 the true peak is already ~5% of the impulse amplitude with a
+     * fixed scale. Finding each frame's own peak |u| and normalizing
+     * against that keeps every frame visually vivid throughout. The
+     * caller-supplied color_scale becomes a floor, not the scale itself:
+     * once the wave has genuinely decayed close to zero, this stops
+     * shrinking the scale further, so the video still fades to white at
+     * the very end rather than renormalizing numerical noise to full
+     * brightness. */
+    double frame_peak = thrust::transform_reduce(
+        thrust::device_pointer_cast(colorizer->device_u),
+        thrust::device_pointer_cast(colorizer->device_u) + colorizer->total_pixels,
+        AbsValue(), 0.0, thrust::maximum<double>());
+    double effective_scale = frame_peak > color_scale ? frame_peak : color_scale;
+
     int blocks = (int)((colorizer->total_pixels + (size_t)colorizer->block_size - 1u) /
                        (size_t)colorizer->block_size);
     colorize_kernel<<<blocks, colorizer->block_size>>>(colorizer->device_u,
                                                         colorizer->device_rgb,
                                                         (int)colorizer->total_pixels,
-                                                        color_scale, zero_band);
+                                                        effective_scale, zero_band);
     error = cudaGetLastError();
     if (error == cudaSuccess) {
         error = cudaDeviceSynchronize();
