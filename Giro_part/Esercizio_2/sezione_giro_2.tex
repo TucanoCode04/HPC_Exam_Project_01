@@ -22,7 +22,7 @@ A second crucial aspect is minimizing thread synchronization overhead. While dat
 Following these code optimizations, the execution times of the three ranks were profiled, executed with 8 OpenMP threads per rank. As expected from a well-balanced workload, the execution times show no significant variation among the three processes, demonstrating excellent load balancing despite the ranks having different initial conditions and logic branches. However, when comparing these results to the baseline times from Assignment 1, a severe performance degradation is observed as the matrix size ($M$) increases.
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{../Giro_part/Esercizio_2/Grafici/Grafico_tempi_variandoM_conIO.png}
+    \includegraphics[width=0.6\textwidth]{../Giro_part/Esercizio_2/Grafici/Grafico_tempi_variandoM_conIO.png}
     \caption{Execution Time vs Matrix Size.}
     \label{fig:graph_1}
 \end{figure}
@@ -36,7 +36,7 @@ In the first optimization phase, all three ranks (totaling 24 threads) were deli
 \begin{figure}[htbp]
     \centering
     % Sostituisci il percorso qui sotto con il nome del PRIMO grafico combo
-    \includegraphics[width=0.9\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_1socket.png}
+    \includegraphics[width=0.6\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_1socket.png}
     \caption{Execution Time and Effective CPU Utilization vs Matrix Size (3 Ranks confined to a single socket without strict pinning).}
     \label{fig:graph_single_socket}
 \end{figure}
@@ -50,7 +50,7 @@ To validate this memory contention hypothesis, a second profiling test was condu
 \begin{figure}[htbp]
     \centering
     % Sostituisci il percorso qui sotto con il nome del SECONDO grafico combo (quello sfalsato)
-    \includegraphics[width=0.9\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2socket.png}
+    \includegraphics[width=0.6\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2socket.png}
     \caption{Execution Time and Effective CPU Utilization vs Matrix Size (Rank 1 isolated on a separate socket).}
     \label{fig:graph_isolated_socket}
 \end{figure}

@@ -32,6 +32,10 @@ Deborah~T. Marr, Frank Binns, David~L. Hill, Glenn Hinton, David~A. Koufaty,
 \newblock Technical report, OpenMP Architecture Review Board, November 2018.
 \newblock \url{https://www.openmp.org/spec-html/5.0/openmp.html}.
 
+\bibitem{sanchez_cache}
+Edgar Ernesto~Sanchez Sanchez.
+\newblock 07\_cache\_mem.pdf course slides, 2026.
+
 \bibitem{numaslides}
 Edgar Ernesto~Sanchez Sanchez.
 \newblock 10\_parallel\_architectures.pdf course slides.
@@ -61,5 +65,10 @@ Edgar Ernesto~Sanchez Sanchez.
 Edgar Ernesto~Sanchez Sanchez.
 \newblock 19\_gpu\_programming\_intro.pdf course slides.
 \newblock 2026.
+
+\bibitem{finitedifference}
+Wikipedia.
+\newblock Finite difference method.
+\newblock \url{https://en.wikipedia.org/wiki/Finite_difference}.
 
 \end{thebibliography}
