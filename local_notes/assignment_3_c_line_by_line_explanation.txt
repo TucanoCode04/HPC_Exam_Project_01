@@ -1,0 +1,273 @@
+Line-by-line explanation of src/Davide/assignment_3.c and CUDA helper
+=====================================================================
+
+This note is local-only. The folder local_notes/ is ignored by git.
+
+Assignment context
+------------------
+Assignment_part_3_CUDA.pdf extends the previous MPI/OpenMP wave simulator by
+coloring the output. The simulation still advances the original scalar wave
+matrix, but each frame is converted to RGB and saved as a PPM image.
+
+The assignment asks for:
+
+    1. PPM output instead of grayscale PGM output.
+    2. CUDA used to transform matrix values into RGB triplets.
+    3. Bright colors for maxima and minima.
+    4. Fading colors along rising/falling wave fronts.
+    5. Calm near-zero regions colored with a clear color, such as white.
+
+Files involved
+--------------
+Assignment 3 is split into three files:
+
+    src/Davide/assignment_3.c
+        C driver. It runs MPI, OpenMP, the wave simulation, and calls the CUDA
+        colorizer each time it needs to write a frame.
+
+    src/Davide/wave_color_cuda.h
+        C-compatible header exposing the CUDA helper functions.
+
+    src/Davide/wave_color_cuda.cu
+        CUDA implementation. It launches a GPU kernel that maps each scalar wave
+        value to an RGB pixel and then writes a P3 ASCII PPM file.
+
+assignment_3.c: line-by-line / block-by-block explanation
+---------------------------------------------------------
+
+Lines 1-7:
+    Include standard C and OpenMP headers for errors, limits, math, timing,
+    threads, file I/O, memory allocation, and strings.
+
+Line 9:
+    Include wave_color_cuda.h. This is the interface between the C simulation
+    driver and the CUDA implementation.
+
+Lines 11-12:
+    Include mpi.h and sys/stat.h directly. This version targets the Linux HPC
+    environment, so assignment 3 is always built with MPI and uses mkdir for
+    output directories.
+
+Lines 26-36:
+    Define assignment constants. These include the student ID, the base
+    physical parameters, the two part 2 second-wave amplitudes, and the default
+    zero_band used by the colorizer.
+
+Lines 38-52:
+    Define Config. It stores the simulation parameters plus color_scale and
+    zero_band, which are specific to assignment 3 visualization.
+
+Lines 54-66:
+    Define WaveSource and Scenario. These are the same ideas used in assignment
+    2: a WaveSource is one impulse, and a Scenario is one MPI rank's simulation.
+
+Lines 68-78:
+    print_usage shows all accepted options. Assignment 3 uses --color-scale and
+    --zero-band instead of --scale because the output is RGB color, not grayscale
+    PGM.
+
+Lines 80-98:
+    parse_int_arg and parse_double_arg safely parse command-line values.
+
+Lines 100-105:
+    default_scale chooses a color scale large enough for all configured impulse
+    amplitudes. This keeps the color mapping stable across all three videos.
+
+Lines 107-120:
+    parse_args initializes Config with defaults for student ID 352165. It also
+    sets the output prefix to "sim", so the final folders become sim1_ppm,
+    sim2_ppm, and sim3_ppm.
+
+Lines 122-163:
+    Parse supported command-line options. The part 3-specific options are:
+    --color-scale for RGB normalization and --zero-band for the white calm zone.
+
+Lines 165-172:
+    Default missing impulse coordinates to the grid center and validate all
+    parameters. zero_band must be at least 0 and below 1.
+
+Lines 174-176:
+    If --color-scale was not provided, use default_scale.
+
+Lines 181-186:
+    ensure_output_dir creates an output folder and accepts the case where the
+    folder already exists.
+
+Lines 188-204:
+    write_ppm_frame builds a filename like sim3_ppm/frame_00042.ppm, then calls
+    cuda_write_ppm. If CUDA or file output fails, it prints the error reported by
+    the CUDA helper.
+
+Lines 206-214:
+    apply_impulse adds a source amplitude to both previous and current matrices,
+    creating an impulse with zero initial velocity.
+
+Lines 216-224:
+    compute_next prepares the constants for the damped wave finite-difference
+    update.
+
+Lines 225-239:
+    OpenMP computes the interior M x M stencil with collapse(2). The CUDA work
+    is only for color output; the numerical simulation here remains CPU/OpenMP.
+
+Lines 241-248:
+    Set all boundary cells of next to zero.
+
+Lines 250-284:
+    build_scenario maps rank 0, 1, and 2 to the three required simulations.
+    The only difference from assignment 2 is the output folder suffix: _ppm.
+
+Lines 286-303:
+    run_scenario creates the output folder, selects a CUDA device for the rank,
+    and creates the CUDA colorizer context.
+
+Lines 305-316:
+    Allocate the three simulation matrices. If allocation fails, destroy the
+    CUDA context before returning.
+
+Lines 318-322:
+    Apply all impulses scheduled for time step 0.
+
+Lines 324-331:
+    Start timing and begin the frame loop. Delayed impulses are inserted before
+    writing the frame for that time step, so sim3 visibly changes at N/7.
+
+Lines 333-336:
+    Write the current matrix as a colored PPM frame by sending it through the
+    CUDA colorizer. The original matrix is not changed by colorization.
+
+Lines 338-344:
+    Compute the next scalar wave matrix and rotate previous/current/next.
+
+Lines 347-357:
+    Print timing, destroy the CUDA colorizer, free the matrices, and return the
+    scenario result.
+
+Lines 360-368:
+    main starts and initializes MPI.
+
+Lines 370-384:
+    Parse arguments and optionally set the OpenMP thread count.
+
+Lines 386-395:
+    Rank 0 checks the usual explicit wave stability factor and warns if it is
+    above the common 2D stability limit.
+
+Lines 397-416:
+    MPI execution path. At least three ranks are required. Ranks 0-2 run the
+    three scenarios; MPI_Allreduce combines their success/failure status.
+
+wave_color_cuda.h: line-by-line / block-by-block explanation
+------------------------------------------------------------
+
+Lines 1-2 and 22:
+    Header guard. It prevents the declarations from being included twice.
+
+Lines 4-6 and 18-20:
+    extern "C" wrapper. This lets the C file link against functions compiled by
+    nvcc as C++ code.
+
+Line 8:
+    Forward-declare CudaColorizer. The C driver sees it as an opaque handle and
+    does not need to know the CUDA internals.
+
+Lines 10-16:
+    Declare the CUDA helper API: select a device, create/destroy the colorizer,
+    write one PPM frame, and read the last error message.
+
+wave_color_cuda.cu: line-by-line / block-by-block explanation
+-------------------------------------------------------------
+
+Lines 1-8:
+    Include the local header, CUDA runtime API, and standard headers used by the
+    helper.
+
+Lines 10-16:
+    Define CudaColorizer. It stores the matrix size, total pixel count, device
+    buffers for scalar input and RGB output, and a host RGB buffer used when
+    writing the PPM file.
+
+Line 18:
+    Store a static last_error string so the C driver can print useful CUDA/file
+    errors.
+
+Lines 20-27:
+    set_cuda_error and set_text_error update last_error with either a CUDA
+    runtime error or a normal text message.
+
+Lines 29-33:
+    Device helper to_byte clamps a floating-point color component into the
+    0..255 byte range.
+
+Lines 35-42:
+    colorize_kernel starts. Each CUDA thread handles one pixel. Threads whose
+    index is outside the image return immediately.
+
+Lines 43-52:
+    Normalize the wave value to [-1, 1], compute its magnitude, and convert it
+    into a fade amount t. Values inside zero_band stay calm/white.
+
+Lines 54-66:
+    Choose the RGB color. Calm values start as white. Positive values fade
+    toward bright red/orange. Negative values fade toward bright blue.
+
+Lines 68-70:
+    Store the RGB triplet into the output array.
+
+Lines 73-75:
+    cuda_colorizer_last_error returns the latest helper error message.
+
+Lines 77-95:
+    cuda_colorizer_select_device chooses a CUDA GPU. When multiple MPI ranks run
+    on a node, rank modulo device_count spreads ranks across available devices.
+
+Lines 97-138:
+    cuda_colorizer_create allocates the CUDA context, device input buffer,
+    device RGB output buffer, and host RGB buffer. It returns the context through
+    the output pointer.
+
+Lines 140-152:
+    cuda_colorizer_destroy frees CUDA device buffers, the host buffer, and the
+    context itself.
+
+Lines 154-179:
+    write_ascii_ppm writes the RGB buffer as a P3 ASCII PPM file. The header is
+    P3, then M M, then 255, followed by M*M RGB triplets.
+
+Lines 181-189:
+    cuda_write_ppm validates arguments before doing CUDA work.
+
+Lines 191-199:
+    Copy the scalar wave matrix from host memory to the device input buffer.
+
+Lines 201-212:
+    Launch the colorize_kernel with 256 threads per block and check for launch
+    errors.
+
+Lines 214-218:
+    Synchronize the CUDA device so the host waits until the kernel is complete.
+
+Lines 220-225:
+    Copy the RGB buffer from device memory back to host memory.
+
+Line 227:
+    Write the RGB data to the PPM file.
+
+Important assignment links in the code
+--------------------------------------
+CUDA color transformation:
+    wave_color_cuda.cu lines 35-70.
+
+PPM output:
+    wave_color_cuda.cu lines 154-179.
+
+Calm white regions:
+    wave_color_cuda.cu lines 43-66, controlled by zero_band.
+
+Original matrix preserved:
+    assignment_3.c lines 333-344 write a colored frame and then continue the
+    scalar simulation using previous/current/next.
+
+MPI/OpenMP retained:
+    assignment_3.c lines 397-416 use MPI ranks, and lines 225 and 241 use
+    OpenMP loops.

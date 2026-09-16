@@ -1,0 +1,202 @@
+Line-by-line explanation of src/Davide/assignment_2.c
+=====================================================
+
+This note is local-only. The folder local_notes/ is ignored by git.
+
+Assignment context
+------------------
+Assignment_part_2_MPI.pdf extends the OpenMP wave simulator from part 1. The
+program must run three independent simulations using MPI, while each simulation
+still uses OpenMP internally for the grid computation.
+
+For student ID 352165, part 2 adds these scenarios:
+
+    sim1: original part 1 wave only
+    sim2: original wave plus a second wave at (2M/3, M/4), amplitude -35, t = 0
+    sim3: original wave plus a second wave at (M/3, M/3), amplitude 58, t = N/7
+
+The code writes grayscale PGM frames into three separate folders:
+
+    sim1/
+    sim2/
+    sim3/
+
+High-level structure
+--------------------
+assignment_2.c keeps the same numerical model as assignment_1.c, then adds:
+
+    1. MPI rank detection.
+    2. A Scenario structure describing which waves a rank must simulate.
+    3. Rank 0, 1, and 2 mapped to sim1, sim2, and sim3.
+    4. A delayed impulse mechanism for sim3.
+
+Line-by-line / block-by-block explanation
+-----------------------------------------
+
+Lines 1-7:
+    Include standard C and OpenMP headers. The code needs errno for mkdir
+    handling, limits for INT_MIN/INT_MAX, math for isfinite/fabs/lrint/sqrt,
+    omp.h for OpenMP timing and threads, and stdio/stdlib/string for I/O,
+    allocation, parsing, and string comparison.
+
+Lines 9-10:
+    Include mpi.h and sys/stat.h directly. This version targets the Linux HPC
+    environment, so assignment 2 is always built with MPI and uses mkdir for
+    sim1/, sim2/, and sim3/.
+
+Lines 24-33:
+    Define the assignment constants for Davide's implementation. The first-wave
+    defaults match part 1, and the second-wave constants match the part 2 table
+    for student ID 352165.
+
+Lines 35-48:
+    Define Config. This stores all runtime parameters: physical constants,
+    grid size, step count, impulse position, amplitude, output scale, thread
+    count, and output folder prefix.
+
+Lines 50-55:
+    Define WaveSource. One source is one wave impulse: row i, column j, start
+    time step, and amplitude.
+
+Lines 57-62:
+    Define Scenario. Each MPI rank gets one Scenario with an id, an output
+    directory, and one or two WaveSource entries.
+
+Lines 64-73:
+    print_usage prints the accepted command-line options. The output-prefix is
+    used to build sim1/sim2/sim3 from the same prefix.
+
+Lines 75-83:
+    parse_int_arg converts a string to int and rejects invalid strings or values
+    outside the int range.
+
+Lines 85-93:
+    parse_double_arg converts a string to double and rejects invalid strings,
+    NaN, and infinity.
+
+Lines 95-100:
+    default_scale chooses a grayscale scale large enough for the first impulse
+    and both possible second impulses. This avoids hard-coded tiny scales that
+    would saturate the PGM images.
+
+Lines 102-115:
+    parse_args starts by filling Config with assignment defaults. Unlike
+    assignment_1.c, this file can run without passing parameters because the
+    default values already describe the assigned case.
+
+Lines 116-155:
+    Parse command-line options. Every supported option takes a value. --help
+    returns a special code so main can print usage and exit successfully.
+
+Lines 157-163:
+    Fill missing impulse coordinates with the grid center and validate the final
+    configuration. The grid must be at least 3x3, c/dt/dx must be positive,
+    gamma and scale cannot be negative, and the impulse must be inside the grid.
+
+Lines 165-167:
+    If the user did not pass --scale, use default_scale.
+
+Lines 172-177:
+    ensure_output_dir creates an output folder and also treats "already exists"
+    as success. This matters because part 2 writes to sim1/, sim2/, and sim3/.
+
+Lines 179-184:
+    scale_to_byte maps one wave height to one grayscale byte. Zero maps to
+    middle gray, negative values move darker, and positive values move lighter.
+
+Lines 186-193:
+    write_pgm builds the output filename, for example sim2/frame_00042.pgm, and
+    checks that the path fits in the fixed buffer.
+
+Lines 195-207:
+    Open the file in binary mode, allocate the pixel buffer, and handle failures
+    explicitly.
+
+Lines 209-222:
+    Write the P5 PGM header, convert all M*M values to bytes, write the pixels,
+    free the temporary buffer, and verify that the full frame was written.
+
+Lines 225-233:
+    apply_impulse adds one source into both previous and current. Applying it to
+    both matrices means the wave starts with zero initial velocity, matching the
+    simple initial condition used in assignment_1.c.
+
+Lines 235-243:
+    compute_next prepares the finite-difference constants for the damped wave
+    update: the squared Courant factor, damping term, denominator, and previous
+    time-level weight.
+
+Lines 244-258:
+    OpenMP parallelizes the interior 2D stencil loop with collapse(2). Each
+    interior cell reads its four neighbors from current and writes one value in
+    next, so there are no write races between threads.
+
+Lines 260-267:
+    A second OpenMP loop forces all boundary cells to zero. This implements fixed
+    boundary conditions and prevents old values from surviving on the edge.
+
+Lines 269-303:
+    build_scenario maps a rank number to the assignment scenario:
+    - rank 0: one source, output sim1
+    - rank 1: first source plus second source at (2M/3, M/4), output sim2
+    - rank 2: first source plus delayed second source at (M/3, M/3), output sim3
+
+Lines 305-322:
+    run_scenario creates the output directory and allocates previous/current/next
+    matrices for that rank's simulation.
+
+Lines 324-328:
+    Apply all sources scheduled for step 0. For sim1 this is only the central
+    wave. For sim2 this is the central wave and the second wave. For sim3 this
+    is only the central wave because its second wave starts later.
+
+Lines 330-337:
+    Start the timer and begin the frame loop. At each frame, apply any delayed
+    source whose start_step equals the current frame. This is where sim3 gets
+    its second impulse at N/7.
+
+Lines 339-342:
+    Write the current matrix as a PGM frame before advancing. That means
+    frame_00000 is the initial condition and later frames match the simulation
+    state at that time step.
+
+Lines 344-350:
+    If more frames are needed, compute the next state and rotate the three
+    matrix pointers. Pointer rotation avoids copying entire M*M matrices.
+
+Lines 353-362:
+    Print timing information, free all matrices, and return whether the scenario
+    succeeded.
+
+Lines 365-373:
+    main starts, initializes MPI, and reads the rank and process count.
+
+Lines 375-389:
+    Parse arguments and optionally set the OpenMP thread count.
+
+Lines 391-400:
+    Rank 0 checks the usual explicit 2D stability factor c*dt/dx and prints a
+    warning if it is above 1/sqrt(2). This is a warning, not a hard stop.
+
+Lines 402-421:
+    MPI execution path. The program requires at least three processes. Ranks
+    0-2 run the three scenarios, ranks above 2 do no simulation work, and
+    MPI_Allreduce combines success/failure status across all ranks.
+
+Important assignment links in the code
+--------------------------------------
+MPI requirement:
+    Lines 368-372 initialize MPI and identify ranks. Lines 402-421 run one
+    scenario per rank.
+
+OpenMP requirement:
+    Lines 244 and 260 use #pragma omp parallel for.
+
+Three output folders:
+    Lines 274-276 build sim1, sim2, and sim3 from the output prefix.
+
+Second wave in sim2:
+    Lines 288-293 set the simultaneous second impulse.
+
+Delayed second wave in sim3:
+    Lines 294-299 set the delayed impulse, and lines 333-336 apply it at N/7.
