@@ -3,28 +3,24 @@
 #include <omp.h>
 #include <mpi.h>
 
-// Funzione per allocare le matrici dinamicamente
+// Allocazione contigua per ottimizzare cache e comunicazioni MPI
 double** matrix_alloc(int n) {
     double** matrix = (double**)malloc(n * sizeof(double*));
-    for (int i = 0; i < n; i++) {
-        matrix[i] = (double*)malloc(n * sizeof(double));
+    matrix[0] = (double*)malloc(n * n * sizeof(double));
+    for (int i = 1; i < n; i++) {
+        matrix[i] = matrix[i - 1] + n;
     }
     return matrix;
 }
 
-// Funzione per deallocare
 void matrix_free(double** matrix, int n) {
-    for (int i = 0; i < n; i++) {
-        free(matrix[i]);
-    }
+    free(matrix[0]);
     free(matrix);
 }
 
-// Funzione per scrivere il frame su disco
 void write_matrix(const char *dir, unsigned char *buffer, int n, int frame_idx) {
     char filename[64];
     snprintf(filename, sizeof(filename), "%s/frame_%05d.pgm", dir, frame_idx);
-
     FILE *fp = fopen(filename, "wb");
     if (!fp) return;
     fprintf(fp, "P5\n%d %d\n255\n", n, n);
@@ -32,21 +28,16 @@ void write_matrix(const char *dir, unsigned char *buffer, int n, int frame_idx) 
     fclose(fp);
 }
 
-// La funzione RUN riadattata per accettare parametri dinamici (M, N, dx, dt)
 void run_simulation(double** u, double** u_past, double** u_fut, int rank, const char* sim_dir, int i2, int j2, double impulso2, int n_start, int M, int N, double dx, double dt) {
-    
-    // Costanti fisiche
     double gamma_val = 0.130;
     double c = 0.21;
     double coeff_forw = 1.0 / (gamma_val * dt + 1.0);
     double c2_dt2_dx2 = (c * c * dt * dt) / (dx * dx);
     double gamma_dt = gamma_val * dt;
 
-    // Calcolo automatico dell'intervallo per ottenere ~250 frame (10 sec di video)
-    int frame_interv = (N >= 250) ? (N / 250) : 1; 
+    int frame_interv = 1;
     int frame_count = 0;
 
-    // Preparazione del buffer e pre-colorazione dei bordi
     unsigned char* buffer = (unsigned char*)malloc(M * M * sizeof(unsigned char));
     double max_val = 0.8;
     double factor = 127.0 / max_val;
@@ -66,26 +57,22 @@ void run_simulation(double** u, double** u_past, double** u_fut, int rank, const
     #pragma omp parallel
     {
         for (int t = 0; t < N; t++) {
-
-            // Iniezione impulso ritardato (solo Rank 2)
-            #pragma omp single
-            {
-                if (rank == 2 && t == n_start) {
+            if (rank == 2 && t == n_start) {
+                #pragma omp single
+                {
                     u[i2][j2] += impulso2;
                     u_past[i2][j2] += impulso2;
                 }
             }
 
-            // Calcolo Laplaciano e popolamento buffer
-            #pragma omp for schedule(static) collapse(2)
+          
+            #pragma omp for schedule(static)
             for (int i = 1; i < M - 1; i++) {
                 for (int j = 1; j < M - 1; j++) {
                     double laplacian = u[i + 1][j] - 2.0 * u[i][j] + u[i - 1][j] +
                                        u[i][j + 1] - 2.0 * u[i][j] + u[i][j - 1];
 
                     u_fut[i][j] = coeff_forw * (c2_dt2_dx2 * laplacian + gamma_dt * u[i][j] - u_past[i][j] + 2.0 * u[i][j]);
-
-                    // Converte in pixel SOLO nei frame che verranno salvati
                     if (t % frame_interv == 0) {
                         int value = (int)(127 + factor * u_fut[i][j]);
                         if (value > 255) value = 255;
@@ -95,7 +82,9 @@ void run_simulation(double** u, double** u_past, double** u_fut, int rank, const
                 }
             }
 
-            // Scrittura seriale e rotazione puntatori
+            // Questo single genera una barriera implicita necessaria alla fine del calcolo spaziale:
+            // si assicura che tutti i thread abbiano completato la matrice u_fut prima del file I/O 
+            // e del cambio dei puntatori.
             #pragma omp single
             {
                 if (t % frame_interv == 0) {
@@ -112,14 +101,15 @@ void run_simulation(double** u, double** u_past, double** u_fut, int rank, const
     }
 
     double t_end = omp_get_wtime();
-    printf("Rank %d: Simulazione %s completata in %f sec (%d frame scritti).\n", rank, sim_dir, t_end - t_start, frame_count);
-    
+    double local_time = t_end - t_start;
+
+    // Tutti i processi stampano il loro tempo in modo indipendente 
+    printf("Rank %d (M=%d): Completata in %f sec (%d frame).\n", rank, M, local_time, frame_count);
     free(buffer);
 }
 
 int main(int argc, char *argv[]) {
     int rank, num_procs;
-
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
@@ -130,13 +120,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Parametri dinamici della griglia (facilmente modificabili o passabili da argv in futuro)
-    int M = 1000;
+    int M = 1000; // Dichiara la variabile e imposta il default
+
+    if (argc > 1) {
+        M = atoi(argv[1]); // Sovrascrive il valore se passato da terminale
+    }
     int N = 1000;
     double dx = 0.01;
     double dt = 0.01;
 
-    // Configurazione sorgenti per i vari rank
     const double impulso1 = -84.0;
     int i1 = M / 2, j1 = M / 2;
 
@@ -156,30 +148,23 @@ int main(int argc, char *argv[]) {
         impulso2 = 60.0; n_start = N / 7;
     }
 
-    // Allocazione e inizializzazione a zero
     double** u = matrix_alloc(M);
     double** u_past = matrix_alloc(M);
     double** u_fut = matrix_alloc(M);
 
-    #pragma omp parallel for schedule(static) collapse(2)
+  
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < M; i++) {
         for (int j = 0; j < M; j++) {
             u[i][j] = u_past[i][j] = u_fut[i][j] = 0.0;
         }
     }
 
-    // Impulso iniziale centrale per tutti i rank
     u[i1][j1] = u_past[i1][j1] = impulso1;
+    if (rank == 1 && n_start == 0) u[i2][j2] = u_past[i2][j2] = impulso2;
 
-    // Impulso secondario per rank 1 (sim2) a t=0
-    if (rank == 1 && n_start == 0) {
-        u[i2][j2] = u_past[i2][j2] = impulso2;
-    }
-
-    // Avvio del calcolo passando tutti i parametri
     run_simulation(u, u_past, u_fut, rank, sim_dir, i2, j2, impulso2, n_start, M, N, dx, dt);
 
-    // Pulizia finale
     matrix_free(u, M);
     matrix_free(u_past, M);
     matrix_free(u_fut, M);
