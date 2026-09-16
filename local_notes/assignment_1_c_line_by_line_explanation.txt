@@ -1,0 +1,552 @@
+uLine-by-line explanation of src/Davide/assignment_1.c
+=====================================================
+
+This note is local-only. The folder local_notes/ is added to .gitignore so it
+does not get pushed.
+
+Assignment context
+------------------
+Assignment_part_1_OpenMP.pdf asks for an OpenMP simulator for the two-
+dimensional damped wave equation:
+
+    d2u/dt2 + gamma * du/dt = c^2 * Laplacian(u)
+
+The lab objective is to move from the continuous equation u(x, y, t) to a
+discrete M x M grid over N time steps. Each time step is a matrix of wave
+heights. The program must compute those matrices using OpenMP and save each
+completed matrix as a binary PGM frame in the sim/ folder using names like
+frame_00001.pgm. Those frames can then be combined into an MP4 video with
+FFmpeg.
+
+PDFs/parameters_part_1.pdf gives the assigned values for student ID 352165:
+
+    gamma = 0.067
+    c = 0.59
+    i0 = M/2
+    j0 = M/2
+    u(i0,j0) = 56
+
+The code is written so gamma, c, dt, dx, M, N, impulse position, amplitude,
+thread count, scale, and output folder are provided as command-line arguments.
+
+How the code matches the lab
+----------------------------
+The assignment says to initialize an M x M matrix, apply an initial impulse,
+compute the wave evolution for N steps, parallelize the computation with
+OpenMP, and write every matrix as a PGM image. assignment_1.c does exactly that:
+
+    1. Read and validate simulation parameters.
+    2. Allocate three M x M matrices: previous, current, and next.
+    3. Place the initial impulse at the requested grid point.
+    4. Repeatedly compute u at the next time step with a finite-difference
+       update for the damped 2D wave equation.
+    5. Use OpenMP on the expensive grid loops.
+    6. Save every time step as a P5 binary PGM frame.
+
+Line-by-line / block-by-block explanation
+-----------------------------------------
+
+Lines 1-6:
+    Include standard headers. errno.h is used to check mkdir errors, math.h for
+    isfinite, fabs, lrint, and sqrt, omp.h for OpenMP, stdio.h for file and
+    console I/O, stdlib.h for allocation and parsing, and string.h for strcmp
+    and memset.
+
+Lines 8-14:
+    Select the correct directory-creation API for the operating system.
+    Windows uses _mkdir from direct.h. Linux/macOS use mkdir from sys/stat.h.
+    The MKDIR macro lets the rest of the code call one name.
+
+Line 16:
+    Start the Config structure. This holds every parameter needed by the
+    simulation.
+
+Line 17:
+    Store gamma, the damping coefficient from the assignment equation.
+
+Line 18:
+    Store c, the wave propagation speed from the assignment equation.
+
+Line 19:
+    Store dt, the time integration step Delta t from the assignment.
+
+Line 20:
+    Store dx, the spatial grid spacing Delta x. The assignment uses a square
+    grid, so the same spacing is used in both x and y.
+
+Line 21:
+    Store size, the M value, meaning the simulation matrix is M x M.
+
+Line 22:
+    Store steps, the N value, meaning how many frames/time steps to compute.
+
+Lines 23-24:
+    Store the impulse coordinates i0 and j0. For this assignment they are M/2
+    and M/2 for student ID 352165, but the code allows overriding them.
+
+Line 25:
+    Store the initial impulse amplitude u(i0,j0). For student ID 352165 this is
+    56.
+
+Line 26:
+    Store the scale used to convert floating-point wave values into PGM bytes
+    in the 0..255 range.
+
+Line 27:
+    Store the requested OpenMP thread count. A value of 0 means use the
+    OpenMP runtime default.
+
+Line 28:
+    Store the output folder. The assignment requires sim/, and the default
+    value later is "sim".
+
+Line 29:
+    End the Config structure.
+
+Lines 31-37:
+    Define print_usage. If the user gives invalid arguments, this prints the
+    correct command-line format and lists the required and optional parameters.
+
+Line 39:
+    Start parse_int_arg, a helper for reading integer command-line values.
+
+Line 40:
+    Declare end, which strtol will set to the first character after the parsed
+    integer.
+
+Line 41:
+    Convert the input string to a long integer in base 10.
+
+Lines 42-44:
+    Reject the value if no characters were parsed or if extra non-number
+    characters remain.
+
+Lines 45-47:
+    Reject numbers outside the normal signed int range.
+
+Line 48:
+    Save the parsed integer into the caller-provided output variable.
+
+Line 49:
+    Return success.
+
+Line 50:
+    End parse_int_arg.
+
+Line 52:
+    Start parse_double_arg, a helper for reading floating-point command-line
+    values.
+
+Line 53:
+    Declare end for strtod, similar to the integer parser.
+
+Line 54:
+    Convert the input string to a double.
+
+Lines 55-57:
+    Reject invalid numbers, strings with extra characters, NaN, and infinity.
+
+Line 58:
+    Save the parsed double into the caller-provided output variable.
+
+Line 59:
+    Return success.
+
+Line 60:
+    End parse_double_arg.
+
+Line 62:
+    Start parse_args. This fills the Config structure from argc/argv.
+
+Lines 63-66:
+    Initialize required floating-point parameters to invalid sentinel values.
+    gamma may be zero, but c, dt, and dx must be positive.
+
+Lines 67-68:
+    Initialize M and N to invalid values. They must be provided by the user.
+
+Lines 69-70:
+    Initialize impulse coordinates to -1. That means "not provided" and later
+    defaults to the grid center M/2, matching the assignment parameters.
+
+Line 71:
+    Set the default impulse amplitude to 1.0 if the user does not provide one.
+
+Line 72:
+    Set PGM scaling to 0.0, which later means "derive it from the amplitude".
+
+Line 73:
+    Set thread count to 0, meaning no explicit omp_set_num_threads call.
+
+Line 74:
+    Default the output folder to sim, which is the folder required by the
+    assignment PDF.
+
+Line 76:
+    Start scanning command-line arguments from argv[1]. argv[0] is the program
+    name.
+
+Lines 77-80:
+    Every supported argument expects a value after it. If there is no next
+    value, print an error and fail parsing.
+
+Line 82:
+    Store the argument name, such as --gamma or --size.
+
+Line 83:
+    Move to and store the argument value.
+
+Lines 85-86:
+    If the key is --gamma, parse it as a double and store cfg->gamma.
+
+Lines 87-88:
+    If the key is --c, parse it as a double and store cfg->c.
+
+Lines 89-90:
+    If the key is --dt, parse it as a double and store cfg->dt.
+
+Lines 91-92:
+    If the key is --dx, parse it as a double and store cfg->dx.
+
+Lines 93-94:
+    If the key is --size, parse it as an integer and store cfg->size, the M
+    matrix dimension.
+
+Lines 95-96:
+    If the key is --steps, parse it as an integer and store cfg->steps, the N
+    simulation step count.
+
+Lines 97-98:
+    If the key is --impulse-i, parse the row coordinate of the initial impulse.
+
+Lines 99-100:
+    If the key is --impulse-j, parse the column coordinate of the initial
+    impulse.
+
+Lines 101-102:
+    If the key is --amplitude, parse the initial wave height at the impulse
+    point.
+
+Lines 103-104:
+    If the key is --scale, parse the PGM scaling value used for visualization.
+
+Lines 105-106:
+    If the key is --threads, parse the requested number of OpenMP threads.
+
+Lines 107-108:
+    If the key is --output, store the output folder path.
+
+Lines 109-112:
+    Reject any unrecognized option. This prevents silently ignoring typos.
+
+Line 113:
+    End the argument loop.
+
+Lines 115-120:
+    Validate the final configuration. The code requires nonnegative damping,
+    positive c, dt, and dx, a grid of at least 3 x 3, at least one step, an
+    in-range impulse column if provided, a nonnegative thread count, and a
+    nonnegative PGM scale.
+
+Lines 122-124:
+    If impulse_i was not provided, default it to size/2. This matches the
+    Parameters_part_1.pdf value i0 = M/2.
+
+Lines 125-127:
+    If impulse_j was not provided, default it to size/2. This matches the
+    Parameters_part_1.pdf value j0 = M/2.
+
+Lines 128-130:
+    Reject impulse coordinates outside the matrix.
+
+Lines 132-137:
+    If the user did not specify --scale, use abs(amplitude). If the amplitude
+    is zero, use 1.0 so the PGM conversion still has a valid denominator.
+
+Line 139:
+    Return success after all arguments are parsed and validated.
+
+Line 140:
+    End parse_args.
+
+Line 142:
+    Start ensure_output_dir, which creates the output folder if needed.
+
+Lines 143-145:
+    Call MKDIR. If the folder is created successfully, return success.
+
+Line 146:
+    If MKDIR failed only because the folder already exists, still return
+    success. This lets repeated runs write into sim/.
+
+Line 147:
+    End ensure_output_dir.
+
+Line 149:
+    Start scale_to_byte. This converts one floating-point wave height into one
+    grayscale byte for the PGM image.
+
+Lines 150-152:
+    If the scale is invalid, return 127, the middle gray value.
+
+Line 154:
+    Normalize the wave value from approximately [-max_abs, +max_abs] into
+    [0, 1]. Negative wave values go toward black, positive values toward white,
+    and zero goes to middle gray.
+
+Lines 155-156:
+    Clamp the normalized value so the PGM byte is never below 0 or above 255.
+    The assignment warns that values greater than 255 corrupt the image.
+
+Line 157:
+    Convert the normalized value to the nearest unsigned byte.
+
+Line 158:
+    End scale_to_byte.
+
+Lines 160-161:
+    Start write_pgm. It writes one M x M matrix as one P5 binary PGM frame.
+
+Line 162:
+    Allocate a fixed-size buffer for the output file path.
+
+Line 163:
+    Build a filename like sim/frame_00001.pgm. This matches the assignment
+    naming rule frame_<xxxxx>.pgm with five digits.
+
+Line 165:
+    Open the PGM file in binary write mode.
+
+Lines 166-169:
+    If the file cannot be opened, print an error and fail.
+
+Line 171:
+    Compute the number of pixels, which is M * M.
+
+Line 173:
+    Write the PGM header: P5, dimensions M M, and maximum value 255. This is
+    exactly the binary grayscale format described in the assignment PDF.
+
+Line 175:
+    Allocate a byte buffer for all pixels.
+
+Lines 176-180:
+    If the pixel allocation fails, close the file, report the error, and fail.
+
+Lines 182-184:
+    Convert every matrix value into a byte using scale_to_byte.
+
+Line 186:
+    Write all pixel bytes after the PGM header.
+
+Lines 187-188:
+    Free the temporary pixel buffer and close the file.
+
+Lines 190-193:
+    Verify that every pixel byte was written. If not, report an incomplete
+    frame.
+
+Line 195:
+    Return success.
+
+Line 196:
+    End write_pgm.
+
+Lines 198-199:
+    Start compute_next. This is the numerical core: it computes the next wave
+    matrix from the previous and current matrices.
+
+Line 200:
+    Copy M from the configuration into a local variable.
+
+Lines 201-202:
+    Compute lambda^2 = (c * dt / dx)^2. This is the squared Courant-like
+    factor used by the finite-difference update of the wave equation.
+
+Line 203:
+    Compute gamma * dt, the discrete damping amount for this time step.
+
+Line 204:
+    Compute the denominator 1 + 0.5 * gamma * dt. This comes from the centered
+    finite-difference handling of the damping term.
+
+Line 205:
+    Compute the weight applied to the previous time step, 1 - 0.5 * gamma * dt.
+
+Line 207:
+    Tell OpenMP to parallelize the next for-loop using static scheduling. This
+    matches the lab requirement to use OpenMP.
+
+Line 208:
+    Loop over interior rows only, from 1 to M-2. The boundary is handled
+    separately.
+
+Line 209:
+    Loop over interior columns only, from 1 to M-2.
+
+Line 210:
+    Convert the 2D index (i, j) into a 1D array index i * M + j.
+
+Lines 211-215:
+    Compute the 5-point discrete Laplacian: up, down, left, right, minus
+    4 times the center. This approximates the spatial Laplacian in the
+    assignment equation.
+
+Lines 217-220:
+    Compute next[idx], which is u at time n+1. The formula combines the current
+    value, previous value, spatial Laplacian, wave speed c, time step dt,
+    spatial step dx, and damping gamma.
+
+Line 221:
+    End the inner column loop.
+
+Line 222:
+    End the outer row loop.
+
+Line 224:
+    Start a second OpenMP-parallel loop for the boundary cells.
+
+Line 225:
+    Iterate across each boundary index.
+
+Line 226:
+    Set the top boundary row to zero.
+
+Line 227:
+    Set the bottom boundary row to zero.
+
+Line 228:
+    Set the left boundary column to zero.
+
+Line 229:
+    Set the right boundary column to zero.
+
+Line 230:
+    End the boundary loop.
+
+Line 231:
+    End compute_next.
+
+Line 233:
+    Start main, the program entry point.
+
+Line 234:
+    Declare the Config object that will hold all simulation settings.
+
+Lines 235-238:
+    Parse command-line arguments. If parsing fails, print usage and exit with
+    failure.
+
+Lines 240-242:
+    If the user requested a positive thread count, tell OpenMP to use that many
+    threads.
+
+Line 244:
+    Compute c * dt / dx, the stability-related factor for the explicit wave
+    update.
+
+Lines 245-250:
+    Warn if the factor is above 1/sqrt(2), a common stability limit for a 2D
+    explicit finite-difference wave update. The code warns rather than exits so
+    the user can still experiment.
+
+Lines 252-255:
+    Ensure the output folder exists. The default is sim/, matching the
+    assignment.
+
+Line 257:
+    Compute the number of cells in one matrix, M * M.
+
+Lines 258-260:
+    Allocate three zero-initialized matrices: previous, current, and next.
+    Keeping three time levels is needed because the discrete equation uses
+    u at n-1 and n to compute u at n+1.
+
+Lines 262-268:
+    If any allocation failed, print an error, free whatever was allocated, and
+    exit.
+
+Line 270:
+    Apply the initial impulse to the current matrix at (i0, j0).
+
+Line 271:
+    Apply the same initial impulse to the previous matrix. This gives the
+    simulation a simple starting condition with no initial velocity.
+
+Line 273:
+    Start a wall-clock timer using OpenMP.
+
+Lines 275-280:
+    Write frame 0, the initial condition, as a PGM image. If writing fails,
+    clean up and exit.
+
+Line 282:
+    Start the main simulation loop. It writes frames 1 through N-1, so together
+    with frame 0 the program produces N frames.
+
+Line 283:
+    Clear the next matrix before computing into it.
+
+Line 284:
+    Compute the next wave state using the finite-difference update.
+
+Lines 286-291:
+    Write the computed next matrix as a PGM frame. If writing fails, free memory
+    and exit.
+
+Lines 293-296:
+    Rotate the three matrix pointers. The old current becomes previous, the
+    computed next becomes current, and the old previous buffer is reused as the
+    next output buffer on the following iteration.
+
+Line 297:
+    End the simulation loop.
+
+Line 299:
+    Stop the timer by subtracting the start time from the current OpenMP time.
+
+Lines 300-301:
+    Print a summary showing how many frames were generated, where they were
+    written, how many OpenMP threads were used, and how long it took.
+
+Lines 303-305:
+    Free all allocated matrices.
+
+Line 306:
+    Return success to the operating system.
+
+Line 307:
+    End main.
+
+Numerical formula used in compute_next
+--------------------------------------
+The core update is:
+
+    next = (2 * current
+            - (1 - 0.5 * gamma * dt) * previous
+            + (c * dt / dx)^2 * laplacian(current))
+           / (1 + 0.5 * gamma * dt)
+
+This is the discrete version of the damped wave equation from the assignment.
+The Laplacian term makes the wave propagate across the 2D grid. The gamma terms
+reduce amplitude over time, modeling damping.
+
+Important assignment links in the code
+--------------------------------------
+OpenMP requirement:
+    Lines 207 and 224 use #pragma omp parallel for schedule(static).
+
+M x M grid requirement:
+    Lines 21, 171, 257, and the indexing pattern i * M + j implement the square
+    matrix.
+
+N matrices / N frames requirement:
+    Lines 275 and 282-291 write one initial frame plus frames 1 through N-1.
+
+PGM output requirement:
+    Lines 160-196 write the binary P5 PGM file with the required header and
+    M * M pixel bytes.
+
+sim/ folder requirement:
+    Line 74 defaults output_dir to "sim", and lines 252-255 create it if
+    needed.
