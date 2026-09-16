@@ -16,11 +16,12 @@ output stage: each timestep's matrix is sent to the GPU, mapped to an RGB
 triplet per pixel by a CUDA kernel, and saved as a P3 (ASCII) PPM frame
 instead of a grayscale PGM. Bright, saturated colors mark the wave's
 extrema, colors fade along the rising/falling fronts, and calm (near-zero)
-regions are rendered white. Student parameters (352165): $\gamma=0.067$,
-$c=0.59$, primary impulse at $(M/2,M/2)$ with amplitude 56; sim2's second
-wave at $(2M/3,M/4)$, amplitude $-35$, $t_{\mathrm{start}}=0$; sim3's second
-wave at $(M/3,M/3)$, amplitude 58, $t_{\mathrm{start}}=N/7$.
+regions are rendered white. 
 
+%Student parameters (352165): $\gamma=0.067$,
+%$c=0.59$, primary impulse at $(M/2,M/2)$ with amplitude 56; sim2's second
+%wave at $(2M/3,M/4)$, amplitude $-35$, $t_{\mathrm{start}}=0$; sim3's second
+%wave at $(M/3,M/3)$, amplitude 58, $t_{\mathrm{start}}=N/7$.
 \subsection{Architecture}
 The three MPI
 ranks \cite{sanchezmpiintro} map naturally onto the three required

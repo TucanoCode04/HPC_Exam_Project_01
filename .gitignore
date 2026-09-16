@@ -10,3 +10,21 @@
 *.synctex.gz
 *.synctex(busy)
 *.toc
+
+# Downloaded third-party tools (not project source)
+ffmpeg.zip
+ffmpeg_tool/
+
+# Compiled build outputs
+build/
+*.o
+*.exe
+
+# Simulation run outputs (raw frames, videos) -- regenerable, large, not source
+sim/
+sim1/
+sim2/
+sim3/
+*.pgm
+*_ppm/
+*.mp4
