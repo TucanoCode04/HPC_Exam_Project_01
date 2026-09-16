@@ -28,8 +28,13 @@ ranks \cite{sanchezmpiintro} map naturally onto the three required
 scenarios: each rank owns a complete, independent grid and runs one
 scenario end to end, so the only collective call needed is a final
 \texttt{MPI\_Allreduce} on success/failure. Within each rank, \texttt{compute\_next}
-(the same 5-point Laplacian stencil as parts 1--2) is parallelised with
-OpenMP \cite{slidestatic}. After each timestep, the rank sends its
+(the same 5-point Laplacian stencil as parts 1--2 -- each point's next
+value is computed from itself and its 4 orthogonal neighbors via central
+differences) is parallelised with OpenMP \cite{slidestatic}, using
+\texttt{schedule(static)} for the same NUMA first-touch reason argued in
+part 1: with a fixed thread-to-row mapping, the memory each thread first
+writes (and therefore where the OS physically places it) matches the
+memory that same thread repeatedly accesses on every subsequent call. After each timestep, the rank sends its
 matrix to the GPU \cite{sanchezcuda}: a kernel normalizes each value
 against the frame's own peak magnitude (found via a GPU-side reduction
 \cite{sanchezgpuintro}), maps it to a color (white near zero, fading to
@@ -41,7 +46,7 @@ Because the job requests a single GPU (\texttt{--gres=gpu:1}) for all
 three ranks, the GPU is a shared resource -- a design point this report
 returns to in Section~\ref{sec:contention}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.32\textwidth]{../src/Davide/Final/Latex/figures/representative_frame.png}
     \caption{A rendered frame (sim1, late in the simulation): bright extrema, fading fronts, white calm regions.}
@@ -55,10 +60,11 @@ as opposed to the open-access or research-group-restricted partitions
 also present on the cluster. Of the four EDU partitions, only two have
 GPUs: \texttt{edu\_a40} and \texttt{edu\_v100}, confirmed live via
 \texttt{sinfo -o "\%P \%D \%G"} (the other two, \texttt{edu\_skylake}
-and \texttt{edu\_sapphire}, are CPU-only). \texttt{edu\_a40} nodes have
-2$\times$24-core CPUs with SMT (96 logical cores/node, confirmed via
-\texttt{sinfo}'s socket/core/thread fields -- the cluster's own
-documentation lists only the 48 physical cores) and 4$\times$A40 GPUs;
+and \texttt{edu\_sapphire}, are CPU-only). \texttt{edu\_a40} nodes have 2 physical CPU sockets, 24 physical cores
+per socket (48 physical cores/node), doubled to 96 logical cores/node by
+SMT (2 hardware threads per core) -- confirmed via \texttt{sinfo}'s
+socket/core/thread fields, since the cluster's own documentation lists
+only the 48 physical cores -- and 4$\times$A40 GPUs;
 \texttt{edu\_v100} nodes have 32 cores and 4$\times$V100 GPUs. Both are
 used in this report: \texttt{edu\_a40} for all main results, and
 \texttt{edu\_v100} as a cross-hardware check in Section~\ref{sec:nsys}.
@@ -76,13 +82,23 @@ approaches ideal $O(M^2)$ scaling as $M$ grows: $128\to256$ costs only
 $2.1\times$ (fixed per-run overhead still dominant at small $M$), while
 $2048\to4096$ costs $4.1\times$ -- essentially the ideal quadratic ratio.
 The right panel shows GPU colorize+write dominating total time
-throughout, and increasingly so: at $M=4096$ it is $\sim$94.6\% of
-total time, versus \texttt{compute\_next} at $\sim$2\%. Both phases are
-$O(M^2)$, so this ratio stays roughly constant across the whole sweep.
+throughout: at $M=4096$ it is $\sim$97.6\% of total time, versus
+\texttt{compute\_next} at $\sim$2.4\%. Both phases are $O(M^2)$, so this
+ratio stays roughly constant across the whole sweep ($\sim$97.6--97.7\%
+from $M=256$ upward; only the smallest grid, $M=128$, deviates, where
+fixed per-run overhead is large enough to matter).
 
-\begin{figure}[H]
+We capped the sweep at $M=4096$ rather than matching part 1's $M=15000$:
+at $M=4096$ an ASCII PPM frame is already $\sim$100--130MB, so scaling to
+$M=15000$ -- $(15000/4096)^2\approx13\times$ the pixels -- would push
+single frames into the multi-gigabyte range across 50 steps and 3 ranks,
+for a sweep whose purpose (showing execution time approach ideal
+$O(M^2)$ scaling and locating the point where GPU colorize+write comes
+to dominate) was already unambiguous well before $M=4096$.
+
+\begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_execution_time.png}
+    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_execution_time.png}
     \caption{Execution time and its GPU/OpenMP split, varying grid size $M$ (4 threads, 3 ranks sharing 1 GPU).}
     \label{fig:size}
 \end{figure}
@@ -105,9 +121,9 @@ variable-width per pixel, so parallel writers would need either a
 prefix-sum pass to compute offsets first, or a switch to fixed-width
 padding). We measured before optimizing, and the measurement said no.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_phase_breakdown.png}
+    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_phase_breakdown.png}
     \caption{colorize+write split into its 5 phases vs.\ grid size. Left: full stack (write's dominance is the point, not log-scaled). Right: same data with write excluded, zoomed in.}
     \label{fig:phase}
 \end{figure}
@@ -140,9 +156,9 @@ nearly identical (Figure~\ref{fig:nsys}): \texttt{fclose} $\sim$17.9\%,
 $\sim$76\% combined on both. This is good evidence the bottleneck is
 I/O/synchronization behavior, not GPU-specific.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/nsys_os_runtime_breakdown.png}
+    \includegraphics[width=0.75\textwidth]{../src/Davide/Final/Latex/figures/nsys_os_runtime_breakdown.png}
     \caption{OS Runtime Summary breakdown (rank 0), \texttt{edu\_a40} vs.\ \texttt{edu\_v100} -- nearly identical despite very different GPU hardware.}
     \label{fig:nsys}
 \end{figure}
@@ -155,29 +171,41 @@ flat, never exceeding $\sim$1.2$\times$ speedup, with compute-only
 plateauing by 2 threads and staying flat through 32. This is consistent
 with the 5-point stencil being memory-bandwidth-bound rather than
 compute-bound (4 loads, 1 store, few FLOPs per point) -- a small number
-of threads already saturates available memory bandwidth. This contrasts
+of threads already saturates available memory bandwidth. It is also
+consistent with a second, unruled-out explanation: \texttt{compute\_next}
+forks a fresh OpenMP thread team on every one of the 300 calls/rank
+(Section~\ref{sec:metrics}'s sweep confirms \texttt{compute\_next} itself
+is only $\sim$2.4\% of wall-clock time), so fork/join and barrier
+overhead alone could plateau this curve independently of memory
+bandwidth; we did not isolate which of the two dominates. This contrasts
 with part 1's own OpenMP results, which showed real scaling at large
 thread counts, mainly because part 1 tested $M$ up to 15000 -- large
 enough for the stencil's absolute cost to be interesting on its own,
 with no competing GPU-bound stage.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{../src/Davide/Final/Latex/figures/thread_sweep_speedup_efficiency.png}
+    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/thread_sweep_speedup_efficiency.png}
     \caption{Speedup and efficiency vs.\ OpenMP thread count at $M=4096$, full pipeline vs.\ compute-only.}
     \label{fig:thread}
 \end{figure}
 
 Figure~\ref{fig:block} sweeps the CUDA kernel's threads-per-block at
-$M=4096$: a clear U-shape, worst at both extremes (32 and 1024
-threads/block, $\sim$88s average) and best around 128 ($\sim$78s,
-$\sim$12\% faster). The same shape was independently reproduced at
-$M=1024$ in an earlier sweep, which strengthens confidence this is a
-real occupancy effect rather than run-to-run noise.
+$M=4096$: time decreases roughly monotonically as block size grows,
+worst at 32 threads/block ($\sim$83s average) and best at 1024
+($\sim$73s, $\sim$12\% faster), with only a minor plateau between 128
+and 512. Since Nsight Compute (the tool that would report actual
+occupancy) is unavailable on this cluster, we do not have a
+profiler-level explanation for this trend, only the timing result
+itself -- the most we can say is that fewer, larger blocks amortize
+per-block launch and scheduling overhead across more threads. A smaller,
+noisier earlier sweep at $M=1024$ (not shown) trended the opposite way
+at the high end, so we do not treat this shape as independently
+confirmed and report only the $M=4096$ result.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{../src/Davide/Final/Latex/figures/blocksize_sweep_kernel_time.png}
+    \includegraphics[width=0.65\textwidth]{../src/Davide/Final/Latex/figures/blocksize_sweep_kernel_time.png}
     \caption{GPU colorize+write time vs.\ CUDA threads-per-block, $M=4096$.}
     \label{fig:block}
 \end{figure}
@@ -216,9 +244,9 @@ design), so multinode is closer to \texttt{shared} than to
 I/O, not GPU compute-engine sharing -- consistent with
 Section~\ref{sec:nsys}'s \texttt{fclose}-dominated OS Runtime profile.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/contention_sweep_solo_vs_shared.png}
+    \includegraphics[width=0.75\textwidth]{../src/Davide/Final/Latex/figures/contention_sweep_solo_vs_shared.png}
     \caption{sim1's execution time across four GPU/node sharing configurations, identical workload.}
     \label{fig:contention}
 \end{figure}

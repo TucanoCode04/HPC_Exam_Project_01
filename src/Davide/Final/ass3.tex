@@ -100,8 +100,8 @@ First run with the \texttt{CudaFrameTiming} instrumentation actually active (job
 \subsection{Results: block size sweep (M = 4096 fixed, 4 threads, --steps 50)}
 \begin{itemize}
 \item Plot: \texttt{plots/blocksize\_sweep\_kernel\_time.png}.
-\item U-shaped: worst at both extremes (32 threads/block $\sim$88s avg, 1024 $\sim$88s avg), best around 128 ($\sim$78s avg) -- $\sim$12\% swing.
-\item Same qualitative shape (worst at extremes, best low-hundreds) independently reproduced at $M=1024$ in an earlier sweep -- strengthens confidence this is a real occupancy effect, not noise.
+\item \textbf{Correction (checked against the raw CSV after the report draft claimed a U-shape -- that claim was wrong):} roughly monotonic decrease with block size. 32 threads/block is worst ($\sim$83s avg), 1024 is best ($\sim$73s avg, $\sim$12\% faster), with a minor plateau at 128--512. Not a U-shape; 1024 was never actually one of the worst points.
+\item The earlier $M=1024$ sweep, re-checked, trends the \emph{opposite} direction at the high end (1024 slowest there) -- it does not corroborate this shape and shouldn't have been cited as doing so. Treat as an open discrepancy, not confirmation.
 \item Curve is somewhat jagged (e.g. 256 bumps up between two lower neighbors) -- plausibly real contention noise, 3 ranks sharing 1 GPU. Averaging repeated runs per block size would sharpen it if needed for the final report.
 \end{itemize}
 
