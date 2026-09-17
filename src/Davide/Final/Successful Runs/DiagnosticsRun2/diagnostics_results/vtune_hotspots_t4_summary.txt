@@ -1,0 +1,66 @@
+Elapsed Time: 39.585s
+    CPU Time: 9.440s
+        Effective Time: 9.410s
+        Spin Time: 0.030s
+            Imbalance or Serial Spinning: 0s
+            Lock Contention: 0s
+            Other: 0.030s
+        Overhead Time: 0s
+            Creation: 0s
+            Scheduling: 0s
+            Reduction: 0s
+            Atomics: 0s
+            Other: 0s
+    Total Thread Count: 14
+    Paused Time: 0s
+
+Top Hotspots
+Function                Module        CPU Time  % of CPU Time(%)
+----------------------  ------------  --------  ----------------
+cuda_write_ppm          assignment_3    3.447s             36.5%
+compute_next._omp_fn.0  assignment_3    3.428s             36.3%
+func@0x37a050           libcuda.so.1    0.785s              8.3%
+__close_nocancel        libc.so.6       0.677s              7.2%
+write                   libc.so.6       0.500s              5.3%
+[Others]                N/A             0.603s              6.4%
+Effective Physical Core Utilization: 0.4% (0.170 out of 48)
+ | The metric value is low, which may signal a poor physical CPU cores
+ | utilization caused by:
+ |     - load imbalance
+ |     - threading runtime overhead
+ |     - contended synchronization
+ |     - thread/process underutilization
+ |     - incorrect affinity that utilizes logical cores instead of physical
+ |       cores
+ | Explore sub-metrics to estimate the efficiency of MPI and OpenMP parallelism
+ | or run the Locks and Waits analysis to identify parallel bottlenecks for
+ | other parallel runtimes.
+ |
+    Effective Logical Core Utilization: 0.2% (0.211 out of 96)
+     | The metric value is low, which may signal a poor logical CPU cores
+     | utilization. Consider improving physical core utilization as the first
+     | step and then look at opportunities to utilize logical cores, which in
+     | some cases can improve processor throughput and overall performance of
+     | multi-threaded applications.
+     |
+Collection and Platform Info
+    Application Command Line: mpirun "-np" "1" "./assignment_3" "--size" "4096" "--steps" "50" 
+    Operating System: 5.14.0-503.26.1.el9_5.x86_64 \S Kernel \r on an \m 
+    Computer Name: compute-7-10.cluster.lan
+    Result Size: 6.1 MB 
+    Collection start time: 03:55:53 17/09/2026 UTC
+    Collection stop time: 03:56:33 17/09/2026 UTC
+    Collector Type: Driverless Perf per-process counting,User-mode sampling and tracing
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Sapphirerapids
+        Frequency: 2.600 GHz
+        Logical CPU Count: 96
+        LLC size: 62.9 MB 
+        Cache Allocation Technology
+            Level 2 capability: available
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.
