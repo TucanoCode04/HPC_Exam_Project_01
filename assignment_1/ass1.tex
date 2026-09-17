@@ -20,7 +20,7 @@ instant by an index $t$, so that $u(x,y,t)$ becomes a matrix of values
 $u_{i,j}^{t}$. The derivatives in the equation are approximated with \textbf{central differences method} \cite{finitedifference}, so that the next wave state $u_{i,j}^{t+1}$ is:
 \begin{equation}
     \resizebox{0.9\textwidth}{!}{$
-        u_{i,j}^{t+1} = \frac{1}{\gamma \Delta t + 2} \left[ c^2 \Delta t^2 \left( \frac{u_{i+1,j}^t - 2u_{i,j}^t + u_{i-1,j}^t}{\Delta x^2} + \frac{u_{i,j+1}^t - 2u_{i,j}^t + u_{i,j-1}^t}{\Delta x^2} \right) + \gamma u_{i,j}^t \Delta t - 2u_{i,j}^{t-1} + 4u_{i,j}^t \right]
+        u_{i,j}^{t+1} = \frac{1}{\gamma \Delta t + 2} \left[ c^2 \Delta t^2 \left( \frac{u_{i+1,j}^t - 2u_{i,j}^t + u_{i-1,j}^t}{\Delta x^2} + \frac{u_{i,j+1}^t - 2u_{i,j}^t + u_{i,j-1}^t}{\Delta x^2} \right) + \gamma u_{i,j}^{t-1} \Delta t - 2u_{i,j}^{t-1} + 4u_{i,j}^t \right]
     $}
 \end{equation}
 The temporal evolution is handled with three $M \times M$ matrices,
@@ -64,7 +64,7 @@ just wrote the file. This keeps the pointer swap race-free and avoids any
 extra synchronization beyond the barrier already required for the write.
 
 \subsubsection{Identified inefficiencies and corrective transformations}
-All profiling and testing in this section was performed using the \texttt{Edu\_skylake} partition (2 nodes, 32 physical and logical cores) \cite{hpcguide} with 32 threads
+All profiling and testing in this section was performed using the \texttt{Edu\_skylake} partition (4 nodes, 32 physical and logical cores) \cite{hpcguide} with 32 threads
 and a workload size of $M = 1000$. The aim was to identify the main bottlenecks and improve the source code.
 
 We profiled the initial implementation with \textbf{Intel VTune
@@ -150,14 +150,14 @@ with 24 physical cores per socket \cite{hpcguide}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{../assignment_1/plots/timeandCPUU96.png}
-    \caption{Execution time and true CPU efficiency scaling with varying grid sizes ($M$), using 32 threads.}
+    \caption{Execution time and true CPU efficiency scaling with varying grid sizes ($M$), using 96 threads.}
     \label{fig:performance_scaling}
 \end{figure}
 
 In order to investigate the architectural limits of the system, a workload sweep test was conducted using the maximum logical capacity of the compute node (96 threads), varying the grid size $M$ from 1,000 to 20,000. Figure \ref{fig:performance_scaling} illustrates the execution time (extracted without the profiling overhead)vs the True Effective CPU Utilization, extracted from the VTune threading analysis.
 The utilization curve reveals three distinct operational phases. For small grids ($M=1000$ to $2500$), the system suffers from severe \textit{thread starvation}, 
 where the computational workload is too small to justify the distribution across 96 threads and two NUMA sockets, resulting in an initial efficiency plateau around 21\%, dominated by synchronization overhead, barrier wait times and I/O operations.
-As $M$ increases ($M=5000$ to $15000$), the computational density grows quadratically ($O(M^2)$) and in accordance with Gustafson's Law, the useful computational work begins to outweigh the fixed parallelization overhead, driving the CPU utilization upward.
+As $M$ increases ($M=5000$ to $15000$), the computational density grows quadratically ($O(M^2)$) the useful computational work begins to outweigh the fixed parallelization overhead, driving the CPU utilization upward.\\
 However, the efficiency strictly plateaus at approximately 36\% for massive grids ($M \ge 15000$). This hard limit is the superposition of three architectural constraints: 
 the strict sequential bottleneck of the disk I/O operations (Amdahl's Law), the saturation of the memory bandwidth (memory wall), and the effects of Hyper-Threading. Regarding the latter, since the node possesses only 48 physical cores, through Hyper-Threading each core exposes two logical processors to the OS, which share the same exectuion units, caches and memory bandwidth \cite{marr2002hyperthreading}. So, attempting to utilize 96 threads for a memory-bound stencil operation forces logical threads to heavily compete for the same physical cache resources, preventing the utilization from approaching 100\%.
 Regarding the absolute execution times, the data perfectly validates the theoretical $O(M^2)$ spatial complexity of the 2D grid simulation. For instance, doubling the grid dimension from $M=10000$ to $M=20000$ effectively quadruples the computational domain and the execution time scales from 33.0 seconds to 123.6 seconds, achieving a 3.74x increase that is remarkably close to the theoretical 4x factor. Conversely, in the smaller grid range ($M \le 2500$), the constant overhead associated with managing 96 concurrent threads, along with the fixed costs of implicit OpenMP barriers, heavily dominates the actual execution time, confirming the thread starvation phenomenon observed in the efficiency curve.
@@ -205,7 +205,7 @@ inter-socket interconnect.
 \end{figure}
 As shown in Figure~\ref{fig:speedup_noio_static}, the static schedule
 substantially mitigates this effect: the efficiency drop between $t=16$
-and $t=32$ is roughly halved (from $-19.3$ to $-10.0$ percentage points
+and $t=32$ (the exact point where the 24-core NUMA boundary is crossed) is roughly halved (from $-19.3$ to $-10.0$ percentage points
 relative to \texttt{guided}), and efficiency remains markedly higher at
 $t=32$ (43.7\% vs. 29.9\%), $t=64$ (45.4\% vs. 27.0\%, a 68\% relative
 gain) and $t=96$ (38.3\% vs. 26.1\%), with speedup at $t=96$ rising from
