@@ -5,9 +5,9 @@ Following the initial wave simulator developed with OpenMP, this second assignme
 
 Building upon the code developed in Assignment 1, the implementation extends the simulator to handle multiple concurrent runs. The core numerical scheme used to advance the wave field at each iteration, together with the mapping function converting field values into grayscale images (\textbf{write\_matrix}), remain identical to the first version, ensuring consistency in wave physics and visualization.
 
-The execution starts by initializing the MPI environment with \textbf{MPI\_Init}, retrieving the total number of processes with \textbf{MPI\_Comm\_size}, and identifying the rank ID of each process with \textbf{MPI\_Comm\_rank}. To run the three required simulations simultaneously, the program verifies that at least 3 processes are allocated. Task parallelism is managed through conditional branching based on the process rank, where each rank specifies its scenario parameters before calling a dedicated \textbf{run\_simulation} function that encapsulates the core iterative loop advancing the simulation in time.
+The execution starts by initializing MPI and identifying each process's rank with \textbf{MPI\_Comm\_rank}, requiring at least 3 processes to run the three required simulations simultaneously. Task parallelism is managed through conditional branching based on the process rank, where each rank specifies its scenario parameters before calling a dedicated \textbf{run\_simulation} function that encapsulates the core iterative loop advancing the simulation in time.
 
-While data parallelism within each process is handled by OpenMP, the execution incorporates rank-specific logic. Thread synchronization constructs, such as the \textbf{pragma omp single} directive, are carefully utilized within the main loop to safely manage tasks that must be executed by a single thread. These tasks include array pointer swapping, injecting the delayed impulse, and saving frames, and confining them to a single thread prevents race conditions without halting the entire team of threads unnecessarily.
+While data parallelism within each process is handled by OpenMP, the execution also incorporates rank-specific logic and thread-synchronization constructs for the handful of operations that must run on a single thread -- discussed in detail in the next section.
 
 \subsection{Optimizations}
 \label{sec:giro_optimizations}
@@ -23,7 +23,7 @@ With these optimizations in place, the three ranks were profiled with 8 OpenMP t
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.48\textwidth]{../Giro_part/Esercizio_2/Grafici/Grafico_tempi_variandoM_conIO.png}
+    \includegraphics[width=0.4\textwidth]{../Giro_part/Esercizio_2/Grafici/Grafico_tempi_variandoM_conIO.png}
     \caption{Execution time with 8 threads per rank by swapping the M size.}
     \label{fig:graph_1}
 \end{figure}
@@ -37,7 +37,7 @@ In a first configuration, all three ranks, 24 threads in total, were confined to
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.48\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_1socket.png}
+    \includegraphics[width=0.52\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_1socket.png}
     \caption{Execution time and effective CPU utilization with 24 threads in one socket, swapping the M.}
     \label{fig:graph_single_socket}
 \end{figure}
@@ -51,7 +51,7 @@ To investigate this anomaly further, on a topology where socket boundaries could
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.48\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2socket.png}
+    \includegraphics[width=0.52\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2socket.png}
     \caption{Execution time and effective CPU utilization with Rank 1 isolated on a separate socket of edu\_skylake partition, swapping M.}
     \label{fig:graph_isolated_socket}
 \end{figure}
@@ -68,7 +68,7 @@ Unlike the previous setup, where isolation was achieved at the socket level with
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.48\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2nodes_threads.png}
+    \includegraphics[width=0.55\textwidth]{../Giro_part/Esercizio_2/Grafici/combo_bars_lines_2nodes_threads.png}
     \caption{Execution time and effective CPU utilization with Rank 0 and Rank 1 on separate physical nodes, sweep the number of threads. The two diamond markers at 8 threads report the execution times measured in the previous experiments under partial isolation, for direct comparison.}
     \label{fig:graph_two_nodes}
 \end{figure}

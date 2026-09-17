@@ -91,7 +91,7 @@ to dominate) was already unambiguous well before $M=4096$.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.68\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_execution_time.png}
+    \includegraphics[width=0.56\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_execution_time.png}
     \caption{Execution time and its GPU/OpenMP split, varying grid size $M$ (4 threads, 3 ranks sharing 1 GPU).}
     \label{fig:size}
 \end{figure}
@@ -116,7 +116,7 @@ padding). We measured before optimizing, and the measurement said no.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.68\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_phase_breakdown.png}
+    \includegraphics[width=0.56\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_phase_breakdown.png}
     \caption{colorize+write split into its 5 phases vs.\ grid size. Left: full stack (write's dominance is the point, not log-scaled). Right: same data with write excluded, zoomed in.}
     \label{fig:phase}
 \end{figure}
@@ -161,7 +161,7 @@ I/O/synchronization behavior, not GPU-specific.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{../src/Davide/Final/Latex/figures/nsys_os_runtime_breakdown.png}
+    \includegraphics[width=0.36\textwidth]{../src/Davide/Final/Latex/figures/nsys_os_runtime_breakdown.png}
     \caption{OS Runtime Summary breakdown (rank 0), \texttt{edu\_a40} vs.\ \texttt{edu\_v100} -- nearly identical despite very different GPU hardware.}
     \label{fig:nsys}
 \end{figure}
@@ -191,7 +191,7 @@ with no competing GPU-bound stage.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.68\textwidth]{../src/Davide/Final/Latex/figures/thread_sweep_speedup_efficiency.png}
+    \includegraphics[width=0.56\textwidth]{../src/Davide/Final/Latex/figures/thread_sweep_speedup_efficiency.png}
     \caption{Speedup and efficiency vs.\ OpenMP thread count at $M=4096$, full pipeline vs.\ compute-only.}
     \label{fig:thread}
 \end{figure}
@@ -211,7 +211,7 @@ confirmed and report only the $M=4096$ result.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.52\textwidth]{../src/Davide/Final/Latex/figures/blocksize_sweep_kernel_time.png}
+    \includegraphics[width=0.36\textwidth]{../src/Davide/Final/Latex/figures/blocksize_sweep_kernel_time.png}
     \caption{GPU colorize+write time vs.\ CUDA threads-per-block, $M=4096$.}
     \label{fig:block}
 \end{figure}
@@ -254,7 +254,7 @@ Section~\ref{sec:nsys}'s \texttt{fclose}-dominated OS Runtime profile.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{../src/Davide/Final/Latex/figures/contention_sweep_solo_vs_shared.png}
+    \includegraphics[width=0.42\textwidth]{../src/Davide/Final/Latex/figures/contention_sweep_solo_vs_shared.png}
     \caption{sim1's execution time across four GPU/node sharing configurations, identical workload.}
     \label{fig:contention}
 \end{figure}

@@ -2,40 +2,98 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{caption}
+\captionsetup{labelfont=bf}
 \usepackage{titlesec}
 \usepackage{hyperref}
+% Make \url{} (used throughout the bibliography) match the surrounding
+% body font instead of the default monospaced typewriter font -- that
+% mismatch is what makes the bibliography look like a different text
+% size even though it isn't.
+\urlstyle{same}
+\hypersetup{
+    pdftitle={HPC Project Report},
+    pdfauthor={Leonardo Antonio Riola, Davide Donati, Giacomo Girotto},
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue!50!black
+}
+% Keep the TOC at section/subsection level -- assignment 1's one
+% subsubsection would otherwise be the only entry going one level
+% deeper than its siblings, making the TOC look uneven.
+\setcounter{tocdepth}{2}
 \geometry{
     a4paper,
-    top=2cm,
-    bottom=2cm,
+    top=1.5cm,
+    bottom=1.5cm,
     left=1.5cm,
     right=1.5cm,
     footskip=0.8cm
 }
 
 % Tighter spacing before/after every section-level title, report-wide.
-\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
-\titlespacing*{\subsection}{0pt}{1.5ex plus 1ex minus .2ex}{0.8ex plus .2ex}
-\titlespacing*{\subsubsection}{0pt}{1ex plus 1ex minus .2ex}{0.5ex plus .2ex}
+\titlespacing*{\section}{0pt}{1.2ex plus 0.5ex minus .2ex}{0.6ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{0.8ex plus 0.5ex minus .2ex}{0.4ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{0.6ex plus 0.4ex minus .2ex}{0.3ex plus .2ex}
 
 % Tighter footnote spacing (gap above the footnote rule, and between
 % individual footnotes when a page has more than one).
 \setlength{\skip\footins}{6pt plus 2pt minus 1pt}
 \setlength{\footnotesep}{5pt}
 
-\title{HPC Project Report}
-\author{Leonardo Antonio Riola, Davide Donati, Giacomo Girotto}
-\date{}
+% Tighter spacing around figures: the gap above/below an in-text float
+% (our figures mostly use [h]), between stacked floats, and around the
+% caption itself.
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 4pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{2pt}
+
 \begin{document}
-\vspace{-1.5cm}
-\maketitle
-\vspace{-1cm}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    \includegraphics[width=0.55\textwidth]{../src/Davide/Final/Latex/figures/Logo_PoliTo_dal_2021_blu.png}
+    \vspace{0.8cm}
+
+    {\large MSc in Quantum Engineering\par}
+    \vspace{0.2cm}
+    {\large 01HEKYU -- High Performance Computing\par}
+
+    \vfill
+    \noindent\rule{\linewidth}{0.6pt}\par
+    \vspace{0.5cm}
+    {\huge\bfseries HPC Project Report\par}
+    \vspace{0.5cm}
+    \noindent\rule{\linewidth}{0.6pt}\par
+    \vfill
+
+    {\large
+        Leonardo Antonio Riola \,--\, ID 353851\par
+        \vspace{3pt}
+        Davide Donati \,--\, ID 352165\par
+        \vspace{3pt}
+        Giacomo Girotto \,--\, ID 361610\par
+    }
+    \vfill
+    {\large Academic Year 2025/2026\par}
+    \vspace{0.2cm}
+    {\large September 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
 \input{../assignment_1/ass1.tex}
 \section{Assignment 2}
 \input{../Giro_part/Esercizio_2/sezione_giro_2}
 \input{../src/Davide/Final/Latex/assignment3.tex}
 
-\newpage
+\clearpage
 \bibliographystyle{plain}
 \bibliography{b}
 \end{document}
