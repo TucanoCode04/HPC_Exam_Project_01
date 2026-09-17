@@ -141,11 +141,21 @@ Systems' OS Runtime Summary lets us split it apart. On \texttt{edu\_a40}:
 \texttt{fwrite} itself is cheap ($\sim$0.6\% of total OS-runtime time),
 while \texttt{fclose} is $\sim$18.3\% -- roughly 30$\times$ more
 expensive than the write call it follows. The two largest categories by
-far, \texttt{epoll\_wait} ($\sim$52\%) and \texttt{poll} ($\sim$25\%),
-most plausibly reflect this rank idling while waiting on the other two
-ranks and/or MPI's internal progress engine rather than being tied
-directly to each file write; we report them without over-claiming a
-precise causal link. To check whether this pattern is an artifact of
+far, \texttt{epoll\_wait} ($\sim$52\%) and \texttt{poll} ($\sim$25\%), we
+initially guessed reflected ranks idling on MPI's progress engine. A
+follow-up run with MPI event tracing enabled rules that out directly:
+summed across \texttt{MPI\_Init}, \texttt{MPI\_Finalize}, and the one
+real collective (\texttt{MPI\_Allreduce}), application-level MPI time is
+$\sim$0.56s per rank -- under 2\% of the combined
+\texttt{epoll\_wait}+\texttt{poll} time ($\sim$28.4s). \texttt{MPI\_Allreduce}
+itself is 13.7ms. The better-supported explanation, from a companion
+VTune Threading run on the same job: its top wait objects include
+InfiniBand verbs streams (\texttt{/dev/infiniband/uverbs0}), suggesting
+OpenMPI's UCX transport stack is initialized and idly polling in the
+background for the whole process lifetime regardless of how little it is
+actually used -- not the application's own collective calls, but the
+runtime's transport layer underneath them. We report this as the
+better-supported hypothesis, not a fully isolated cause. To check whether the OS-runtime pattern itself is an artifact of
 one specific GPU, we repeated the identical run on \texttt{edu\_v100} --
 an older GPU generation with a slower host interconnect (the whole
 production run was $\sim$3$\times$ slower end-to-end on V100, consistent
@@ -171,13 +181,16 @@ flat, never exceeding $\sim$1.2$\times$ speedup, with compute-only
 plateauing by 2 threads and staying flat through 32. This is consistent
 with the 5-point stencil being memory-bandwidth-bound rather than
 compute-bound (4 loads, 1 store, few FLOPs per point) -- a small number
-of threads already saturates available memory bandwidth. It is also
-consistent with a second, unruled-out explanation: \texttt{compute\_next}
-forks a fresh OpenMP thread team on every one of the 300 calls/rank
-(Section~\ref{sec:metrics}'s sweep confirms \texttt{compute\_next} itself
-is only $\sim$2.4\% of wall-clock time), so fork/join and barrier
-overhead alone could plateau this curve independently of memory
-bandwidth; we did not isolate which of the two dominates. This contrasts
+of threads already saturates available memory bandwidth. We also
+considered an alternative explanation -- that \texttt{compute\_next}
+forking a fresh OpenMP thread team on every one of 300 calls/rank could
+plateau this curve through fork/join overhead alone, independent of
+memory bandwidth -- and ruled it out with VTune Hotspots at $M=4096$:
+\texttt{gomp\_team\_barrier\_wait\_end} does not appear among the top
+hotspots at either 4 or 32 threads (unlike part 1's profile, where it was
+79.4\% of CPU time), and \texttt{compute\_next}'s own CPU time is flat
+across that range (3.43s at 4 threads vs.\ 3.21s at 32) rather than
+growing with team size. This contrasts
 with part 1's own OpenMP results, which showed real scaling at large
 thread counts, mainly because part 1 tested $M$ up to 15000 -- large
 enough for the stencil's absolute cost to be interesting on its own,

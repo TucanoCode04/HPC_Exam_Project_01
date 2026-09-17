@@ -1,0 +1,996 @@
+Compiling...
+=== VTune hotspots+threading, M=4096, 4 threads ===
+vtune: Warning: Only user space will be profiled due to credentials lack. Consider changing /proc/sys/kernel/perf_event_paranoid file for enabling kernel space profiling.
+vtune: Collection started. To stop the collection, either press CTRL-C or enter from another console window: vtune -r /home/hpc26_352165/Test/src/diagnostics_results/vtune_hotspots_t4 -command stop.
+Rank 0: simulation 'sim1_ppm' finished in 37.722 s (colorize+write 35.803 s, compute 1.919 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.725 s, kernel 0.176 s, d2h 0.105 s, format 3.454 s, write 31.344 s (totals over 50 frames).
+vtune: Collection stopped.
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_hotspots_t4'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions  0 % Finalizing the result                            vtune: Executing actions  0 % Clearing the database                            vtune: Executing actions  7 % Clearing the database                            vtune: Executing actions  7 % Loading raw data to the database                 vtune: Executing actions  7 % Loading 'systemcollector-1655053-compute-7-10.cluvtune: Executing actions 12 % Loading 'systemcollector-1655053-compute-7-10.cluvtune: Executing actions 12 % Loading '1655072.stat.perf' file                 vtune: Executing actions 12 % Loading '1655053-1655072.0.trace' file           vtune: Executing actions 12 % Loading '1655053-1655072.1.trace' file           vtune: Executing actions 12 % Loading '1655072-1655137.0.trace' file           vtune: Executing actions 12 % Loading '1655072-1655137.1.trace' file           vtune: Executing actions 12 % Loading '1655072-1655152.0.trace' file           vtune: Executing actions 12 % Loading '1655072-1655152.1.trace' file           vtune: Executing actions 12 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Processing profile metrics and debug information vtune: Executing actions 19 % Processing profile metrics and debug information vtune: Executing actions 19 % Setting data model parameters                    vtune: Executing actions 19 % Resolving module symbols                         vtune: Executing actions 19 % Resolving information for `bash'                 vtune: Executing actions 19 % Resolving information for `libc.so.6'            vtune: Executing actions 19 % Resolving information for `libpindwarf.so'       vtune: Executing actions 19 % Resolving information for `libgomp.so.1'         vtune: Executing actions 19 % Resolving information for `libhwloc.so.15'       vtune: Executing actions 19 % Resolving information for `srun'                 vtune: Executing actions 19 % Resolving information for `libpmix.so.2'         
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/bash'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libc.so.6'.
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/srun'.
+vtune: Executing actions 19 % Resolving information for `libmpi.so.40'         vtune: Executing actions 19 % Resolving information for `libucp.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucp.so.0'.
+vtune: Executing actions 19 % Resolving information for `libprrte.so.3'        vtune: Executing actions 19 % Resolving information for `[vdso]'               vtune: Executing actions 19 % Resolving information for `libucs.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucs.so.0'.
+vtune: Executing actions 20 % Resolving information for `libucs.so.0'          vtune: Executing actions 20 % Resolving information for `libucm.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucm.so.0'.
+vtune: Executing actions 20 % Resolving information for dangling locations     vtune: Executing actions 20 % Resolving information for `libopen-pal.so.80'    vtune: Executing actions 20 % Resolving information for `pinbin'               vtune: Executing actions 20 % Resolving information for `libdwarf.so'          vtune: Executing actions 20 % Resolving information for `libuct.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libuct.so.0'.
+vtune: Executing actions 20 % Resolving information for `prte'                 vtune: Executing actions 20 % Resolving information for `libuct_ib_mlx5.so.0'  
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib_mlx5.so.0'.
+vtune: Executing actions 20 % Resolving information for `libibverbs.so.1'      
+vtune: Warning: Cannot locate debugging information for file `/lib64/libibverbs.so.1'.
+vtune: Executing actions 21 % Resolving information for `libibverbs.so.1'      vtune: Executing actions 21 % Resolving information for `libc-dynamic.so'      vtune: Executing actions 21 % Resolving information for `assignment_3'         vtune: Executing actions 21 % Resolving information for `libuct_ib.so.0'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib.so.0'.
+vtune: Executing actions 21 % Resolving information for `libtpsstool.so'       
+vtune: Warning: Cannot locate debugging information for file `/share/apps/intel/oneapi/vtune/2025.0/lib64/libtpsstool.so'.
+vtune: Executing actions 21 % Resolving information for `libc++.so'            vtune: Executing actions 21 % Resolving information for `libmlx5.so.1'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libmlx5.so.1'.
+vtune: Executing actions 21 % Resolving information for `ld-linux-x86-64.so.2' vtune: Executing actions 21 % Resolving information for `mpirun'               vtune: Executing actions 22 % Resolving information for `mpirun'               vtune: Executing actions 22 % Resolving information for `libcudart.so.12'      
+vtune: Warning: Cannot locate debugging information for file `/share/apps/hpc_sdk/Linux_x86_64/25.1/cuda/lib64/libcudart.so.12'.
+vtune: Executing actions 22 % Resolving information for `libcuda.so.1'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libcuda.so.1'.
+vtune: Executing actions 22 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving thread name information                vtune: Executing actions 24 % Resolving thread name information                vtune: Executing actions 24 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving interrupt name information             vtune: Executing actions 26 % Resolving interrupt name information             vtune: Executing actions 26 % Processing profile metrics and debug information vtune: Executing actions 27 % Processing profile metrics and debug information vtune: Executing actions 28 % Processing profile metrics and debug information vtune: Executing actions 29 % Processing profile metrics and debug information vtune: Executing actions 30 % Processing profile metrics and debug information vtune: Executing actions 30 % Setting data model parameters                    vtune: Executing actions 30 % Precomputing frequently used data                vtune: Executing actions 30 % Precomputing frequently used data                vtune: Executing actions 31 % Precomputing frequently used data                vtune: Executing actions 32 % Precomputing frequently used data                vtune: Executing actions 34 % Precomputing frequently used data                vtune: Executing actions 35 % Precomputing frequently used data                vtune: Executing actions 36 % Precomputing frequently used data                vtune: Executing actions 36 % Updating precomputed scalar metrics              vtune: Executing actions 37 % Updating precomputed scalar metrics              vtune: Executing actions 37 % Discarding redundant overtime data               vtune: Executing actions 39 % Discarding redundant overtime data               vtune: Executing actions 39 % Saving the result                                vtune: Executing actions 41 % Saving the result                                vtune: Executing actions 42 % Saving the result                                vtune: Executing actions 49 % Saving the result                                vtune: Executing actions 50 % Saving the result                                vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              Elapsed Time: 39.585s
+    CPU Time: 9.440s
+        Effective Time: 9.410s
+        Spin Time: 0.030s
+            Imbalance or Serial Spinning: 0s
+            Lock Contention: 0s
+            Other: 0.030s
+        Overhead Time: 0s
+            Creation: 0s
+            Scheduling: 0s
+            Reduction: 0s
+            Atomics: 0s
+            Other: 0s
+    Total Thread Count: 14
+    Paused Time: 0s
+
+Top Hotspots
+Function                Module        CPU Time  % of CPU Time(%)
+----------------------  ------------  --------  ----------------
+cuda_write_ppm          assignment_3    3.447s             36.5%
+compute_next._omp_fn.0  assignment_3    3.428s             36.3%
+func@0x37a050           libcuda.so.1    0.785s              8.3%
+__close_nocancel        libc.so.6       0.677s              7.2%
+write                   libc.so.6       0.500s              5.3%
+[Others]                N/A             0.603s              6.4%
+Effective Physical Core Utilization: 0.4% (0.170 out of 48)
+ | The metric value is low, which may signal a poor physical CPU cores
+ | utilization caused by:
+ |     - load imbalance
+ |     - threading runtime overhead
+ |     - contended synchronization
+ |     - thread/process underutilization
+ |     - incorrect affinity that utilizes logical cores instead of physical
+ |       cores
+ | Explore sub-metrics to estimate the efficiency of MPI and OpenMP parallelism
+ | or run the Locks and Waits analysis to identify parallel bottlenecks for
+ | other parallel runtimes.
+ |
+    Effective Logical Core Utilization: 0.2% (0.211 out of 96)
+     | The metric value is low, which may signal a poor logical CPU cores
+     | utilization. Consider improving physical core utilization as the first
+     | step and then look at opportunities to utilize logical cores, which in
+     | some cases can improve processor throughput and overall performance of
+     | multi-threaded applications.
+     |
+Collection and Platform Info
+    Application Command Line: mpirun "-np" "1" "./assignment_3" "--size" "4096" "--steps" "50" 
+    Operating System: 5.14.0-503.26.1.el9_5.x86_64 \S Kernel \r on an \m 
+    Computer Name: compute-7-10.cluster.lan
+    Result Size: 6.1 MB 
+    Collection start time: 03:55:53 17/09/2026 UTC
+    Collection stop time: 03:56:33 17/09/2026 UTC
+    Collector Type: Driverless Perf per-process counting,User-mode sampling and tracing
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Sapphirerapids
+        Frequency: 2.600 GHz
+        Logical CPU Count: 96
+        LLC size: 62.9 MB 
+        Cache Allocation Technology
+            Level 2 capability: available
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.
+vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+vtune: Collection started. To stop the collection, either press CTRL-C or enter from another console window: vtune -r /home/hpc26_352165/Test/src/diagnostics_results/vtune_threading_t4 -command stop.
+Rank 0: simulation 'sim1_ppm' finished in 38.104 s (colorize+write 36.222 s, compute 1.882 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.758 s, kernel 0.167 s, d2h 0.102 s, format 3.264 s, write 31.930 s (totals over 50 frames).
+vtune: Collection stopped.
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_threading_t4'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions  0 % Finalizing the result                            vtune: Executing actions  0 % Clearing the database                            vtune: Executing actions  7 % Clearing the database                            vtune: Executing actions  7 % Loading raw data to the database                 vtune: Executing actions  7 % Loading 'systemcollector-1656037-compute-7-10.cluvtune: Executing actions 12 % Loading 'systemcollector-1656037-compute-7-10.cluvtune: Executing actions 12 % Loading '1656037-1656042.0.trace' file           vtune: Executing actions 12 % Loading '1656037-1656042.1.trace' file           vtune: Executing actions 12 % Loading '1656042-1656081.0.trace' file           vtune: Executing actions 12 % Loading '1656042-1656081.1.trace' file           vtune: Executing actions 12 % Loading '1656042-1656120.0.trace' file           vtune: Executing actions 12 % Loading '1656042-1656120.1.trace' file           vtune: Executing actions 12 % Converting API Events to Waits                   vtune: Executing actions 12 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Processing profile metrics and debug information vtune: Executing actions 19 % Processing profile metrics and debug information vtune: Executing actions 19 % Setting data model parameters                    vtune: Executing actions 19 % Resolving module symbols                         vtune: Executing actions 19 % Resolving information for `bash'                 vtune: Executing actions 19 % Resolving information for `libibverbs.so.1'      vtune: Executing actions 19 % Resolving information for `libevent_core-2.1.so.7vtune: Executing actions 19 % Resolving information for `hwloc_xml_libxml.so'  vtune: Executing actions 19 % Resolving information for `assignment_3'         vtune: Executing actions 19 % Resolving information for `libevent_pthreads-2.1.
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/bash'.
+vtune: Executing actions 19 % Resolving information for `libpmix.so.2'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libibverbs.so.1'.
+vtune: Executing actions 19 % Resolving information for `libc-dynamic.so'      vtune: Executing actions 19 % Resolving information for `libuct_ib.so.0'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib.so.0'.
+vtune: Executing actions 19 % Resolving information for `libopen-pal.so.80'    vtune: Executing actions 19 % Resolving information for `libuct_ib_mlx5.so.0'  
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib_mlx5.so.0'.
+vtune: Executing actions 19 % Resolving information for dangling locations     vtune: Executing actions 19 % Resolving information for `libmlx5.so.1'         vtune: Executing actions 19 % Resolving information for `libuct_knem.so.0'     
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_knem.so.0'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libmlx5.so.1'.
+vtune: Executing actions 20 % Resolving information for `libuct_knem.so.0'     vtune: Executing actions 20 % Resolving information for `libuct_xpmem.so.0'    
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_xpmem.so.0'.
+vtune: Executing actions 20 % Resolving information for `libhwloc.so.15'       vtune: Executing actions 20 % Resolving information for `libtpsstool.so'       vtune: Executing actions 20 % Resolving information for `mpirun'               
+vtune: Warning: Cannot locate debugging information for file `/share/apps/intel/oneapi/vtune/2025.0/lib64/libtpsstool.so'.
+vtune: Executing actions 20 % Resolving information for `libc.so.6'            
+vtune: Warning: Cannot locate debugging information for file `/usr/lib64/libc.so.6'.
+vtune: Executing actions 20 % Resolving information for `libc++abi.so'         vtune: Executing actions 20 % Resolving information for `libc++.so'            vtune: Executing actions 20 % Resolving information for `ld-linux-x86-64.so.2' vtune: Executing actions 20 % Resolving information for `libslurmfull-22.05.9.s
+vtune: Warning: Cannot locate debugging information for file `/lib64/libslurmfull-22.05.9.so'.
+vtune: Executing actions 20 % Resolving information for `libcudart.so.12'      
+vtune: Warning: Cannot locate debugging information for file `/share/apps/hpc_sdk/Linux_x86_64/25.1/cuda/lib64/libcudart.so.12'.
+vtune: Executing actions 20 % Resolving information for `libuct_rdmacm.so.0'   
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_rdmacm.so.0'.
+vtune: Executing actions 20 % Resolving information for `librdmacm.so.1'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/librdmacm.so.1'.
+vtune: Executing actions 20 % Resolving information for `libxml2.so.2'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libxml2.so.2'.
+vtune: Executing actions 21 % Resolving information for `libxml2.so.2'         vtune: Executing actions 21 % Resolving information for `libuct_cma.so.0'      vtune: Executing actions 21 % Resolving information for `libucm.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_cma.so.0'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucm.so.0'.
+vtune: Executing actions 21 % Resolving information for `prte'                 vtune: Executing actions 21 % Resolving information for `libevent_core-2.1.so.7vtune: Executing actions 21 % Resolving information for `libgomp.so.1'         vtune: Executing actions 21 % Resolving information for `libxpmem.so.0'        
+vtune: Warning: Cannot locate debugging information for file `/lib64/libxpmem.so.0'.
+vtune: Executing actions 21 % Resolving information for `libucs.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucs.so.0'.
+vtune: Executing actions 21 % Resolving information for `libnl-3.so.200'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/libnl-3.so.200'.
+vtune: Executing actions 21 % Resolving information for `libpmix.so.2.13.5'    vtune: Executing actions 21 % Resolving information for `libucp.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucp.so.0'.
+vtune: Executing actions 21 % Resolving information for `srun'                 
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/srun'.
+vtune: Executing actions 21 % Resolving information for `libmpi.so.40'         vtune: Executing actions 21 % Resolving information for `libdwarf.so'          vtune: Executing actions 21 % Resolving information for `pinbin'               vtune: Executing actions 21 % Resolving information for `libprrte.so.3'        vtune: Executing actions 22 % Resolving information for `libprrte.so.3'        vtune: Executing actions 22 % Resolving information for `libprrte.so.3.0.8'    vtune: Executing actions 22 % Resolving information for `libpindwarf.so'       vtune: Executing actions 22 % Resolving information for `[vdso]'               vtune: Executing actions 22 % Resolving information for `libc.so.6'            vtune: Executing actions 22 % Resolving information for `libuct.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libc.so.6'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libuct.so.0'.
+vtune: Executing actions 22 % Resolving information for `libcuda.so.1'         vtune: Executing actions 22 % Resolving information for `libnl-route-3.so.200' 
+vtune: Warning: Cannot locate debugging information for file `/lib64/libnl-route-3.so.200'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libcuda.so.1'.
+vtune: Executing actions 23 % Resolving information for `libnl-route-3.so.200' vtune: Executing actions 23 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving sync object name information           vtune: Executing actions 24 % Resolving sync object name information           vtune: Executing actions 24 % Resolving thread name information                vtune: Executing actions 24 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving interrupt name information             vtune: Executing actions 26 % Resolving interrupt name information             vtune: Executing actions 26 % Processing profile metrics and debug information vtune: Executing actions 27 % Processing profile metrics and debug information vtune: Executing actions 28 % Processing profile metrics and debug information vtune: Executing actions 29 % Processing profile metrics and debug information vtune: Executing actions 30 % Processing profile metrics and debug information vtune: Executing actions 31 % Processing profile metrics and debug information vtune: Executing actions 31 % Setting data model parameters                    vtune: Executing actions 32 % Setting data model parameters                    vtune: Executing actions 32 % Precomputing frequently used data                vtune: Executing actions 32 % Precomputing frequently used data                vtune: Executing actions 33 % Precomputing frequently used data                vtune: Executing actions 35 % Precomputing frequently used data                vtune: Executing actions 36 % Precomputing frequently used data                vtune: Executing actions 38 % Precomputing frequently used data                vtune: Executing actions 38 % Updating precomputed scalar metrics              vtune: Executing actions 39 % Updating precomputed scalar metrics              vtune: Executing actions 39 % Discarding redundant overtime data               vtune: Executing actions 41 % Discarding redundant overtime data               vtune: Executing actions 41 % Saving the result                                vtune: Executing actions 42 % Saving the result                                vtune: Executing actions 44 % Saving the result                                vtune: Executing actions 50 % Saving the result                                vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              Elapsed Time: 39.988s
+    Paused Time: 0s
+Effective CPU Utilization: 0.2% (0.240 out of 96 logical CPUs)
+ | The metric value is low, which may signal a poor logical CPU cores
+ | utilization caused by load imbalance, threading runtime overhead, contended
+ | synchronization, or thread/process underutilization. Explore sub-metrics to
+ | estimate the efficiency of MPI and OpenMP parallelism or run the Locks and
+ | Waits analysis to identify parallel bottlenecks for other parallel runtimes.
+ |
+    Total Thread Count: 15
+     | The number of threads in the application is significantly lower than the
+     | number of logical cores on the machine. Check if it is resulted by thread
+     | number hard coding that limits application scalability.
+     |
+        Thread Oversubscription: 0s (0.0% of CPU Time)
+    Wait Time with poor CPU Utilization: 277.695s (100.0% of Wait Time)
+
+        Top Waiting Objects
+        Sync Object                                Wait Time with poor CPU Utilization  (% from Object Wait Time)(%)  Wait Count
+        -----------------------------------------  -----------------------------------  ----------------------------  ----------
+        poll                                                                   76.864s                        100.0%         395
+        select                                                                 39.500s                        100.0%           1
+        Stream 0xebec4af5                                                      39.493s                        100.0%           5
+        Stream /dev/infiniband/uverbs0 0x6c017de4                              38.753s                        100.0%          15
+        Stream 0x6f6db1fb                                                      38.728s                        100.0%          44
+        [Others]                                                               44.356s                        100.0%         480
+    Spin and Overhead Time: 0.040s (0.4% of CPU Time)
+
+        Top Functions with Spin or Overhead Time
+        Function       Module     Spin and Overhead Time  (% from CPU Time)(%)
+        -------------  ---------  ----------------------  --------------------
+        __sched_yield  libc.so.6                  0.040s                  0.4%
+Collection and Platform Info
+    Application Command Line: mpirun "-np" "1" "./assignment_3" "--size" "4096" "--steps" "50" 
+    Operating System: 5.14.0-503.26.1.el9_5.x86_64 \S Kernel \r on an \m 
+    Computer Name: compute-7-10.cluster.lan
+    Result Size: 14.3 MB 
+    Collection start time: 03:56:40 17/09/2026 UTC
+    Collection stop time: 03:57:20 17/09/2026 UTC
+    Collector Type: User-mode sampling and tracing
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Sapphirerapids
+        Frequency
+        Logical CPU Count: 96
+        LLC size: 62.9 MB 
+        Cache Allocation Technology
+            Level 2 capability: available
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.
+vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_hotspots_t4'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_threading_t4'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+=== VTune t4 done, results on disk ===
+=== VTune hotspots+threading, M=4096, 32 threads ===
+vtune: Warning: Only user space will be profiled due to credentials lack. Consider changing /proc/sys/kernel/perf_event_paranoid file for enabling kernel space profiling.
+vtune: Collection started. To stop the collection, either press CTRL-C or enter from another console window: vtune -r /home/hpc26_352165/Test/src/diagnostics_results/vtune_hotspots_t32 -command stop.
+Rank 0: simulation 'sim1_ppm' finished in 37.260 s (colorize+write 35.401 s, compute 1.859 s, 32 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.566 s, kernel 0.159 s, d2h 0.101 s, format 3.207 s, write 31.369 s (totals over 50 frames).
+vtune: Collection stopped.
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_hotspots_t32'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions  0 % Finalizing the result                            vtune: Executing actions  0 % Clearing the database                            vtune: Executing actions  7 % Clearing the database                            vtune: Executing actions  7 % Loading raw data to the database                 vtune: Executing actions  7 % Loading 'systemcollector-1657242-compute-7-10.cluvtune: Executing actions 12 % Loading 'systemcollector-1657242-compute-7-10.cluvtune: Executing actions 12 % Loading '1657252.stat.perf' file                 vtune: Executing actions 12 % Loading '1657242-1657252.0.trace' file           vtune: Executing actions 12 % Loading '1657242-1657252.1.trace' file           vtune: Executing actions 12 % Loading '1657252-1657313.0.trace' file           vtune: Executing actions 12 % Loading '1657252-1657313.1.trace' file           vtune: Executing actions 12 % Loading '1657252-1657338.0.trace' file           vtune: Executing actions 12 % Loading '1657252-1657338.1.trace' file           vtune: Executing actions 12 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Processing profile metrics and debug information vtune: Executing actions 19 % Processing profile metrics and debug information vtune: Executing actions 19 % Setting data model parameters                    vtune: Executing actions 19 % Resolving module symbols                         vtune: Executing actions 19 % Resolving information for `libuct_ib_mlx5.so.0'  vtune: Executing actions 19 % Resolving information for `prte'                 
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib_mlx5.so.0'.
+vtune: Executing actions 19 % Resolving information for `bash'                 vtune: Executing actions 19 % Resolving information for `libprrte.so.3'        vtune: Executing actions 19 % Resolving information for `libc++.so'            
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/bash'.
+vtune: Executing actions 19 % Resolving information for `libpmix.so.2'         vtune: Executing actions 19 % Resolving information for `pinbin'               vtune: Executing actions 19 % Resolving information for `libhwloc.so.15'       vtune: Executing actions 19 % Resolving information for `libslurmfull-22.05.9.s
+vtune: Warning: Cannot locate debugging information for file `/lib64/libslurmfull-22.05.9.so'.
+vtune: Executing actions 19 % Resolving information for `libuct.so.0'          vtune: Executing actions 19 % Resolving information for `srun'                 
+vtune: Warning: Cannot locate debugging information for file `/lib64/libuct.so.0'.
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/srun'.
+vtune: Executing actions 20 % Resolving information for `srun'                 vtune: Executing actions 20 % Resolving information for `libucm.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucm.so.0'.
+vtune: Executing actions 20 % Resolving information for dangling locations     vtune: Executing actions 20 % Resolving information for `libopen-pal.so.80'    vtune: Executing actions 20 % Resolving information for `libgomp.so.1'         vtune: Executing actions 20 % Resolving information for `mpirun'               vtune: Executing actions 20 % Resolving information for `libmlx5.so.1'         vtune: Executing actions 20 % Resolving information for `libuct_ib.so.0'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/libmlx5.so.1'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib.so.0'.
+vtune: Executing actions 20 % Resolving information for `libibverbs.so.1'      
+vtune: Warning: Cannot locate debugging information for file `/lib64/libibverbs.so.1'.
+vtune: Executing actions 20 % Resolving information for `libc-dynamic.so'      vtune: Executing actions 21 % Resolving information for `libc-dynamic.so'      vtune: Executing actions 21 % Resolving information for `assignment_3'         vtune: Executing actions 21 % Resolving information for `libc.so.6'            
+vtune: Warning: Cannot locate debugging information for file `/lib64/libc.so.6'.
+vtune: Executing actions 21 % Resolving information for `ld-linux-x86-64.so.2' vtune: Executing actions 21 % Resolving information for `libcuda.so.1'         vtune: Executing actions 21 % Resolving information for `libtpsstool.so'       vtune: Executing actions 21 % Resolving information for `[vdso]'               vtune: Executing actions 21 % Resolving information for `libdwarf.so'          vtune: Executing actions 21 % Resolving information for `libucs.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucs.so.0'.
+vtune: Warning: Cannot locate debugging information for file `/share/apps/intel/oneapi/vtune/2025.0/lib64/libtpsstool.so'.
+vtune: Executing actions 22 % Resolving information for `libucs.so.0'          vtune: Executing actions 22 % Resolving information for `libucp.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucp.so.0'.
+vtune: Executing actions 22 % Resolving information for `libcudart.so.12'      vtune: Executing actions 22 % Resolving information for `libmpi.so.40'         
+vtune: Warning: Cannot locate debugging information for file `/share/apps/hpc_sdk/Linux_x86_64/25.1/cuda/lib64/libcudart.so.12'.
+vtune: Executing actions 22 % Resolving information for `libpindwarf.so'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/libcuda.so.1'.
+vtune: Executing actions 22 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving thread name information                vtune: Executing actions 24 % Resolving thread name information                vtune: Executing actions 24 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving interrupt name information             vtune: Executing actions 26 % Resolving interrupt name information             vtune: Executing actions 26 % Processing profile metrics and debug information vtune: Executing actions 27 % Processing profile metrics and debug information vtune: Executing actions 28 % Processing profile metrics and debug information vtune: Executing actions 29 % Processing profile metrics and debug information vtune: Executing actions 30 % Processing profile metrics and debug information vtune: Executing actions 30 % Setting data model parameters                    vtune: Executing actions 30 % Precomputing frequently used data                vtune: Executing actions 30 % Precomputing frequently used data                vtune: Executing actions 31 % Precomputing frequently used data                vtune: Executing actions 32 % Precomputing frequently used data                vtune: Executing actions 33 % Precomputing frequently used data                vtune: Executing actions 34 % Precomputing frequently used data                vtune: Executing actions 36 % Precomputing frequently used data                vtune: Executing actions 36 % Updating precomputed scalar metrics              vtune: Executing actions 37 % Updating precomputed scalar metrics              vtune: Executing actions 37 % Discarding redundant overtime data               vtune: Executing actions 39 % Discarding redundant overtime data               vtune: Executing actions 39 % Saving the result                                vtune: Executing actions 41 % Saving the result                                vtune: Executing actions 42 % Saving the result                                vtune: Executing actions 50 % Saving the result                                vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              Elapsed Time: 39.207s
+    CPU Time: 8.620s
+        Effective Time: 8.570s
+        Spin Time: 0.050s
+            Imbalance or Serial Spinning: 0.010s
+            Lock Contention: 0s
+            Other: 0.040s
+        Overhead Time: 0s
+            Creation: 0s
+            Scheduling: 0s
+            Reduction: 0s
+            Atomics: 0s
+            Other: 0s
+    Total Thread Count: 42
+    Paused Time: 0s
+
+Top Hotspots
+Function                Module        CPU Time  % of CPU Time(%)
+----------------------  ------------  --------  ----------------
+cuda_write_ppm          assignment_3    3.220s             37.4%
+compute_next._omp_fn.0  assignment_3    3.207s             37.2%
+func@0x37a050           libcuda.so.1    0.544s              6.3%
+__close_nocancel        libc.so.6       0.505s              5.9%
+write                   libc.so.6       0.500s              5.8%
+[Others]                N/A             0.643s              7.5%
+Effective Physical Core Utilization: 0.3% (0.167 out of 48)
+ | The metric value is low, which may signal a poor physical CPU cores
+ | utilization caused by:
+ |     - load imbalance
+ |     - threading runtime overhead
+ |     - contended synchronization
+ |     - thread/process underutilization
+ |     - incorrect affinity that utilizes logical cores instead of physical
+ |       cores
+ | Explore sub-metrics to estimate the efficiency of MPI and OpenMP parallelism
+ | or run the Locks and Waits analysis to identify parallel bottlenecks for
+ | other parallel runtimes.
+ |
+    Effective Logical Core Utilization: 0.2% (0.207 out of 96)
+     | The metric value is low, which may signal a poor logical CPU cores
+     | utilization. Consider improving physical core utilization as the first
+     | step and then look at opportunities to utilize logical cores, which in
+     | some cases can improve processor throughput and overall performance of
+     | multi-threaded applications.
+     |
+Collection and Platform Info
+    Application Command Line: mpirun "-np" "1" "./assignment_3" "--size" "4096" "--steps" "50" 
+    Operating System: 5.14.0-503.26.1.el9_5.x86_64 \S Kernel \r on an \m 
+    Computer Name: compute-7-10.cluster.lan
+    Result Size: 6.1 MB 
+    Collection start time: 03:57:34 17/09/2026 UTC
+    Collection stop time: 03:58:13 17/09/2026 UTC
+    Collector Type: Driverless Perf per-process counting,User-mode sampling and tracing
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Sapphirerapids
+        Frequency: 2.600 GHz
+        Logical CPU Count: 96
+        LLC size: 62.9 MB 
+        Cache Allocation Technology
+            Level 2 capability: available
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.
+vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+vtune: Collection started. To stop the collection, either press CTRL-C or enter from another console window: vtune -r /home/hpc26_352165/Test/src/diagnostics_results/vtune_threading_t32 -command stop.
+Rank 0: simulation 'sim1_ppm' finished in 37.399 s (colorize+write 35.592 s, compute 1.807 s, 32 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.616 s, kernel 0.164 s, d2h 0.101 s, format 3.189 s, write 31.523 s (totals over 50 frames).
+vtune: Collection stopped.
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_threading_t32'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions  0 % Finalizing the result                            vtune: Executing actions  0 % Clearing the database                            vtune: Executing actions  7 % Clearing the database                            vtune: Executing actions  7 % Loading raw data to the database                 vtune: Executing actions  7 % Loading 'systemcollector-1658303-compute-7-10.cluvtune: Executing actions 12 % Loading 'systemcollector-1658303-compute-7-10.cluvtune: Executing actions 12 % Loading '1658303-1658314.0.trace' file           vtune: Executing actions 12 % Loading '1658303-1658314.1.trace' file           vtune: Executing actions 12 % Loading '1658314-1658367.0.trace' file           vtune: Executing actions 12 % Loading '1658314-1658367.1.trace' file           vtune: Executing actions 12 % Loading '1658314-1658382.0.trace' file           vtune: Executing actions 12 % Loading '1658314-1658382.1.trace' file           vtune: Executing actions 12 % Converting API Events to Waits                   vtune: Executing actions 12 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Processing profile metrics and debug information vtune: Executing actions 19 % Processing profile metrics and debug information vtune: Executing actions 19 % Setting data model parameters                    vtune: Executing actions 19 % Resolving module symbols                         vtune: Executing actions 19 % Resolving information for dangling locations     vtune: Executing actions 19 % Resolving information for `librdmacm.so.1'       vtune: Executing actions 19 % Resolving information for `libnl-route-3.so.200' vtune: Executing actions 19 % Resolving information for `libuct.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/librdmacm.so.1'.
+vtune: Executing actions 19 % Resolving information for `bash'                 
+vtune: Warning: Cannot locate debugging information for file `/lib64/libnl-route-3.so.200'.
+vtune: Executing actions 19 % Resolving information for `libibverbs.so.1'      
+vtune: Warning: Cannot locate debugging information for file `/lib64/libuct.so.0'.
+vtune: Executing actions 19 % Resolving information for `libc.so.6'            
+vtune: Warning: Cannot locate debugging information for file `/lib64/libibverbs.so.1'.
+vtune: Executing actions 19 % Resolving information for `libuct_knem.so.0'     
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/bash'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_knem.so.0'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libc.so.6'.
+vtune: Executing actions 19 % Resolving information for `libopen-pal.so.80'    vtune: Executing actions 19 % Resolving information for `libevent_pthreads-2.1.vtune: Executing actions 19 % Resolving information for `hwloc_xml_libxml.so'  vtune: Executing actions 19 % Resolving information for `libuct_ib_mlx5.so.0'  
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib_mlx5.so.0'.
+vtune: Executing actions 19 % Resolving information for `libuct_cma.so.0'      
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_cma.so.0'.
+vtune: Executing actions 20 % Resolving information for `libuct_cma.so.0'      vtune: Executing actions 20 % Resolving information for `libuct_ib.so.0'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_ib.so.0'.
+vtune: Executing actions 20 % Resolving information for `libevent_core-2.1.so.7vtune: Executing actions 20 % Resolving information for `prte'                 vtune: Executing actions 20 % Resolving information for `libuct_xpmem.so.0'    
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_xpmem.so.0'.
+vtune: Executing actions 20 % Resolving information for `libhwloc.so.15'       vtune: Executing actions 20 % Resolving information for `libc-dynamic.so'      vtune: Executing actions 20 % Resolving information for `assignment_3'         vtune: Executing actions 20 % Resolving information for `ld-linux-x86-64.so.2' vtune: Executing actions 20 % Resolving information for `libnl-3.so.200'       
+vtune: Warning: Cannot locate debugging information for file `/lib64/libnl-3.so.200'.
+vtune: Executing actions 20 % Resolving information for `libpmix.so.2.13.5'    vtune: Executing actions 20 % Resolving information for `libc.so.6'            vtune: Executing actions 20 % Resolving information for `srun'                 vtune: Executing actions 20 % Resolving information for `libgomp.so.1'         
+vtune: Warning: Cannot locate debugging information for file `/usr/lib64/libc.so.6'.
+vtune: Warning: Cannot locate debugging information for file `/usr/bin/srun'.
+vtune: Executing actions 20 % Resolving information for `libslurmfull-22.05.9.svtune: Executing actions 20 % Resolving information for `libuct_rdmacm.so.0'   
+vtune: Warning: Cannot locate debugging information for file `/lib64/ucx/libuct_rdmacm.so.0'.
+vtune: Warning: Cannot locate debugging information for file `/lib64/libslurmfull-22.05.9.so'.
+vtune: Executing actions 21 % Resolving information for `libuct_rdmacm.so.0'   vtune: Executing actions 21 % Resolving information for `libpmix.so.2'         vtune: Executing actions 21 % Resolving information for `libprrte.so.3'        vtune: Executing actions 21 % Resolving information for `mpirun'               vtune: Executing actions 21 % Resolving information for `libxml2.so.2'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libxml2.so.2'.
+vtune: Executing actions 21 % Resolving information for `pinbin'               vtune: Executing actions 21 % Resolving information for `libprrte.so.3.0.8'    vtune: Executing actions 21 % Resolving information for `[vdso]'               vtune: Executing actions 21 % Resolving information for `libxpmem.so.0'        
+vtune: Warning: Cannot locate debugging information for file `/lib64/libxpmem.so.0'.
+vtune: Executing actions 21 % Resolving information for `libucs.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucs.so.0'.
+vtune: Executing actions 21 % Resolving information for `libmlx5.so.1'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libmlx5.so.1'.
+vtune: Executing actions 21 % Resolving information for `libdwarf.so'          vtune: Executing actions 21 % Resolving information for `libucm.so.0'          vtune: Executing actions 21 % Resolving information for `libmpi.so.40'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucm.so.0'.
+vtune: Executing actions 22 % Resolving information for `libmpi.so.40'         vtune: Executing actions 22 % Resolving information for `libevent_core-2.1.so.7vtune: Executing actions 22 % Resolving information for `libucp.so.0'          
+vtune: Warning: Cannot locate debugging information for file `/lib64/libucp.so.0'.
+vtune: Executing actions 22 % Resolving information for `libtpsstool.so'       vtune: Executing actions 22 % Resolving information for `libpindwarf.so'       
+vtune: Warning: Cannot locate debugging information for file `/share/apps/intel/oneapi/vtune/2025.0/lib64/libtpsstool.so'.
+vtune: Executing actions 22 % Resolving information for `libcudart.so.12'      
+vtune: Warning: Cannot locate debugging information for file `/share/apps/hpc_sdk/Linux_x86_64/25.1/cuda/lib64/libcudart.so.12'.
+vtune: Executing actions 22 % Resolving information for `libcuda.so.1'         
+vtune: Warning: Cannot locate debugging information for file `/lib64/libcuda.so.1'.
+vtune: Executing actions 23 % Resolving information for `libcuda.so.1'         vtune: Executing actions 23 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving sync object name information           vtune: Executing actions 24 % Resolving sync object name information           vtune: Executing actions 24 % Resolving thread name information                vtune: Executing actions 24 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving interrupt name information             vtune: Executing actions 26 % Resolving interrupt name information             vtune: Executing actions 26 % Processing profile metrics and debug information vtune: Executing actions 27 % Processing profile metrics and debug information vtune: Executing actions 28 % Processing profile metrics and debug information vtune: Executing actions 29 % Processing profile metrics and debug information vtune: Executing actions 30 % Processing profile metrics and debug information vtune: Executing actions 31 % Processing profile metrics and debug information vtune: Executing actions 31 % Setting data model parameters                    vtune: Executing actions 32 % Setting data model parameters                    vtune: Executing actions 32 % Precomputing frequently used data                vtune: Executing actions 32 % Precomputing frequently used data                vtune: Executing actions 33 % Precomputing frequently used data                vtune: Executing actions 35 % Precomputing frequently used data                vtune: Executing actions 36 % Precomputing frequently used data                vtune: Executing actions 38 % Precomputing frequently used data                vtune: Executing actions 38 % Updating precomputed scalar metrics              vtune: Executing actions 39 % Updating precomputed scalar metrics              vtune: Executing actions 39 % Discarding redundant overtime data               vtune: Executing actions 41 % Discarding redundant overtime data               vtune: Executing actions 41 % Saving the result                                vtune: Executing actions 42 % Saving the result                                vtune: Executing actions 44 % Saving the result                                vtune: Executing actions 49 % Saving the result                                vtune: Executing actions 50 % Saving the result                                vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              Elapsed Time: 39.199s
+    Paused Time: 0s
+Effective CPU Utilization: 0.2% (0.231 out of 96 logical CPUs)
+ | The metric value is low, which may signal a poor logical CPU cores
+ | utilization caused by load imbalance, threading runtime overhead, contended
+ | synchronization, or thread/process underutilization. Explore sub-metrics to
+ | estimate the efficiency of MPI and OpenMP parallelism or run the Locks and
+ | Waits analysis to identify parallel bottlenecks for other parallel runtimes.
+ |
+    Total Thread Count: 43
+     | The number of threads in the application is significantly lower than the
+     | number of logical cores on the machine. Check if it is resulted by thread
+     | number hard coding that limits application scalability.
+     |
+        Thread Oversubscription: 0s (0.0% of CPU Time)
+    Wait Time with poor CPU Utilization: 272.055s (100.0% of Wait Time)
+
+        Top Waiting Objects
+        Sync Object                                Wait Time with poor CPU Utilization  (% from Object Wait Time)(%)  Wait Count
+        -----------------------------------------  -----------------------------------  ----------------------------  ----------
+        poll                                                                   75.412s                        100.0%         387
+        select                                                                 38.741s                        100.0%           1
+        Stream 0xebec4af5                                                      38.733s                        100.0%           5
+        Stream /dev/infiniband/uverbs0 0x6c017de4                              38.029s                        100.0%          14
+        Stream 0x6f6db1fb                                                      37.968s                        100.0%          48
+        [Others]                                                               43.172s                        100.0%         484
+    Spin and Overhead Time: 0.040s (0.4% of CPU Time)
+
+        Top Functions with Spin or Overhead Time
+        Function       Module     Spin and Overhead Time  (% from CPU Time)(%)
+        -------------  ---------  ----------------------  --------------------
+        __sched_yield  libc.so.6                  0.040s                  0.4%
+Collection and Platform Info
+    Application Command Line: mpirun "-np" "1" "./assignment_3" "--size" "4096" "--steps" "50" 
+    Operating System: 5.14.0-503.26.1.el9_5.x86_64 \S Kernel \r on an \m 
+    Computer Name: compute-7-10.cluster.lan
+    Result Size: 14.2 MB 
+    Collection start time: 03:58:21 17/09/2026 UTC
+    Collection stop time: 03:59:00 17/09/2026 UTC
+    Collector Type: User-mode sampling and tracing
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Sapphirerapids
+        Frequency
+        Logical CPU Count: 96
+        LLC size: 62.9 MB 
+        Cache Allocation Technology
+            Level 2 capability: available
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.
+vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_hotspots_t32'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+vtune: Using result path `/home/hpc26_352165/Test/src/diagnostics_results/vtune_threading_t32'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
+=== VTune t32 done, results on disk ===
+=== nsys with MPI tracing (bounded to 180s; may fail, that's OK) ===
+Collecting data...
+Collecting data...
+Collecting data...
+Rank 1: simulation 'sim2_ppm' finished in 8.512 s (colorize+write 8.337 s, compute 0.175 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.037 s, kernel 0.085 s, d2h 0.012 s, format 0.278 s, write 7.924 s (totals over 400 frames).
+Rank 0: simulation 'sim1_ppm' finished in 8.536 s (colorize+write 8.365 s, compute 0.170 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.036 s, kernel 0.082 s, d2h 0.012 s, format 0.274 s, write 7.961 s (totals over 400 frames).
+Rank 2: simulation 'sim3_ppm' finished in 8.522 s (colorize+write 8.355 s, compute 0.166 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.037 s, kernel 0.086 s, d2h 0.012 s, format 0.279 s, write 7.941 s (totals over 400 frames).
+Generating '/tmp/nsys-report-2d64.qdstrm'
+Generating '/tmp/nsys-report-a840.qdstrm'
+Generating '/tmp/nsys-report-189b.qdstrm'
+[1/1] [0%                          ] nsys_mpi_rank2.nsys-rep[1/1] [0%                          ] nsys_mpi_rank0.nsys-rep[1/1] [0%                          ] nsys_mpi_rank1.nsys-rep[1/1] [0%                          ] nsys_mpi_rank2.nsys-rep[1/1] [8%                          ] nsys_mpi_rank2.nsys-rep[1/1] [=======39%                  ] nsys_mpi_rank2.nsys-rep[1/1] [========40%                 ] nsys_mpi_rank2.nsys-rep[1/1] [0%                          ] nsys_mpi_rank0.nsys-rep[1/1] [========42%                 ] nsys_mpi_rank0.nsys-rep[1/1] [=========45%                ] nsys_mpi_rank0.nsys-rep[1/1] [==========48%               ] nsys_mpi_rank0.nsys-rep[1/1] [===========51%              ] nsys_mpi_rank0.nsys-rep[1/1] [============54%             ] nsys_mpi_rank0.nsys-rep[1/1] [============56%             ] nsys_mpi_rank0.nsys-rep[1/1] [=============59%            ] nsys_mpi_rank0.nsys-rep[1/1] [==============62%           ] nsys_mpi_rank0.nsys-rep[1/1] [==============64%           ] nsys_mpi_rank0.nsys-rep[1/1] [===============67%          ] nsys_mpi_rank0.nsys-rep[1/1] [================70%         ] nsys_mpi_rank0.nsys-rep[1/1] [=================73%        ] nsys_mpi_rank0.nsys-rep[1/1] [==================75%       ] nsys_mpi_rank0.nsys-rep[1/1] [==================78%       ] nsys_mpi_rank0.nsys-rep[1/1] [===================81%      ] nsys_mpi_rank0.nsys-rep[1/1] [======================91%   ] nsys_mpi_rank0.nsys-rep[1/1] [=======================93%  ] nsys_mpi_rank0.nsys-rep[1/1] [========================100%] nsys_mpi_rank0.nsys-rep[1/1] [0%                          ] nsys_mpi_rank1.nsys-rep[1/1] [========42%                 ] nsys_mpi_rank2.nsys-rep[1/1] [========================100%] nsys_mpi_rank0.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/diagnostics_results/nsys_mpi_rank0.nsys-rep
+[1/1] [=========43%                ] nsys_mpi_rank2.nsys-rep[1/1] [=========44%                ] nsys_mpi_rank2.nsys-rep[1/1] [==========47%               ] nsys_mpi_rank2.nsys-rep[1/1] [==========49%               ] nsys_mpi_rank2.nsys-rep[1/1] [===========52%              ] nsys_mpi_rank2.nsys-rep[1/1] [===========53%              ] nsys_mpi_rank2.nsys-rep[1/1] [============56%             ] nsys_mpi_rank2.nsys-rep[1/1] [=============59%            ] nsys_mpi_rank2.nsys-rep[1/1] [==============61%           ] nsys_mpi_rank2.nsys-rep[1/1] [==============62%           ] nsys_mpi_rank2.nsys-rep[1/1] [==============64%           ] nsys_mpi_rank2.nsys-rep[1/1] [===============67%          ] nsys_mpi_rank2.nsys-rep[1/1] [================70%         ] nsys_mpi_rank2.nsys-rep[1/1] [=================73%        ] nsys_mpi_rank2.nsys-rep[1/1] [==================76%       ] nsys_mpi_rank2.nsys-rep[1/1] [===================79%      ] nsys_mpi_rank2.nsys-rep[1/1] [===================82%      ] nsys_mpi_rank2.nsys-rep[1/1] [====================85%     ] nsys_mpi_rank2.nsys-rep[1/1] [=======================93%  ] nsys_mpi_rank2.nsys-rep[1/1] [========================100%] nsys_mpi_rank2.nsys-rep[1/1] [========42%                 ] nsys_mpi_rank1.nsys-rep[1/1] [=========45%                ] nsys_mpi_rank1.nsys-rep[1/1] [=========46%                ] nsys_mpi_rank1.nsys-rep[1/1] [==========49%               ] nsys_mpi_rank1.nsys-rep[1/1] [===========52%              ] nsys_mpi_rank1.nsys-rep[1/1] [========================100%] nsys_mpi_rank2.nsys-rep
+[1/1] [============54%             ] nsys_mpi_rank1.nsys-repGenerated:
+    /home/hpc26_352165/Test/src/diagnostics_results/nsys_mpi_rank2.nsys-rep
+[1/1] [============57%             ] nsys_mpi_rank1.nsys-rep[1/1] [=============59%            ] nsys_mpi_rank1.nsys-rep[1/1] [==============62%           ] nsys_mpi_rank1.nsys-rep[1/1] [==============64%           ] nsys_mpi_rank1.nsys-rep[1/1] [===============67%          ] nsys_mpi_rank1.nsys-rep[1/1] [================70%         ] nsys_mpi_rank1.nsys-rep[1/1] [=================72%        ] nsys_mpi_rank1.nsys-rep[1/1] [==================75%       ] nsys_mpi_rank1.nsys-rep[1/1] [==================77%       ] nsys_mpi_rank1.nsys-rep[1/1] [===================80%      ] nsys_mpi_rank1.nsys-rep[1/1] [===================81%      ] nsys_mpi_rank1.nsys-rep[1/1] [=====================89%    ] nsys_mpi_rank1.nsys-rep[1/1] [======================92%   ] nsys_mpi_rank1.nsys-rep[1/1] [========================100%] nsys_mpi_rank1.nsys-rep[1/1] [========================100%] nsys_mpi_rank1.nsys-rep
+Generated:
+    /home/hpc26_352165/Test/src/diagnostics_results/nsys_mpi_rank1.nsys-rep
+=== nsys MPI trace completed ===
+  adding: diagnostics_results/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/vtune_hotspots_t4.vtune (deflated 54%)
+  adding: diagnostics_results/vtune_hotspots_t4/log/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/log/perfrun-2026.09.17-03h55m52s.1655053.log (deflated 94%)
+  adding: diagnostics_results/vtune_hotspots_t4/log/mrtehelpers-2026.09.17-03h55m52s.1655053.log (deflated 47%)
+  adding: diagnostics_results/vtune_hotspots_t4/log/perfrun-2026.09.17-03h55m53s.1655105.log (deflated 87%)
+  adding: diagnostics_results/vtune_hotspots_t4/log/mrtehelpers-2026.09.17-03h55m53s.1655105.log (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/collection.cfg (deflated 66%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/analysis_type.cfg (deflated 79%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/context_values.cfg (deflated 81%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/runss.options (deflated 59%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/search_dir.cfg (deflated 67%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/log.cfg (deflated 74%)
+  adding: diagnostics_results/vtune_hotspots_t4/config/state.cfg (deflated 4%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/systemcollector-1655053-compute-7-10.cluster.lan.sc (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/sep.events (deflated 89%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/amplxe-perf.1655060.log (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/perfcmd (deflated 75%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/map.events (deflated 79%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072.stat.perf (deflated 68%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/amplxe-perf.1655121.log (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/pytrace-1655072-0x8d6d5fea.log (deflated 76%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.0-1655072.0.th (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.0-1655072.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/pytrace-1655072-0x94547290.log (deflated 79%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1-1655072.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1-1655072.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/pytrace-1655137-0x9f44ce6a.log (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.0-1655137.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.0-1655137.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/pytrace-1655137-0xa3be9e90.log (deflated 76%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.1-1655137.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655137.1-1655137.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1-1655150.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1-1655150.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1-1655151.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655053-1655072.1-1655151.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.0-1655152.0.th (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.0-1655152.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/pytrace-1655152-0xaa449c53.log (deflated 90%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655152.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655152.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655168.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655168.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655173.0.th (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655173.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655176.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655176.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655187.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655187.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655210.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655210.0.th.aux (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655211.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655211.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655212.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t4/data.0/1655072-1655152.1-1655212.0.th.aux (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/archive/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/archive/binaries/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/archive/binaries/[vdso]/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/[vdso] (deflated 66%)
+  adding: diagnostics_results/vtune_hotspots_t4/.norun (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/dicer.db (deflated 78%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/grouper.metadata (deflated 86%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/pmu_data/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/pmu_data/container.metadata (deflated 56%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/pmu_data/end_tsc/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/pmu_data/end_tsc/0 (deflated 84%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/pmu_data/end_tsc/mapping.xml (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/directory.xml (deflated 42%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/groupings_dbint-32747798.dat (deflated 78%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/dbint-32747798/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/dbint-32747798/aggregated/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/dbint-32747798/aggregated/0/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/dbint-32747798/aggregated/0/0 (deflated 80%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/timelinedb/dbint-32747798/aggregated/0/mapping.xml (deflated 7%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_dd_thread/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_dd_thread/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_dd_thread/grouper/0 (deflated 89%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_dd_thread/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_dd_thread/container.metadata (deflated 67%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/0 (deflated 76%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/container.metadata (deflated 52%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/0 (deflated 88%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/container.metadata (deflated 61%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t4/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/container.metadata (deflated 60%)
+  adding: diagnostics_results/vtune_threading_t4/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/vtune_threading_t4.vtune (deflated 55%)
+  adding: diagnostics_results/vtune_threading_t4/log/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/log/perfrun-2026.09.17-03h56m39s.1656037.log (deflated 83%)
+  adding: diagnostics_results/vtune_threading_t4/log/mrtehelpers-2026.09.17-03h56m39s.1656037.log (deflated 47%)
+  adding: diagnostics_results/vtune_threading_t4/log/perfrun-2026.09.17-03h56m40s.1656049.log (deflated 87%)
+  adding: diagnostics_results/vtune_threading_t4/log/mrtehelpers-2026.09.17-03h56m40s.1656049.log (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/config/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/config/collection.cfg (deflated 66%)
+  adding: diagnostics_results/vtune_threading_t4/config/analysis_type.cfg (deflated 73%)
+  adding: diagnostics_results/vtune_threading_t4/config/context_values.cfg (deflated 81%)
+  adding: diagnostics_results/vtune_threading_t4/config/runss.options (deflated 43%)
+  adding: diagnostics_results/vtune_threading_t4/config/search_dir.cfg (deflated 67%)
+  adding: diagnostics_results/vtune_threading_t4/config/log.cfg (deflated 80%)
+  adding: diagnostics_results/vtune_threading_t4/config/state.cfg (deflated 4%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/systemcollector-1656037-compute-7-10.cluster.lan.sc (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/pytrace-1656042-0x81833347.log (deflated 77%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.0-1656042.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.0-1656042.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/pytrace-1656042-0x8a882e92.log (deflated 79%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1-1656042.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1-1656042.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/pytrace-1656081-0x9864d02d.log (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.0-1656081.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.0-1656081.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/pytrace-1656081-0x9e976670.log (deflated 76%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.1-1656081.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656081.1-1656081.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1-1656116.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1-1656116.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1-1656117.0.th (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656037-1656042.1-1656117.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.0-1656120.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.0-1656120.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/pytrace-1656120-0xa782ad9d.log (deflated 90%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656120.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656120.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656140.0.th (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656140.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656141.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656141.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656146.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656146.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656150.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656150.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656173.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656174.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656173.0.th.aux (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656174.0.th.aux (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656175.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t4/data.0/1656042-1656120.1-1656175.0.th.aux (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t4/archive/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/archive/binaries/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/archive/binaries/[vdso]/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/[vdso] (deflated 66%)
+  adding: diagnostics_results/vtune_threading_t4/.norun (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/dicer.db (deflated 61%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/grouper.metadata (deflated 87%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/directory.xml (deflated 47%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/groupings_dbint-1457249763.dat (deflated 77%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1457249763/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1457249763/aggregated/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1457249763/aggregated/0/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1457249763/aggregated/0/0 (deflated 80%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1457249763/aggregated/0/mapping.xml (deflated 6%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/groupings_dbint-1641236490.dat (deflated 42%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1641236490/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1641236490/instance/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1641236490/instance/0/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1641236490/instance/0/0 (deflated 84%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/timelinedb/dbint-1641236490/instance/0/mapping.xml (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_dd_thread/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_dd_thread/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_dd_thread/grouper/0 (deflated 82%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_dd_thread/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_dd_thread/container.metadata (deflated 66%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/0 (deflated 58%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_data_grouper/container.metadata (deflated 64%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/0 (deflated 61%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/container.metadata (deflated 52%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t4/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/container.metadata (deflated 60%)
+  adding: diagnostics_results/vtune_hotspots_t4_summary.txt (deflated 55%)
+  adding: diagnostics_results/vtune_threading_t4_summary.txt (deflated 61%)
+  adding: diagnostics_results/vtune_hotspots_t32/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/vtune_hotspots_t32.vtune (deflated 55%)
+  adding: diagnostics_results/vtune_hotspots_t32/log/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/log/perfrun-2026.09.17-03h57m33s.1657242.log (deflated 94%)
+  adding: diagnostics_results/vtune_hotspots_t32/log/mrtehelpers-2026.09.17-03h57m33s.1657242.log (deflated 47%)
+  adding: diagnostics_results/vtune_hotspots_t32/log/perfrun-2026.09.17-03h57m34s.1657268.log (deflated 87%)
+  adding: diagnostics_results/vtune_hotspots_t32/log/mrtehelpers-2026.09.17-03h57m34s.1657268.log (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/collection.cfg (deflated 66%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/analysis_type.cfg (deflated 79%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/context_values.cfg (deflated 81%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/runss.options (deflated 59%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/search_dir.cfg (deflated 67%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/log.cfg (deflated 75%)
+  adding: diagnostics_results/vtune_hotspots_t32/config/state.cfg (deflated 4%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/systemcollector-1657242-compute-7-10.cluster.lan.sc (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/sep.events (deflated 89%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/amplxe-perf.1657249.log (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/perfcmd (deflated 75%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/map.events (deflated 79%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252.stat.perf (deflated 68%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/amplxe-perf.1657278.log (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/pytrace-1657252-0x17db321e.log (deflated 77%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.0-1657252.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.0-1657252.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/pytrace-1657252-0x25547606.log (deflated 79%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1-1657252.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1-1657252.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/pytrace-1657313-0x2f76eb70.log (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.0-1657313.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.0-1657313.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/pytrace-1657313-0x33d2cbd7.log (deflated 77%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.1-1657313.0.th (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657313.1-1657313.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1-1657336.0.th (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1-1657336.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1-1657337.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657242-1657252.1-1657337.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.0-1657338.0.th (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.0-1657338.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/pytrace-1657338-0x3b693a44.log (deflated 90%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657338.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657338.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657354.0.th (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657354.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657355.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657355.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657356.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657356.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657360.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657360.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657375.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657375.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657377.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657377.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657376.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657376.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657378.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657378.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657380.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657380.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657379.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657379.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657381.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657381.0.th.aux (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657384.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657384.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657382.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657382.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657383.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657383.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657385.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657385.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657386.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657386.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657390.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657390.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657389.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657389.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657391.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657391.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657392.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657392.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657394.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657394.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657395.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657395.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657396.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657396.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657393.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657393.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657398.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657398.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657397.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657397.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657399.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657399.0.th.aux (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657400.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657400.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657401.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657401.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657404.0.th (deflated 4%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657404.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657406.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657406.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657407.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657407.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657405.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657405.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657408.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657408.0.th.aux (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657409.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_hotspots_t32/data.0/1657252-1657338.1-1657409.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/archive/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/archive/binaries/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/archive/binaries/[vdso]/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/[vdso] (deflated 66%)
+  adding: diagnostics_results/vtune_hotspots_t32/.norun (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/dicer.db (deflated 78%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/grouper.metadata (deflated 86%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/pmu_data/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/pmu_data/container.metadata (deflated 56%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/pmu_data/end_tsc/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/pmu_data/end_tsc/0 (deflated 85%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/pmu_data/end_tsc/mapping.xml (deflated 1%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/directory.xml (deflated 42%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/groupings_dbint-2128360181.dat (deflated 84%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/dbint-2128360181/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/dbint-2128360181/aggregated/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/dbint-2128360181/aggregated/0/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/dbint-2128360181/aggregated/0/0 (deflated 80%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/timelinedb/dbint-2128360181/aggregated/0/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_dd_thread/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_dd_thread/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_dd_thread/grouper/0 (deflated 91%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_dd_thread/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_dd_thread/container.metadata (deflated 67%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/0 (deflated 74%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/container.metadata (deflated 52%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/0 (deflated 88%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/container.metadata (deflated 61%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_hotspots_t32/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/container.metadata (deflated 60%)
+  adding: diagnostics_results/vtune_threading_t32/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/vtune_threading_t32.vtune (deflated 54%)
+  adding: diagnostics_results/vtune_threading_t32/log/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/log/perfrun-2026.09.17-03h58m20s.1658303.log (deflated 83%)
+  adding: diagnostics_results/vtune_threading_t32/log/mrtehelpers-2026.09.17-03h58m20s.1658303.log (deflated 47%)
+  adding: diagnostics_results/vtune_threading_t32/log/perfrun-2026.09.17-03h58m21s.1658333.log (deflated 87%)
+  adding: diagnostics_results/vtune_threading_t32/log/mrtehelpers-2026.09.17-03h58m21s.1658333.log (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/config/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/config/collection.cfg (deflated 66%)
+  adding: diagnostics_results/vtune_threading_t32/config/analysis_type.cfg (deflated 73%)
+  adding: diagnostics_results/vtune_threading_t32/config/context_values.cfg (deflated 81%)
+  adding: diagnostics_results/vtune_threading_t32/config/runss.options (deflated 44%)
+  adding: diagnostics_results/vtune_threading_t32/config/search_dir.cfg (deflated 67%)
+  adding: diagnostics_results/vtune_threading_t32/config/log.cfg (deflated 80%)
+  adding: diagnostics_results/vtune_threading_t32/config/state.cfg (deflated 4%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/systemcollector-1658303-compute-7-10.cluster.lan.sc (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/pytrace-1658314-0xeebf936b.log (deflated 77%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.0-1658314.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.0-1658314.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/pytrace-1658314-0xf77ce8c8.log (deflated 79%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1-1658314.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1-1658314.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/pytrace-1658367-0x427977b.log (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.0-1658367.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.0-1658367.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/pytrace-1658367-0xa27b15c.log (deflated 76%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.1-1658367.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658367.1-1658367.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1-1658380.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1-1658380.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1-1658381.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658303-1658314.1-1658381.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.0.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.0.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.0-1658382.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.0-1658382.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1.trace (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1.trace.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/pytrace-1658382-0x12e46bb2.log (deflated 90%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658382.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658382.0.th.aux (deflated 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658398.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658398.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658399.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658399.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658400.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658400.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658406.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658406.0.th.aux (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658420.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658420.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658425.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658425.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658423.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658423.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658421.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658421.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658422.0.th (deflated 4%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658422.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658424.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658424.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658426.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658426.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658427.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658427.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658429.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658429.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658428.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658428.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658430.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658430.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658433.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658433.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658434.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658434.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658432.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658432.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658435.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658435.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658437.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658437.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658431.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658431.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658438.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658438.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658436.0.th (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658436.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658442.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658442.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658444.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658444.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658439.0.th (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658439.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658443.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658443.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658449.0.th (deflated 4%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658449.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658448.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658448.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658450.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658450.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658447.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658447.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658445.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658445.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658446.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658446.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658451.0.th (deflated 3%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658451.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658454.0.th (deflated 2%)
+  adding: diagnostics_results/vtune_threading_t32/data.0/1658314-1658382.1-1658454.0.th.aux (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/archive/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/archive/binaries/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/archive/binaries/[vdso]/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/archive/binaries/[vdso]/9bf2f4aaf5b7c2dbbebd864fa5e31550/[vdso] (deflated 66%)
+  adding: diagnostics_results/vtune_threading_t32/.norun (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/dicer.db (deflated 61%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/grouper.metadata (deflated 87%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/directory.xml (deflated 48%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/groupings_dbint-1665846327.dat (deflated 83%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1665846327/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1665846327/aggregated/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1665846327/aggregated/0/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1665846327/aggregated/0/0 (deflated 81%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1665846327/aggregated/0/mapping.xml (deflated 6%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/groupings_dbint-1618882024.dat (deflated 42%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1618882024/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1618882024/instance/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1618882024/instance/0/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1618882024/instance/0/0 (deflated 84%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/timelinedb/dbint-1618882024/instance/0/mapping.xml (deflated 1%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_dd_thread/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_dd_thread/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_dd_thread/grouper/0 (deflated 82%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_dd_thread/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_dd_thread/container.metadata (deflated 66%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/0 (deflated 65%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_data_grouper/container.metadata (deflated 63%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/0 (deflated 61%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/mapping.xml (deflated 5%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/container.metadata (deflated 52%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/grouper/ (stored 0%)
+  adding: diagnostics_results/vtune_threading_t32/sqlite-db/_cache_grouper_data4_sched_and_counter_metrics/container.metadata (deflated 60%)
+  adding: diagnostics_results/vtune_hotspots_t32_summary.txt (deflated 55%)
+  adding: diagnostics_results/vtune_threading_t32_summary.txt (deflated 60%)
+  adding: diagnostics_results/nsys_mpi_rank2.nsys-rep (deflated 45%)
+  adding: diagnostics_results/nsys_mpi_rank0.nsys-rep (deflated 46%)
+  adding: diagnostics_results/nsys_mpi_rank1.nsys-rep (deflated 46%)
+Diagnostics saved in: /home/hpc26_352165/Test/src/diagnostics_results.zip
