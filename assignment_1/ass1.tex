@@ -82,7 +82,7 @@ time lost to idle spinning at synchronization points.
 
 Hotspot analysis showed that \texttt{gomp\_team\_barrier\_wait\_end} and
 \texttt{fwrite} accounted for 79.4\% and 9.7\% of total CPU time
-respectively, against only 2.2\% for the matrix computation itself \footnote{gjgjgj}: the
+respectively, against only 2.2\% for the matrix computation itself: the
 bottleneck was therefore not the stencil, but excessive synchronization
 and I/O overhead. Three successive transformations addressed this, each
 verified either via VTune or direct code inspection.
@@ -168,10 +168,11 @@ Regarding the absolute execution times, the data perfectly validates the theoret
     \caption{Speedup and parallel efficiency with varying number of threads.}
     \label{fig:speedup}
 \end{figure}
+We then tested the program with a fixed workload size of $M=15000$ varying the number of threads and collected the \textbf{Speedup} and \textbf{Parallel Efficiency} (Speedup/Number of threads) parameters.
 Figure~\ref{fig:speedup} shows two distinct regimes. For $P \leq 32$, all
-threads run on independent physical cores; the residual efficiency loss
-is explained by the OpenMP barrier cost identified with VTune, which
-grows with team size. For $P=64$ and $P=96$, thread count exceeds the
+threads run on independent physical cores; the efficiency loss
+is explained by the OpenMP barriers cost, which
+grows with team size. For $t=64$ and $t=96$, thread count exceeds the
 number of physical cores (48), so Hyper-Threading is used from that point onward.
 
 We repeated the same test with the I/O operations disabled, so that the
@@ -183,7 +184,7 @@ program only computes the matrix updates. \footnote{See output\_1925400.txt, out
     \label{fig:speedup_noio}
 \end{figure}
 As Figure~\ref{fig:speedup_noio} shows, both metrics improve
-significantly: at $P=96$ speedup more than doubles, from $11.1\times$ to
+significantly: at $t=96$ speedup more than doubles, from $11.1\times$ to
 $25.1\times$, and parallel efficiency grows from 11.6\% to 26.1\%. This
 confirms that a substantial share of the overhead seen in the full
 version came from the I/O operations and their associated
@@ -203,11 +204,11 @@ inter-socket interconnect.
     \label{fig:speedup_noio_static}
 \end{figure}
 As shown in Figure~\ref{fig:speedup_noio_static}, the static schedule
-substantially mitigates this effect: the efficiency drop between $P=16$
-and $P=32$ is roughly halved (from $-19.3$ to $-10.0$ percentage points
+substantially mitigates this effect: the efficiency drop between $t=16$
+and $t=32$ is roughly halved (from $-19.3$ to $-10.0$ percentage points
 relative to \texttt{guided}), and efficiency remains markedly higher at
-$P=32$ (43.7\% vs. 29.9\%), $P=64$ (45.4\% vs. 27.0\%, a 68\% relative
-gain) and $P=96$ (38.3\% vs. 26.1\%), with speedup at $P=96$ rising from
+$t=32$ (43.7\% vs. 29.9\%), $t=64$ (45.4\% vs. 27.0\%, a 68\% relative
+gain) and $t=96$ (38.3\% vs. 26.1\%), with speedup at $t=96$ rising from
 $25.1\times$ to $36.8\times$. This is consistent with the static schedule
 preserving the same thread-to-row mapping established during
 initialization, which keeps most memory accesses local to each thread's
