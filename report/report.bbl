@@ -5,11 +5,6 @@ Politecnico di~Torino.
 \newblock Hpc@polito infrastructure guide.
 \newblock \url{https://hpc.polito.it/docs/hpcpolito_guide.pdf}.
 
-\bibitem{drepper_memory}
-Ulrich Drepper.
-\newblock What every programmer should know about memory.
-\newblock Technical report, Red Hat, Inc., 2007.
-
 \bibitem{vtune-hotspots}
 {Intel Corporation}.
 \newblock Hotspots analysis for {CPU} usage issues -- intel vtune profiler user

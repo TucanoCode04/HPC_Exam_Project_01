@@ -2,19 +2,34 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{titlesec}
 \usepackage{hyperref}
 \geometry{
     a4paper,
-    top=2cm,    % Ridotto da 2.5 a 1.5
+    top=2cm,
     bottom=2cm,
-    left=2cm,
-    right=2cm
+    left=1.5cm,
+    right=1.5cm,
+    footskip=0.8cm
 }
+
+% Tighter spacing before/after every section-level title, report-wide.
+\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.5ex plus 1ex minus .2ex}{0.8ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1ex plus 1ex minus .2ex}{0.5ex plus .2ex}
+
+% Tighter footnote spacing (gap above the footnote rule, and between
+% individual footnotes when a page has more than one).
+\setlength{\skip\footins}{6pt plus 2pt minus 1pt}
+\setlength{\footnotesep}{5pt}
+
 \title{HPC Project Report}
 \author{Leonardo Antonio Riola, Davide Donati, Giacomo Girotto}
 \date{}
 \begin{document}
+\vspace{-1.5cm}
 \maketitle
+\vspace{-1cm}
 \input{../assignment_1/ass1.tex}
 \section{Assignment 2}
 \input{../Giro_part/Esercizio_2/sezione_giro_2}
