@@ -1,0 +1,212 @@
+Assignment 2 presentation -- 7 slides, ~5-6 minutes
+====================================================
+Same format as assignment 3's script: on-screen description, a spoken
+script block (~15-25s each at normal pace), and a ready-to-paste prompt
+for the Claude PowerPoint add-in, one per slide.
+
+Images referenced below all live in:
+Giro_part/Esercizio_2/Grafici/
+  - Grafico_tempi_variandoM_conIO.png
+  - combo_bars_lines_1socket.png
+  - combo_bars_lines_2socket.png
+  - combo_bars_lines_2nodes_threads.png
+
+
+SLIDE 1 -- Title
+-----------------
+On screen: text only, no image.
+  Title: "Assignment 2 -- Hybrid MPI + OpenMP"
+  Subtitle: "Multi-wave interference on HPC@PoliTO"
+  Small italic line: "Finding: the ceiling is disk I/O and socket-level
+  memory contention -- not the stencil"
+
+Say:
+"Assignment two extends the wave simulator to run three different wave
+scenarios at once, using MPI on top of the OpenMP core from part one.
+Each rank runs its own independent simulation. We'll walk through four
+experiments that progressively isolate exactly what limits performance
+here -- and it's not the computation itself."
+
+PowerPoint add-in prompt:
+"Create a title slide titled 'Assignment 2 -- Hybrid MPI + OpenMP' with
+subtitle 'Multi-wave interference on HPC@PoliTO', and a small italic
+line below reading 'Finding: the ceiling is disk I/O and socket-level
+memory contention -- not the stencil'. No image, no bullet points. Add
+this as speaker notes: 'Assignment two extends the wave simulator to run
+three different wave scenarios at once, using MPI on top of the OpenMP
+core from part one. Each rank runs its own independent simulation.
+We'll walk through four experiments that progressively isolate exactly
+what limits performance here -- and it's not the computation itself.'
+Match the existing deck's fonts, colors, and layout style."
+
+
+SLIDE 2 -- Architecture
+------------------------
+On screen: text only, no image.
+  Headline: "3 MPI ranks, one scenario each, OpenMP inside each"
+  Small text: "Rank 0: baseline single wave -- Rank 1: two impulses at
+  t=0 -- Rank 2: second impulse delayed to t_start"
+
+Say:
+"Rank 0 reproduces the single-wave baseline from assignment one. Rank 1
+starts two impulses at once, to study wave interference. Rank 2 delays
+its second impulse, for time-shifted interference instead. The three
+ranks never exchange data -- each just runs its own full simulation loop
+independently, which is what let us optimize memory allocation and
+thread synchronization per rank without any cross-rank coordination
+cost."
+
+PowerPoint add-in prompt:
+"Create a slide titled '3 MPI ranks, one scenario each, OpenMP inside
+each'. Below the title, in smaller text: 'Rank 0: baseline single wave
+-- Rank 1: two impulses at t=0 -- Rank 2: second impulse delayed to
+t_start'. No image. Add this as speaker notes: 'Rank 0 reproduces the
+single-wave baseline from assignment one. Rank 1 starts two impulses at
+once, to study wave interference. Rank 2 delays its second impulse, for
+time-shifted interference instead. The three ranks never exchange data
+-- each just runs its own full simulation loop independently, which is
+what let us optimize memory allocation and thread synchronization per
+rank without any cross-rank coordination cost.'"
+
+
+SLIDE 3 -- The I/O bottleneck
+-------------------------------
+On screen: Grafico_tempi_variandoM_conIO.png, headline "Severe slowdown
+vs. assignment 1 as M grows -> traced to concurrent disk writes".
+
+Say:
+"Once we profiled the three ranks together, execution time degraded
+badly compared to assignment one as the grid size grew. It wasn't the
+extra computation -- all three ranks write their frames to the same
+shared filesystem at the same time, and that concurrent I/O is what was
+actually stalling every CPU thread."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'Severe slowdown vs. assignment 1 as M grows ->
+traced to concurrent disk writes'. Include the attached image
+(Grafico_tempi_variandoM_conIO.png) large and centered below the title,
+no bullet points. Add this as speaker notes: 'Once we profiled the three
+ranks together, execution time degraded badly compared to assignment
+one as the grid size grew. It wasn't the extra computation -- all three
+ranks write their frames to the same shared filesystem at the same time,
+and that concurrent I/O is what was actually stalling every CPU
+thread.'"
+
+
+SLIDE 4 -- Isolating compute: single-socket profiling
+---------------------------------------------------------
+On screen: combo_bars_lines_1socket.png, headline "Removing I/O: 700s ->
+61s at M=10000 -- but Rank 1's utilization doesn't add up".
+
+Say:
+"With disk writes disabled, execution time dropped from over seven
+hundred seconds to about sixty-one, confirming I/O was the main cost.
+But VTune showed something odd: Rank 1's effective CPU utilization was
+much lower than the other two, even though all three do identical work.
+At this point we didn't yet know why -- the next experiment was designed
+specifically to find out."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'Removing I/O: 700s -> 61s at M=10000 -- but Rank
+1's utilization doesn't add up'. Include the attached image
+(combo_bars_lines_1socket.png) large and centered below the title, no
+bullet points. Add this as speaker notes: 'With disk writes disabled,
+execution time dropped from over seven hundred seconds to about
+sixty-one, confirming I/O was the main cost. But VTune showed something
+odd: Rank 1's effective CPU utilization was much lower than the other
+two, even though all three do identical work. At this point we didn't
+yet know why -- the next experiment was designed specifically to find
+out.'"
+
+
+SLIDE 5 -- Splitting ranks across sockets
+--------------------------------------------
+On screen: combo_bars_lines_2socket.png, headline "Isolating Rank 1 on
+its own socket: 88s vs 150s -- and it explains the utilization gap too".
+
+Say:
+"We moved to a partition where we could control socket placement, and
+Rank 1 landed alone on one socket while the other two shared the second.
+Rank 1 finished in eighty-eight seconds against one-fifty for the
+others -- real evidence of socket-level memory contention. It also
+explained the earlier puzzle: since MPI_Finalize is a global sync point,
+whichever rank finishes first just idles waiting for the rest, and VTune
+averages that idle time into its utilization score -- dragging down the
+score of the fastest rank, not the slowest."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'Isolating Rank 1 on its own socket: 88s vs 150s
+-- and it explains the utilization gap too'. Include the attached image
+(combo_bars_lines_2socket.png) large and centered below the title, no
+bullet points. Add this as speaker notes: 'We moved to a partition where
+we could control socket placement, and Rank 1 landed alone on one socket
+while the other two shared the second. Rank 1 finished in eighty-eight
+seconds against one-fifty for the others -- real evidence of
+socket-level memory contention. It also explained the earlier puzzle:
+since MPI_Finalize is a global sync point, whichever rank finishes first
+just idles waiting for the rest, and VTune averages that idle time into
+its utilization score -- dragging down the score of the fastest rank,
+not the slowest.'"
+
+
+SLIDE 6 -- Full node isolation
+---------------------------------
+On screen: combo_bars_lines_2nodes_threads.png, headline "One dedicated
+node per rank: 150s -> 88s -> 57s, best config ~29s at 48 threads".
+
+Say:
+"Giving each rank an entire dedicated node -- not just a separate socket
+-- brought time down further, to about fifty-seven seconds, with Rank 0
+and Rank 1 now matching almost exactly. Scaling up to forty-eight
+threads per rank under full isolation got us to our best result: about
+twenty-nine seconds, with CPU utilization climbing from around one
+percent at a single thread to forty-eight percent at forty-eight."
+
+PowerPoint add-in prompt:
+"Create a slide titled 'One dedicated node per rank: 150s -> 88s -> 57s,
+best config ~29s at 48 threads'. Include the attached image
+(combo_bars_lines_2nodes_threads.png) large and centered below the
+title, no bullet points. Add this as speaker notes: 'Giving each rank an
+entire dedicated node -- not just a separate socket -- brought time down
+further, to about fifty-seven seconds, with Rank 0 and Rank 1 now
+matching almost exactly. Scaling up to forty-eight threads per rank
+under full isolation got us to our best result: about twenty-nine
+seconds, with CPU utilization climbing from around one percent at a
+single thread to forty-eight percent at forty-eight.'"
+
+
+SLIDE 7 -- Conclusion
+------------------------
+On screen: text only, 3 bullets max:
+  - Real bottleneck: concurrent disk I/O, not the stencil computation
+  - Socket-level memory contention is real and measurable (88s vs 150s)
+  - Apparent "low utilization" was an artifact of MPI_Finalize idle time,
+    not wasted compute -- caught by connecting two separate experiments
+
+Say:
+"The throughline here: every anomaly we saw had a real, testable cause,
+found by isolating one variable at a time -- disk contention, then
+socket placement, then full node isolation. What looked at first like a
+mysterious utilization drop turned out to just be a synchronization
+artifact, not wasted work. Best configuration: one dedicated node per
+rank, forty-eight threads, about twenty-nine seconds."
+
+PowerPoint add-in prompt:
+"Create a closing slide titled 'Conclusions' with exactly these three
+bullet points, no image: 'Real bottleneck: concurrent disk I/O, not the
+stencil computation', 'Socket-level memory contention is real and
+measurable (88s vs 150s)', 'Apparent low utilization was an artifact of
+MPI_Finalize idle time, not wasted compute -- caught by connecting two
+separate experiments'. Add this as speaker notes: 'The throughline here:
+every anomaly we saw had a real, testable cause, found by isolating one
+variable at a time -- disk contention, then socket placement, then full
+node isolation. What looked at first like a mysterious utilization drop
+turned out to just be a synchronization artifact, not wasted work. Best
+configuration: one dedicated node per rank, forty-eight threads, about
+twenty-nine seconds.'"
+
+
+Before generating with assignment 1 and 3's slides already in the deck,
+worth adding once to your first prompt: "Match the existing deck's
+fonts, colors, and layout style" -- so slide 1 doesn't visually clash
+with the rest.
