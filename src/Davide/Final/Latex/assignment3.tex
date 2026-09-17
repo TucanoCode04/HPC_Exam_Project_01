@@ -41,17 +41,10 @@ against the frame's own peak magnitude (found via a GPU-side reduction
 bright red/orange for positive values and blue for negative, saturating
 at the wave's extrema), and the result is written to disk as an ASCII
 PPM frame while the original scalar matrix continues to drive the
-simulation. Figure~\ref{fig:frame} shows one rendered frame.
+simulation.
 Because the job requests a single GPU (\texttt{--gres=gpu:1}) for all
 three ranks, the GPU is a shared resource -- a design point this report
 returns to in Section~\ref{sec:contention}.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.32\textwidth]{../src/Davide/Final/Latex/figures/representative_frame.png}
-    \caption{A rendered frame (sim1, late in the simulation): bright extrema, fading fronts, white calm regions.}
-    \label{fig:frame}
-\end{figure}
 
 \subsection{Cluster hardware}
 All experiments ran on Politecnico di Torino's HPC@PoliTO cluster
@@ -98,7 +91,7 @@ to dominate) was already unambiguous well before $M=4096$.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_execution_time.png}
+    \includegraphics[width=0.68\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_execution_time.png}
     \caption{Execution time and its GPU/OpenMP split, varying grid size $M$ (4 threads, 3 ranks sharing 1 GPU).}
     \label{fig:size}
 \end{figure}
@@ -123,7 +116,7 @@ padding). We measured before optimizing, and the measurement said no.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_phase_breakdown.png}
+    \includegraphics[width=0.68\textwidth]{../src/Davide/Final/Latex/figures/size_sweep_phase_breakdown.png}
     \caption{colorize+write split into its 5 phases vs.\ grid size. Left: full stack (write's dominance is the point, not log-scaled). Right: same data with write excluded, zoomed in.}
     \label{fig:phase}
 \end{figure}
@@ -168,7 +161,7 @@ I/O/synchronization behavior, not GPU-specific.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{../src/Davide/Final/Latex/figures/nsys_os_runtime_breakdown.png}
+    \includegraphics[width=0.6\textwidth]{../src/Davide/Final/Latex/figures/nsys_os_runtime_breakdown.png}
     \caption{OS Runtime Summary breakdown (rank 0), \texttt{edu\_a40} vs.\ \texttt{edu\_v100} -- nearly identical despite very different GPU hardware.}
     \label{fig:nsys}
 \end{figure}
@@ -198,7 +191,7 @@ with no competing GPU-bound stage.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{../src/Davide/Final/Latex/figures/thread_sweep_speedup_efficiency.png}
+    \includegraphics[width=0.68\textwidth]{../src/Davide/Final/Latex/figures/thread_sweep_speedup_efficiency.png}
     \caption{Speedup and efficiency vs.\ OpenMP thread count at $M=4096$, full pipeline vs.\ compute-only.}
     \label{fig:thread}
 \end{figure}
@@ -218,7 +211,7 @@ confirmed and report only the $M=4096$ result.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.65\textwidth]{../src/Davide/Final/Latex/figures/blocksize_sweep_kernel_time.png}
+    \includegraphics[width=0.52\textwidth]{../src/Davide/Final/Latex/figures/blocksize_sweep_kernel_time.png}
     \caption{GPU colorize+write time vs.\ CUDA threads-per-block, $M=4096$.}
     \label{fig:block}
 \end{figure}
@@ -250,16 +243,18 @@ ranks writing frames \emph{concurrently} to the same node; \texttt{solo}
 is the only mode with exactly one writer at a time, anywhere.
 \texttt{multinode} sits in between ($\sim$10\% faster than
 \texttt{distributed}) by removing host-local contention (memory bus,
-PCIe root complex) but not the deeper one: all three nodes still write
-to the same shared network filesystem (BeeGFS/NFS, cluster-wide by
-design), so multinode is closer to \texttt{shared} than to
+PCIe root complex) but not, most plausibly, a deeper one: all three
+nodes most likely still write to the same shared, network-attached
+storage behind every node's home directory (per the cluster's own
+documentation, though not measured directly here) -- the best available
+explanation for why multinode sits closer to \texttt{shared} than to
 \texttt{solo}. The dominant contention in this workload is concurrent
 I/O, not GPU compute-engine sharing -- consistent with
 Section~\ref{sec:nsys}'s \texttt{fclose}-dominated OS Runtime profile.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{../src/Davide/Final/Latex/figures/contention_sweep_solo_vs_shared.png}
+    \includegraphics[width=0.6\textwidth]{../src/Davide/Final/Latex/figures/contention_sweep_solo_vs_shared.png}
     \caption{sim1's execution time across four GPU/node sharing configurations, identical workload.}
     \label{fig:contention}
 \end{figure}

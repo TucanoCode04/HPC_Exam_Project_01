@@ -1,16 +1,21 @@
 \section{Assignment 1}
 \subsection{Introduction and objectives}
-The goal of this assignment is to implement a simulator for the
-propagation of a damped wave, governed by the following partial
+This assignment implements a numerical simulator for a damped wave
+propagating across a two-dimensional domain, governed by the partial
 differential equation:
 \begin{equation}
     \frac{\partial^{2}u}{\partial t^{2}}+\gamma\frac{\partial u}{\partial t}=c^{2}\nabla^{2}u
 \end{equation}
-where $u(x,y,t)$ is the wave height on a two-dimensional plane over
-time, $\gamma$ is the damping coefficient, and $c$ is the propagation
-speed. The simulator computes $u$ at every point $(x,y)$ as $t$
-advances, with the final goal of producing an MP4 video of the
-simulation.
+Physically, this couples wave propagation (the $c^{2}\nabla^{2}u$ term,
+which spreads a local disturbance outward at speed $c$) with viscous
+damping (the $\gamma\,\partial u/\partial t$ term, which dissipates
+energy over time and drives the field back toward rest); $u(x,y,t)$ is
+the wave's height at position $(x,y)$ and time $t$. Beyond producing a
+visual MP4 of the simulation, this first assignment's real purpose is to
+establish the OpenMP-parallelized simulation core that Assignments 2 and
+3 build on directly: the same discretization, the same stencil update,
+and the same per-frame output pattern reappear largely unchanged in the
+later multi-rank and GPU-accelerated versions.
 
 \subsection{Implementation}
 The continuous model is discretised on a regular grid: space is divided
@@ -28,17 +33,7 @@ The temporal evolution is handled with three $M \times M$ matrices,
 with \texttt{malloc} and representing the wave state at times $t-1$, $t$
 and $t+1$ respectively. All elements are initialised to zero except for a
 single impulse at the centre of the grid $(M/2, M/2)$, used to start the
-perturbation. The impulse amplitude, propagation speed and damping
-coefficient used throughout this work are:
-\begin{center}
-    \begin{tabular}{|c|c|c|}
-    \hline
-    \textbf{Impulse} & \textbf{Propagation speed $c$} & \textbf{Damping coefficient $\gamma$} \\
-    \hline
-    -49 & 0.33 & 0.187 \\
-    \hline
-    \end{tabular}
-\end{center}
+perturbation.
 
 The core of this assignment is the parallelization of the update loop
 with \textbf{OpenMP}. A \texttt{\#pragma omp parallel} region is opened
@@ -87,25 +82,21 @@ bottleneck was therefore not the stencil, but excessive synchronization
 and I/O overhead. Three successive transformations addressed this, each
 verified either via VTune or direct code inspection.
 
-\paragraph{Improvement 1: buffered frame output.}
-Frames were originally written pixel by pixel with \texttt{fwrite()}
-inside a single-threaded \texttt{\#pragma omp single} block. We replaced
-this with an in-memory buffer, filled in parallel via a dedicated
-\texttt{\#pragma omp for} and flushed to disk with one \texttt{fwrite()}
-call, cutting I/O calls from one per pixel to one per frame. This did
-introduce a new barrier, however, since the buffer-fill loop is a
-separate worksharing construct from the stencil loop.
-
-\paragraph{Improvement 2: loop fusion.}
-Since the stencil and the buffer-fill iterate over the exact same
-$(i,j)$ range, we merged them into a single \texttt{\#pragma omp for},
-writing each scaled pixel immediately after computing
-\texttt{u\_fut[i][j]}. This removes the extra barrier introduced above,
-with no loss of parallel work.
-
-\paragraph{Improvement 3: parallel initialization and scheduling policy.}
-The matrix initialization, originally performed sequentially by a single
-thread, was parallelized with \texttt{\#pragma omp parallel for}. By
+Three successive transformations addressed this, each verified either
+via VTune or direct code inspection. Frames were originally written
+pixel by pixel with \texttt{fwrite()} inside a single-threaded
+\texttt{\#pragma omp single} block; replacing this with an in-memory
+buffer, filled in parallel via a dedicated \texttt{\#pragma omp for} and
+flushed to disk with one \texttt{fwrite()} call, cut I/O calls from one
+per pixel to one per frame, though it introduced a new barrier, since the
+buffer-fill loop was a separate worksharing construct from the stencil
+loop. Since the stencil and the buffer-fill iterate over the exact same
+$(i,j)$ range, however, we then merged them into a single
+\texttt{\#pragma omp for}, writing each scaled pixel immediately after
+computing \texttt{u\_fut[i][j]} and removing that extra barrier again
+with no loss of parallel work. Finally, the matrix initialization,
+originally performed sequentially by a single thread, was parallelized
+with \texttt{\#pragma omp parallel for}. By
 Amdahl's law, this serial fraction would otherwise cap the achievable
 speedup regardless of how well the main loop scales. On a multi-socket
 compute node, each CPU socket has its own directly-attached memory
@@ -130,10 +121,11 @@ isolating the computation from I/O reverses this result, confirming that
 NUMA locality does matter once the synchronization overhead of I/O is
 removed.
 
-After these three improvements, VTune Hotspot analysis showed the CPU
-time spent in \\\texttt{gomp\_team\_barrier\_wait\_end} dropping to 57.5\%,
-while time spent in the matrix computation itself rose to 15.7\%; I/O
-(\texttt{fwrite}) time fell below 0.3\% \footnote{ See output\_1920920.txt}. The Threading analysis, however,
+After these three improvements, VTune Hotspot analysis showed a clear
+shift in where CPU time was spent: \texttt{gomp\_team\_barrier\_wait\_end}
+fell from 79.4\% to 57.5\%, the matrix computation itself rose from
+2.2\% to 15.7\%, and I/O (\texttt{fwrite}) time dropped from 9.7\% to
+under 0.3\% \footnote{See output\_1920920.txt}. The Threading analysis, however,
 revealed that the program was still using only 23\% of the available
 CPUs, for an average effective utilization of 7.362 out of 32 threads:
 a clear sign that, at $M=1000$, the workload was simply too small for the
@@ -143,13 +135,17 @@ utilization changes.
 
 \subsection{Testing and Results}
 \label{sec:testing}
-The remaining tests were run on the \texttt{Edu\_sapphire} partition
+Having used \texttt{edu\_skylake} purely to identify and fix code-level
+bottlenecks, the remaining tests moved to a larger, more capable
+partition to study the HPC system's own architectural behavior under
+realistic workloads -- NUMA effects, Hyper-Threading, and multi-node
+scaling -- rather than the code itself. The remaining tests were run on the \texttt{Edu\_sapphire} partition
 (2 nodes, 48 physical and 96 logical cores each); each node is dual-socket,
 with 24 physical cores per socket \cite{hpcguide}.
 \subsubsection{Sweep of workload size}
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\textwidth]{../assignment_1/plots/timeandCPUU96.png}
+    \includegraphics[width=0.55\textwidth]{../assignment_1/plots/timeandCPUU96.png}
     \caption{Execution time and true CPU efficiency scaling with varying grid sizes ($M$), using 96 threads.}
     \label{fig:performance_scaling}
 \end{figure}
@@ -162,9 +158,9 @@ However, the efficiency strictly plateaus at approximately 36\% for massive grid
 the strict sequential bottleneck of the disk I/O operations (Amdahl's Law), the saturation of the memory bandwidth (memory wall), and the effects of Hyper-Threading. Regarding the latter, since the node possesses only 48 physical cores, through Hyper-Threading each core exposes two logical processors to the OS, which share the same exectuion units, caches and memory bandwidth \cite{marr2002hyperthreading}. So, attempting to utilize 96 threads for a memory-bound stencil operation forces logical threads to heavily compete for the same physical cache resources, preventing the utilization from approaching 100\%.
 Regarding the absolute execution times, the data perfectly validates the theoretical $O(M^2)$ spatial complexity of the 2D grid simulation. For instance, doubling the grid dimension from $M=10000$ to $M=20000$ effectively quadruples the computational domain and the execution time scales from 33.0 seconds to 123.6 seconds, achieving a 3.74x increase that is remarkably close to the theoretical 4x factor. Conversely, in the smaller grid range ($M \le 2500$), the constant overhead associated with managing 96 concurrent threads, along with the fixed costs of implicit OpenMP barriers, heavily dominates the actual execution time, confirming the thread starvation phenomenon observed in the efficiency curve.
 \subsubsection{Sweep of number of threads at $M=15000$}
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling.png}
+    \includegraphics[width=0.62\textwidth]{../assignment_1/plots/scaling.png}
     \caption{Speedup and parallel efficiency with varying number of threads.}
     \label{fig:speedup}
 \end{figure}
@@ -177,9 +173,9 @@ number of physical cores (48), so Hyper-Threading is used from that point onward
 
 We repeated the same test with the I/O operations disabled, so that the
 program only computes the matrix updates. \footnote{See output\_1925400.txt, output\_1925398.txt, output\_1925396.txt, output\_1925394.txt, output\_1925399.txt, output\_1925397.txt, output\_1925395.txt, output\_1925393.txt in folder "results\_noio"}
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling_noio.png}
+    \includegraphics[width=0.62\textwidth]{../assignment_1/plots/scaling_noio.png}
     \caption{Speedup and parallel efficiency with varying number of threads, I/O disabled.}
     \label{fig:speedup_noio}
 \end{figure}
@@ -197,9 +193,9 @@ loop, to restore the NUMA alignment mentioned earlier. \footnote{See output\_192
 exceeds 24, work is necessarily split across both sockets, and accesses
 to memory owned by the other socket incur the added latency of the
 inter-socket interconnect.
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{../assignment_1/plots/scaling_noio_static.png}
+    \includegraphics[width=0.62\textwidth]{../assignment_1/plots/scaling_noio_static.png}
     \caption{Speedup and parallel efficiency with varying number of threads, I/O disabled, \texttt{schedule(static)}.}
     \label{fig:speedup_noio_static}
 \end{figure}
