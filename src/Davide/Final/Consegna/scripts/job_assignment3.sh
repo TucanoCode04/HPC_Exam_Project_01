@@ -1,0 +1,86 @@
+#!/bin/bash
+#SBATCH -J ass_3_cuda
+#SBATCH --partition=edu_a40
+#SBATCH --time=00:10:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=3
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --mem-per-cpu=1G
+#SBATCH --output=output_%j.txt
+
+## --- Error check (exit immediately in case of an error) ---
+set -e
+
+## --- Load SLURM modules ---
+module purge
+module load gcc
+module load openmpi
+
+## --- CUDA toolkit (HPC SDK bundle) ---
+export CUDA_HOME=/share/apps/hpc_sdk/Linux_x86_64/25.1/cuda
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+
+## --- Nsight Systems (separate from the CUDA toolkit in the SDK layout).
+## Nsight Compute is intentionally not used here: this cluster returns
+## ERR_NVGPUCTRPERM (GPU performance-counter access is admin-only), which
+## is a driver-level restriction no user-side flag can work around.
+NSYS=/share/apps/hpc_sdk/Linux_x86_64/25.1/profilers/Nsight_Systems/bin/nsys
+
+## --- OpenMP configuration ---
+# Use the CPUs actually allocated by the scheduler for this task,
+# not a fixed value disconnected from the allocation.
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export OMP_PROC_BIND=close
+export OMP_PLACES=cores
+echo "OpenMP threads per rank: $OMP_NUM_THREADS"
+echo "MPI ranks: $SLURM_NTASKS"
+
+# --- Code compilation ---
+# No Makefile: two compilers, three steps. mpicc already knows its own
+# MPI include/lib paths and understands its own -Wl,-rpath linker flags,
+# so it compiles and links everything except the CUDA source. nvcc only
+# ever sees wave_color_cuda.cu; the two .o files are linked together by
+# mpicc, which just needs to be told where libcudart lives.
+echo "Compiling..."
+mpicc -O3 -fopenmp -c assignment_3.c -o assignment_3.o
+nvcc -O3 -c wave_color_cuda.cu -o wave_color_cuda.o
+mpicc -O3 -fopenmp assignment_3.o wave_color_cuda.o -o assignment_3 \
+    -L$CUDA_HOME/lib64 -lcudart -lstdc++
+
+## --- Program run ---
+# --size 400: user-confirmed from testing before this rewrite -- at the
+# DEFAULT_SIZE=512 fallback the wave reads as too small relative to the
+# grid in the rendered video.
+# --steps 400 (up from DEFAULT_STEPS=300, matching a prior reference
+# video's frame count): reaching further with more steps alone (tried:
+# 1500) also meant more amplitude decay (depends on gamma*dt, unaffected
+# by grid size), so the tail of the video washed out to solid white well
+# before it ended. Fixed by shrinking DX instead (see assignment_3.c) --
+# that buys propagation distance without touching the decay rate, so 400
+# steps is now enough on its own. See DX's comment for the numbers.
+echo "Running the program"
+rm -rf ./sim1_ppm ./sim2_ppm ./sim3_ppm
+mpirun -np $SLURM_NTASKS ./assignment_3 --size 400 --steps 400
+echo "Program finished. Frames saved in sim1_ppm, sim2_ppm, sim3_ppm"
+
+# --- profile ---
+echo "Profiling..."
+WORKDIR="$PWD"
+RESULTS="$PWD/nsight_results"
+
+[ -d "$RESULTS" ] && rm -rf "$RESULTS"
+mkdir -p "$RESULTS"
+
+# --- Nsight Systems: whole-application timeline (CPU/GPU overlap, memcpy,
+#     kernel launches, OpenMP/MPI activity). One report per rank.
+mpirun -np $SLURM_NTASKS "$NSYS" profile \
+    --trace=cuda,openmp,osrt --backtrace=lbr \
+    --output="$RESULTS/timeline_rank%q{OMPI_COMM_WORLD_RANK}" \
+    -- ./assignment_3 --size 400 --steps 400
+
+cd "$WORKDIR"
+zip -r results.zip nsight_results
+
+echo "Profile results saved in: $WORKDIR/results.zip"

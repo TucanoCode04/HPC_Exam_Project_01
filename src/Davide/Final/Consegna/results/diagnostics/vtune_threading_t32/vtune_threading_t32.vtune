@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+ <rdmgr>
+  <timestamp type="u64_t">1789617500</timestamp>
+  <hostname type="string">compute-7-10.cluster.lan</hostname>
+  <os type="string">linux</os>
+  <product type="string">Intel® VTune™ Profiler 2025.0.1</product>
+  <buildNumber type="s32_t">629235</buildNumber>
+  <logicalCPUCount type="s32_t">96</logicalCPUCount>
+  <physicalCoreCount type="s32_t">48</physicalCoreCount>
+  <processorPackageCount type="s32_t">2</processorPackageCount>
+  <CPUFrequency type="s64_t">3601870000</CPUFrequency>
+  <CPUFamily type="s32_t">6</CPUFamily>
+  <CPUModel type="s32_t">143</CPUModel>
+  <CPUStepping type="s32_t">8</CPUStepping>
+  <CPUBrandName type="string">Intel(R) Xeon(R) Gold 6442Y</CPUBrandName>
+  <isa type="string">avx512</isa>
+  <collectionTimeBegin type="u64_t">1789617500</collectionTimeBegin>
+  <collectionTimeEnd type="u64_t">1789617541</collectionTimeEnd>
+  <variables>
+   <at type="string">tr</at>
+  </variables>
+ </rdmgr>
+</root>

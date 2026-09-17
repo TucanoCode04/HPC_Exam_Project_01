@@ -1,0 +1,9 @@
+Compiling...
+=== Multi-node (3 ranks, 3 nodes, 1 dedicated GPU each) ===
+Rank 0: simulation 'sim1_ppm' finished in 18.758 s (colorize+write 18.346 s, compute 0.412 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.138 s, kernel 0.036 s, d2h 0.026 s, format 0.766 s, write 17.380 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 18.783 s (colorize+write 18.378 s, compute 0.405 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.146 s, kernel 0.036 s, d2h 0.026 s, format 0.772 s, write 17.397 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 18.878 s (colorize+write 18.475 s, compute 0.403 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.149 s, kernel 0.037 s, d2h 0.026 s, format 0.763 s, write 17.500 s (totals over 50 frames).
+Appended 'multinode' rows to contention_sweep.csv

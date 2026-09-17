@@ -1,0 +1,9 @@
+Compiling...
+=== Distributed (3 ranks, 3 dedicated GPUs, 1 node) ===
+Rank 0: simulation 'sim1_ppm' finished in 21.249 s (colorize+write 20.814 s, compute 0.435 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.151 s, kernel 0.037 s, d2h 0.026 s, format 0.817 s, write 19.783 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 21.374 s (colorize+write 20.942 s, compute 0.432 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.141 s, kernel 0.143 s, d2h 0.026 s, format 0.819 s, write 19.812 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 21.547 s (colorize+write 21.107 s, compute 0.440 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.145 s, kernel 0.035 s, d2h 0.026 s, format 0.828 s, write 20.073 s (totals over 50 frames).
+Appended 'distributed' rows to contention_sweep.csv
