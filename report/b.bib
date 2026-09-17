@@ -20,37 +20,37 @@
   note    = {\url{https://www.intel.com/content/dam/www/public/us/en/documents/research/2002-vol06-iss-1-intel-technology-journal.pdf}}
 }
 
-@article{slidestatic,
+@misc{slidestatic,
   author  = {Edgar Ernesto Sanchez Sanchez},
   title   = {14\_OpenMP.pdf course slides},
   year    = {2026}
 }
 
-@article{numaslides,
+@misc{numaslides,
   author  = {Edgar Ernesto Sanchez Sanchez},
   title   = {10\_parallel\_architectures.pdf course slides},
   year    = {2026}
 }
 
-@article{sanchezmpiintro,
+@misc{sanchezmpiintro,
   author  = {Edgar Ernesto Sanchez Sanchez},
   title   = {16\_MPI\_Intro.pdf course slides},
   year    = {2026}
 }
 
-@article{sanchezmpitopo,
+@misc{sanchezmpitopo,
   author  = {Edgar Ernesto Sanchez Sanchez},
   title   = {17\_MPI\_virtual\_topologies.pdf course slides},
   year    = {2026}
 }
 
-@article{sanchezcuda,
+@misc{sanchezcuda,
   author  = {Edgar Ernesto Sanchez Sanchez},
   title   = {18\_CUDA.pdf course slides},
   year    = {2026}
 }
 
-@article{sanchezgpuintro,
+@misc{sanchezgpuintro,
   author  = {Edgar Ernesto Sanchez Sanchez},
   title   = {19\_GPU\_programming\_intro.pdf course slides},
   year    = {2026}
@@ -65,13 +65,13 @@
   note        = {\url{https://www.openmp.org/spec-html/5.0/openmp.html}}
 }
 
-@article{hpcguide,
+@misc{hpcguide,
   author  = {Politecnico di Torino},
   title   = {HPC@Polito infrastructure guide},
   note    = {\url{https://hpc.polito.it/docs/hpcpolito_guide.pdf}}
 }
 
-@article{finitedifference,
+@misc{finitedifference,
   author  = {Wikipedia},
   title   = {Finite difference method},
   note    = {\url{https://en.wikipedia.org/wiki/Finite_difference}}
@@ -89,4 +89,28 @@
   institution = {Red Hat, Inc.},
   year        = {2007},
   url         = {https://people.freebsd.org/~lstewart/articles/cpumemory.pdf}
+}
+
+@misc{output_guided_static_m1000,
+  author = {{HPC Project Team}},
+  title  = {Raw profiling output logs: {schedule(static)} vs.\ {schedule(guided)} at $M=1000$},
+  note   = {output\_1920835.txt (static), output\_1920842.txt (guided), folder static\_vs\_guided}
+}
+
+@misc{output_after_improvements,
+  author = {{HPC Project Team}},
+  title  = {Raw {VTune} Hotspots output log after the three code improvements},
+  note   = {output\_1920920.txt, folder after\_improv}
+}
+
+@misc{output_noio_sweep,
+  author = {{HPC Project Team}},
+  title  = {Raw profiling output logs: thread-count sweep at {$M=15000$}, {I/O} disabled},
+  note   = {output\_1925393.txt, output\_1925394.txt, output\_1925395.txt, output\_1925396.txt, output\_1925397.txt, output\_1925398.txt, output\_1925399.txt, output\_1925400.txt, folder results\_noio}
+}
+
+@misc{output_noio_static_sweep,
+  author = {{HPC Project Team}},
+  title  = {Raw profiling output logs: thread-count sweep at {$M=15000$}, {I/O} disabled, {schedule(static)}},
+  note   = {output\_1927019.txt, output\_1927027.txt, output\_1927036.txt, output\_1928220.txt, output\_1928222.txt, output\_1928239.txt, folder results\_noio\_static}
 }

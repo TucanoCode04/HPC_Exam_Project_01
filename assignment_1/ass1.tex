@@ -108,7 +108,7 @@ the initialization loop the same schedule as the stencil loop, so that
 each thread's first-touch region matches the region it repeatedly
 accesses afterwards. Profiling the complete pipeline
 (including I/O) showed, however, that \texttt{schedule(guided)}
-outperforms \texttt{schedule(static)} in practice \footnote{See output\_1920835.txt (static) and output\_1920842.txt (guided)}: 
+outperforms \texttt{schedule(static)} in practice \cite{output_guided_static_m1000}:
 under \texttt{guided} scheduling,
 chunks are handed out to threads on request rather than fixed in advance,
 with each chunk's size proportional to the number of remaining
@@ -125,7 +125,7 @@ After these three improvements, VTune Hotspot analysis showed a clear
 shift in where CPU time was spent: \texttt{gomp\_team\_barrier\_wait\_end}
 fell from 79.4\% to 57.5\%, the matrix computation itself rose from
 2.2\% to 15.7\%, and I/O (\texttt{fwrite}) time dropped from 9.7\% to
-under 0.3\% \footnote{See output\_1920920.txt}. The Threading analysis, however,
+under 0.3\% \cite{output_after_improvements}. The Threading analysis, however,
 revealed that the program was still using only 23\% of the available
 CPUs, for an average effective utilization of 7.362 out of 32 threads:
 a clear sign that, at $M=1000$, the workload was simply too small for the
@@ -145,7 +145,7 @@ with 24 physical cores per socket \cite{hpcguide}.
 \subsubsection{Sweep of workload size}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.55\textwidth]{../assignment_1/plots/timeandCPUU96.png}
+    \includegraphics[width=0.46\textwidth]{../assignment_1/plots/timeandCPUU96.png}
     \caption{Execution time and true CPU efficiency scaling with varying grid sizes ($M$), using 96 threads.}
     \label{fig:performance_scaling}
 \end{figure}
@@ -160,7 +160,7 @@ Regarding the absolute execution times, the data perfectly validates the theoret
 \subsubsection{Sweep of number of threads at $M=15000$}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.62\textwidth]{../assignment_1/plots/scaling.png}
+    \includegraphics[width=0.5\textwidth]{../assignment_1/plots/scaling.png}
     \caption{Speedup and parallel efficiency with varying number of threads.}
     \label{fig:speedup}
 \end{figure}
@@ -172,13 +172,33 @@ grows with team size. For $t=64$ and $t=96$, thread count exceeds the
 number of physical cores (48), so Hyper-Threading is used from that point onward.
 
 We repeated the same test with the I/O operations disabled, so that the
-program only computes the matrix updates. \footnote{See output\_1925400.txt, output\_1925398.txt, output\_1925396.txt, output\_1925394.txt, output\_1925399.txt, output\_1925397.txt, output\_1925395.txt, output\_1925393.txt in folder "results\_noio"}
+program only computes the matrix updates \cite{output_noio_sweep}.
+Finally, we also replaced \texttt{schedule(guided)} with
+\texttt{schedule(static)} in both the initialization and the stencil
+loop, to restore the NUMA alignment mentioned earlier \cite{output_noio_static_sweep}. Once thread count
+exceeds 24, work is necessarily split across both sockets, and accesses
+to memory owned by the other socket incur the added latency of the
+inter-socket interconnect.
+
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.62\textwidth]{../assignment_1/plots/scaling_noio.png}
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../assignment_1/plots/scaling_noio.png}
+        \caption{\texttt{schedule(guided)}}
+        \label{fig:speedup_noio}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../assignment_1/plots/scaling_noio_static.png}
+        \caption{\texttt{schedule(static)}}
+        \label{fig:speedup_noio_static}
+    \end{subfigure}
     \caption{Speedup and parallel efficiency with varying number of threads, I/O disabled.}
-    \label{fig:speedup_noio}
+    \label{fig:speedup_noio_combined}
 \end{figure}
+
 As Figure~\ref{fig:speedup_noio} shows, both metrics improve
 significantly: at $t=96$ speedup more than doubles, from $11.1\times$ to
 $25.1\times$, and parallel efficiency grows from 11.6\% to 26.1\%. This
@@ -187,18 +207,6 @@ version came from the I/O operations and their associated
 synchronization barriers, rather than from the stencil computation
 itself.
 
-Finally, we replaced \texttt{schedule(guided)} with
-\texttt{schedule(static)} in both the initialization and the stencil
-loop, to restore the NUMA alignment mentioned earlier. \footnote{See output\_1928239.txt, output\_1928222.txt, output\_1928220.txt, output\_1927019.txt, output\_1927027.txt, output\_1927036.txt in folder "results\_noio\_static"} Once thread count
-exceeds 24, work is necessarily split across both sockets, and accesses
-to memory owned by the other socket incur the added latency of the
-inter-socket interconnect.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.62\textwidth]{../assignment_1/plots/scaling_noio_static.png}
-    \caption{Speedup and parallel efficiency with varying number of threads, I/O disabled, \texttt{schedule(static)}.}
-    \label{fig:speedup_noio_static}
-\end{figure}
 As shown in Figure~\ref{fig:speedup_noio_static}, the static schedule
 substantially mitigates this effect: the efficiency drop between $t=16$
 and $t=32$ (the exact point where the 24-core NUMA boundary is crossed) is roughly halved (from $-19.3$ to $-10.0$ percentage points
