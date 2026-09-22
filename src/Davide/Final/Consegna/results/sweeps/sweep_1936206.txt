@@ -1,0 +1,122 @@
+Compiling...
+=== Size sweep ===
+Rank 2: simulation 'sim3_ppm' finished in 0.146 s (colorize+write 0.143 s, compute 0.003 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.001 s, kernel 0.005 s, d2h 0.000 s, format 0.003 s, write 0.133 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 0.234 s (colorize+write 0.231 s, compute 0.003 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.001 s, kernel 0.106 s, d2h 0.000 s, format 0.003 s, write 0.121 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 0.439 s (colorize+write 0.436 s, compute 0.003 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.001 s, kernel 0.313 s, d2h 0.000 s, format 0.003 s, write 0.118 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 0.332 s (colorize+write 0.324 s, compute 0.008 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.002 s, kernel 0.008 s, d2h 0.001 s, format 0.014 s, write 0.301 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 0.336 s (colorize+write 0.328 s, compute 0.008 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.002 s, kernel 0.007 s, d2h 0.001 s, format 0.013 s, write 0.305 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 0.353 s (colorize+write 0.345 s, compute 0.008 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.002 s, kernel 0.007 s, d2h 0.001 s, format 0.013 s, write 0.322 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 1.057 s (colorize+write 1.030 s, compute 0.027 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.006 s, kernel 0.009 s, d2h 0.002 s, format 0.053 s, write 0.960 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 1.100 s (colorize+write 1.073 s, compute 0.027 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.006 s, kernel 0.009 s, d2h 0.002 s, format 0.052 s, write 1.004 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 1.165 s (colorize+write 1.138 s, compute 0.027 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.007 s, kernel 0.118 s, d2h 0.002 s, format 0.053 s, write 0.959 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 4.524 s (colorize+write 4.416 s, compute 0.108 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.037 s, kernel 0.015 s, d2h 0.007 s, format 0.211 s, write 4.146 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 4.531 s (colorize+write 4.420 s, compute 0.112 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.036 s, kernel 0.015 s, d2h 0.007 s, format 0.215 s, write 4.147 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 4.581 s (colorize+write 4.472 s, compute 0.109 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.035 s, kernel 0.015 s, d2h 0.007 s, format 0.212 s, write 4.203 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 19.283 s (colorize+write 18.844 s, compute 0.439 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.144 s, kernel 0.039 s, d2h 0.026 s, format 0.837 s, write 17.798 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 19.425 s (colorize+write 18.985 s, compute 0.440 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.148 s, kernel 0.139 s, d2h 0.025 s, format 0.831 s, write 17.841 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 19.439 s (colorize+write 18.997 s, compute 0.442 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.141 s, kernel 0.139 s, d2h 0.025 s, format 0.828 s, write 17.864 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 77.761 s (colorize+write 76.002 s, compute 1.759 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.571 s, kernel 0.146 s, d2h 0.106 s, format 3.256 s, write 71.923 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 78.249 s (colorize+write 76.417 s, compute 1.832 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.610 s, kernel 0.139 s, d2h 0.104 s, format 3.272 s, write 72.290 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 78.961 s (colorize+write 77.019 s, compute 1.943 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.588 s, kernel 0.143 s, d2h 0.107 s, format 3.281 s, write 72.900 s (totals over 50 frames).
+=== Thread sweep ===
+Rank 0: simulation 'sim1_ppm' finished in 79.731 s (colorize+write 77.697 s, compute 2.034 s, 1 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.604 s, kernel 0.135 s, d2h 0.101 s, format 3.316 s, write 73.541 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 79.973 s (colorize+write 78.006 s, compute 1.967 s, 1 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.570 s, kernel 0.238 s, d2h 0.101 s, format 3.272 s, write 73.825 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 82.254 s (colorize+write 79.922 s, compute 2.332 s, 1 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.600 s, kernel 0.241 s, d2h 0.105 s, format 3.293 s, write 75.683 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 85.251 s (colorize+write 83.545 s, compute 1.706 s, 2 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.636 s, kernel 0.150 s, d2h 0.112 s, format 3.219 s, write 79.428 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 85.340 s (colorize+write 83.635 s, compute 1.705 s, 2 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.627 s, kernel 0.158 s, d2h 0.113 s, format 3.193 s, write 79.544 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 86.703 s (colorize+write 84.963 s, compute 1.741 s, 2 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.644 s, kernel 0.170 s, d2h 0.128 s, format 3.207 s, write 80.814 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 79.029 s (colorize+write 77.307 s, compute 1.722 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.608 s, kernel 0.166 s, d2h 0.122 s, format 3.180 s, write 73.230 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 80.312 s (colorize+write 78.578 s, compute 1.733 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.635 s, kernel 0.189 s, d2h 0.138 s, format 3.174 s, write 74.442 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 81.046 s (colorize+write 79.308 s, compute 1.738 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.623 s, kernel 0.213 s, d2h 0.141 s, format 3.195 s, write 75.136 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 80.599 s (colorize+write 78.864 s, compute 1.735 s, 8 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.583 s, kernel 0.175 s, d2h 0.125 s, format 3.179 s, write 74.802 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 81.739 s (colorize+write 79.981 s, compute 1.759 s, 8 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.621 s, kernel 0.185 s, d2h 0.134 s, format 3.192 s, write 75.849 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 81.742 s (colorize+write 80.003 s, compute 1.739 s, 8 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.624 s, kernel 0.180 s, d2h 0.126 s, format 3.226 s, write 75.846 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 80.342 s (colorize+write 78.564 s, compute 1.778 s, 16 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.602 s, kernel 0.245 s, d2h 0.109 s, format 3.248 s, write 74.358 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 80.952 s (colorize+write 79.193 s, compute 1.760 s, 16 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.578 s, kernel 0.363 s, d2h 0.113 s, format 3.249 s, write 74.890 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 81.253 s (colorize+write 79.435 s, compute 1.818 s, 16 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.587 s, kernel 0.160 s, d2h 0.122 s, format 3.275 s, write 75.291 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 84.577 s (colorize+write 82.777 s, compute 1.800 s, 32 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.594 s, kernel 0.233 s, d2h 0.102 s, format 3.272 s, write 78.576 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 84.679 s (colorize+write 82.893 s, compute 1.786 s, 32 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.570 s, kernel 0.336 s, d2h 0.102 s, format 3.274 s, write 78.610 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 85.165 s (colorize+write 83.376 s, compute 1.789 s, 32 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.589 s, kernel 0.545 s, d2h 0.102 s, format 3.343 s, write 78.797 s (totals over 50 frames).
+=== Block size sweep ===
+Rank 0: simulation 'sim1_ppm' finished in 84.402 s (colorize+write 82.648 s, compute 1.754 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.609 s, kernel 0.246 s, d2h 0.114 s, format 3.199 s, write 78.480 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 85.596 s (colorize+write 83.869 s, compute 1.727 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.587 s, kernel 0.173 s, d2h 0.133 s, format 3.172 s, write 79.803 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 85.605 s (colorize+write 83.847 s, compute 1.757 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.591 s, kernel 0.275 s, d2h 0.132 s, format 3.197 s, write 79.652 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 82.711 s (colorize+write 80.975 s, compute 1.736 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.588 s, kernel 0.160 s, d2h 0.117 s, format 3.210 s, write 76.901 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 83.184 s (colorize+write 81.440 s, compute 1.744 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.580 s, kernel 0.157 s, d2h 0.118 s, format 3.170 s, write 77.415 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 84.408 s (colorize+write 82.687 s, compute 1.721 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.612 s, kernel 0.184 s, d2h 0.136 s, format 3.165 s, write 78.590 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 80.758 s (colorize+write 79.021 s, compute 1.737 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.594 s, kernel 0.147 s, d2h 0.112 s, format 3.166 s, write 75.001 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 84.427 s (colorize+write 82.702 s, compute 1.725 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.632 s, kernel 0.219 s, d2h 0.150 s, format 3.161 s, write 78.539 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 84.430 s (colorize+write 82.716 s, compute 1.714 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.622 s, kernel 0.218 s, d2h 0.152 s, format 3.178 s, write 78.547 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 80.311 s (colorize+write 78.573 s, compute 1.738 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.584 s, kernel 0.156 s, d2h 0.115 s, format 3.175 s, write 74.543 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 81.505 s (colorize+write 79.770 s, compute 1.734 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.598 s, kernel 0.161 s, d2h 0.121 s, format 3.203 s, write 75.687 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 82.221 s (colorize+write 80.399 s, compute 1.822 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.651 s, kernel 0.164 s, d2h 0.133 s, format 3.155 s, write 76.296 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 80.609 s (colorize+write 78.907 s, compute 1.702 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.656 s, kernel 0.178 s, d2h 0.127 s, format 3.136 s, write 74.809 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 80.621 s (colorize+write 78.926 s, compute 1.695 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.633 s, kernel 0.197 s, d2h 0.134 s, format 3.126 s, write 74.835 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 81.311 s (colorize+write 79.600 s, compute 1.711 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.638 s, kernel 0.208 s, d2h 0.142 s, format 3.131 s, write 75.480 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 74.564 s (colorize+write 72.718 s, compute 1.846 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.589 s, kernel 0.132 s, d2h 0.101 s, format 3.288 s, write 68.606 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 74.918 s (colorize+write 73.167 s, compute 1.752 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.572 s, kernel 0.236 s, d2h 0.102 s, format 3.305 s, write 68.952 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 75.125 s (colorize+write 73.320 s, compute 1.805 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.569 s, kernel 0.446 s, d2h 0.101 s, format 3.345 s, write 68.858 s (totals over 50 frames).
+=== GPU contention sweep ===
+Rank 0: simulation 'sim1_ppm' finished in 9.474 s (colorize+write 9.066 s, compute 0.408 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.143 s, kernel 0.036 s, d2h 0.026 s, format 0.772 s, write 8.088 s (totals over 50 frames).
+Rank 0: simulation 'sim1_ppm' finished in 20.843 s (colorize+write 20.408 s, compute 0.436 s, 4 OpenMP threads).
+  phase breakdown for rank 0: h2d 0.148 s, kernel 0.039 s, d2h 0.026 s, format 0.812 s, write 19.383 s (totals over 50 frames).
+Rank 2: simulation 'sim3_ppm' finished in 22.137 s (colorize+write 21.706 s, compute 0.432 s, 4 OpenMP threads).
+  phase breakdown for rank 2: h2d 0.143 s, kernel 0.042 s, d2h 0.027 s, format 0.814 s, write 20.680 s (totals over 50 frames).
+Rank 1: simulation 'sim2_ppm' finished in 22.230 s (colorize+write 21.785 s, compute 0.445 s, 4 OpenMP threads).
+  phase breakdown for rank 1: h2d 0.148 s, kernel 0.041 s, d2h 0.026 s, format 0.832 s, write 20.738 s (totals over 50 frames).
+Sweep complete. CSVs: size_sweep.csv, thread_sweep.csv, blocksize_sweep.csv, contention_sweep.csv
